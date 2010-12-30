@@ -16,8 +16,6 @@ class EC_Point
     
     const EC & __EC;
 
-    bool __isZero;
-
 public:
     EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC); // Generic
     EC_Point(const EC & __EC); // Zero
@@ -31,11 +29,12 @@ public:
    
     
     EC_Point & operator=  (const EC_Point & Y);
-    EC_Point & operator+= (const EC_Point & Y);
     EC_Point   operator+  (const EC_Point & Y) const;
-    EC_Point & operator*= (const ZZ_p & Y);
     EC_Point   operator*  (const ZZ_p & Y) const;
     
+    void operator+= (const EC_Point & Y);
+    void operator*= (const ZZ_p & Y);
+
     inline const ZZ_p & getX() const;
     inline const ZZ_p & getY() const;
 

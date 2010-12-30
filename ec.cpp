@@ -3,14 +3,14 @@
 /* ---------------------- Points ------------------------ */
 
 EC_Point::EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC)
-    : X(X), Y(Y), __EC(__EC), __isZero(false)
+    : X(X), Y(Y), __EC(__EC)
 {
     if (! _IsOnCurve())
         throw;
 }
 
 EC_Point::EC_Point(const EC & __EC)
-    : X(ZZ_p()), Y(ZZ_p()), __EC(__EC), __isZero(true)
+    : X(ZZ_p()), Y(ZZ_p()), __EC(__EC)
 {}
 
 EC_Point::~EC_Point()
@@ -58,9 +58,6 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
     this->X = Y.getX();
     this->Y = Y.getY();
     
-    this->__isZero = Y.isZero();
-    
-    
     return *this;
 }
 
@@ -75,68 +72,64 @@ EC_Point EC_Point::operator+  (const EC_Point & _Y) const
 
 
 
-EC_Point & EC_Point::operator+= (const EC_Point & _Y)
+void EC_Point::operator+= (const EC_Point & _Y)
 {
     const ZZ_p & YX = _Y.getX();
     const ZZ_p & YY = _Y.getY();
 
     if (_Y.isZero())
-        return *this;
+        return;
     
     if (isZero())
     {
-        X = YX;
-        Y = YY;
-
-        __isZero = _Y.isZero();
-        
-        return *this;
+        *this = _Y;
+        return;
     }
 
+    
     ZZ_p L;
-
-    // std::cout << "(" << X <<  ";" << Y << ") + (" <<
-    //     YX <<  ";" << YY << "); " << std::endl;
     
-    if ((X == YX) &&
-        (Y == YY)) // *2
-        L = ((sqr(X) * 3) + __EC.A) / (Y * 2);
+    
+    if ((this == &_Y) ||
+        (X==YX) || (Y==YY))
+    {
+        L = ( 3 * sqr(X) + __EC.A ) / (2 * Y);
+    }
     else
-        L = (YY - Y) / (YX - X);
+    {
+        L = (Y - YY) / (X - YX);
+    }
     
-    ZZ_p X3;
-    ZZ_p Y3;
-    
-    X3 = sqr(L) - X - YX;
-    Y3 = ((X - X3) * L) - Y;
-    
+    ZZ_p X3 = sqr(L) - X - YX;
+    ZZ_p Y3 = L*(X-X3) - Y;
+
     X = X3;
     Y = Y3;
 
-    __isZero = IsZero(Y);
-
-    return *this;
+    return;
 }
 
-EC_Point & EC_Point::operator*= (const ZZ_p & Y)
+void EC_Point::operator*= (const ZZ_p & Y)
 {
     const ZZ & _Y = rep(Y);
-
-    EC_Point result(*this);
     
-    for (long i=0; i<NumBits(_Y); i++)
+    EC_Point tmp(*this);
+
+    if (IsZero(Y))
+        this->Y = Y;
+    
+    
+    for (long i=0; i < NumBits(_Y); i++)
     {
         if (bit(_Y, i))
         {
-            result += result;
+            *this += tmp;
         }
 
-        result += *this;
+        tmp += tmp;
     }
 
-    *this = result;
-
-    return *this;
+    return;
 }
 
 EC_Point EC_Point::operator* (const ZZ_p & Y) const
@@ -152,7 +145,7 @@ EC_Point EC_Point::operator* (const ZZ_p & Y) const
 
 bool EC_Point::isZero() const
 {
-    return __isZero;
+    return IsZero(Y);
 }
 
 
