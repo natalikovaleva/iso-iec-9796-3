@@ -106,6 +106,7 @@ void EC_Point::operator+= (const EC_Point & _Y)
     X = X3;
     Y = Y3;
 
+
     return;
 }
 
