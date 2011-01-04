@@ -1,55 +1,59 @@
 #pragma once
 
-#include <ZZ.h>
+#include <NTL/ZZ_p.h>
 #include <sys/types.h>
 
 #include "sha512.h"
 
+using namespace NTL;
+
 
 class Hash
 {
-    unsigned char data[128];
-
-    void (__hash_buffer *) (unsigned char *ib,
-                            int ile,
-                            unsigned char *ob,
-                            int ole);
-
-    void setupHasher(Hash_Type type);
-
-    const char * toChar();
-
-    const union 
-    {
-        char * _asChar;
-        ZZ_p & _asZZ_p;
-        ZZ   & _asZZ;
-    };
-
-    const int _dataSize;
-    
-    
-    
 public:
     enum Hash_Type
     {
         SHA256,
         SHA384,
         SHA512
-    }
+    };
 
-
-        
-public:
-    Hash(Hash_Type type, const char * source, size_t length);
-    Hash(Hash_Type type, const ZZ_p & source);
-    Hash(Hash_Type type, const ZZ & source);
-   
-    ~Hash();
-
-    ZZ getZZ() const;
-    const char * getData() const;
+private:
     
+    unsigned char __hash_buffer[128];
+    
+    void (* __hash_function) (unsigned char *ib,
+                              int ile,
+                              unsigned char *ob,
+                              int ole);
+    
+    size_t __hash_size;
+
+    void setupHasher(Hash_Type type);
+
+public:
+    Hash(Hash_Type type);
+    ~Hash();
+    
+    unsigned char * getHash(const unsigned char * source, size_t source_size,
+                   unsigned char * buffer, size_t buffer_size) const;
+
+    const unsigned char * getHash(const unsigned char * source, size_t source_size);
+    
+    inline size_t getHashSize(void) const;
     
 };
 
+class Hash_ZZ_p : public Hash
+{
+    ZZ_p toZZ_p(const unsigned char * hash, size_t hash_size) const;
+    inline ZZ toZZ(const unsigned char * hash, size_t hash_size) const;
+    
+public:
+    Hash_ZZ_p(Hash::Hash_Type type);
+    ~Hash_ZZ_p();
+    
+    ZZ_p operator() (const unsigned char * source, size_t source_size) const;
+    ZZ_p operator() (const ZZ_p & source) const;
+    inline ZZ_p operator() (const ZZ   & source) const;
+};

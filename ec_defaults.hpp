@@ -8,7 +8,7 @@ class EC_Defaults
 public:
     enum Sizes
     {
-        EC192 = 192,
+        EC192 = 192
     };
     
 
