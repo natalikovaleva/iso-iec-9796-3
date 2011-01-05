@@ -62,9 +62,9 @@ int main(int argc, char *argv[])
 
     unsigned char buffer[1024];
 
-    Qc.serialize(buffer, sizeof(buffer), sample);
+    Qc.serialize(buffer, sizeof(buffer));
     
-    EC_CPoint Qcc (buffer, sizeof(buffer));
+    EC_CPoint Qcc (buffer, Qc.serializeSize());
 
     std::cout << "Decompress serialized Q = " << Qcc.decompress(sample) << std::endl;
     
