@@ -9,6 +9,7 @@ EC_Point::EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC)
         throw;
 }
 
+
 EC_Point::EC_Point(const EC & __EC)
     : X(ZZ_p()), Y(ZZ_p()), __EC(__EC)
 {}
@@ -35,19 +36,6 @@ bool EC_Point::isSameEC(const EC & __EC) const
 {
     return &(this->__EC) == &(__EC);
 }
-
-
-const ZZ_p & EC_Point::getX() const
-{
-    return X;
-}
-
-const ZZ_p & EC_Point::getY() const
-{
-    return Y;
-}
-
-
 
 EC_Point & EC_Point::operator= (const EC_Point & Y)
 {
@@ -175,6 +163,18 @@ EC_Point EC::create(const ZZ_p & x,
 {
     return EC_Point(x, y, *this);
 }
+
+EC_Point EC::create(const ZZ & x,
+                      const ZZ & y) const
+{
+    ZZ_p x_ZZp, y_ZZp;
+
+    conv(x_ZZp, x);
+    conv(y_ZZp, y);
+    
+    return EC_Point(x_ZZp, y_ZZp, *this);
+}
+
 
 bool EC::generate_random(ZZ_p & d) const
 {

@@ -13,7 +13,7 @@ CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg
 %.o : %.c
 		gcc -Wall -pedantic --std=c99 $(CXXFLAGS) $(INCLUDE) -c -o $@ $<
 
-sign:	sign.o ec.o ec_defaults.o sha512.o hash.o
+sign:	sign.o ec.o ec_defaults.o ec_compress.o sha512.o hash.o
 		g++ -Wall $(CXXFLAGS) -o  $@ $^ ntl.a
 		find -name "*.gcda" -delete
 

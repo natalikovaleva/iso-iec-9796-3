@@ -35,9 +35,12 @@ public:
     void operator+= (const EC_Point & Y);
     void operator*= (const ZZ_p & Y);
 
-    inline const ZZ_p & getX() const;
-    inline const ZZ_p & getY() const;
+    inline const ZZ_p & getX() const
+        { return X; }
 
+    inline const ZZ_p & getY() const
+        { return Y; }
+        
     inline bool isSameEC(const EC & __EC) const;
 
     friend class EC;
@@ -57,6 +60,25 @@ class EC
 
     ZZ_pContext __mod; // Modulus context
 
+    /* Getters */
+public:
+    inline const ZZ & getModulus() const 
+        { return P; }
+
+    inline const ZZ_p & getA() const
+        { return A; }
+
+    inline const ZZ_p & getB() const
+        { return B; }
+
+    inline const ZZ_p & getC() const
+        { return C; }
+             
+    inline const EC_Point & getBasePoint() const
+        { return G; }
+
+    inline const ZZ_p & getOrder() const
+        { return N; }
     
 public:
 
@@ -74,6 +96,10 @@ public:
     
     EC_Point create(const ZZ_p & x,
                     const ZZ_p & y) const;
+    
+    EC_Point create(const ZZ & x,
+                    const ZZ & y) const;
+
     
     inline const EC_Point & get_base_point(void) const { return G; } ;
 

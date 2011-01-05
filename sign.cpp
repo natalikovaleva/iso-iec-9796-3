@@ -4,6 +4,7 @@
 
 #include "hash.hpp"
 #include "ec.hpp"
+#include "ec_compress.hpp"
 #include "ec_defaults.hpp"
 
 
@@ -50,9 +51,22 @@ int main(int argc, char *argv[])
 
     std::cout << "Q = G*d = " << Q << std::endl;
 
+    EC_CPoint Qc (Q);
+
+    std::cout << "Compress => Decompress Q = " << Qc.decompress(sample) << std::endl;
+    
     std::cout << "Check order correctness: " << sample.isCorrectOrder() <<
         std::endl;
     
+    std::cout << "Serialization corectness" << std::endl;
+
+    unsigned char buffer[1024];
+
+    Qc.serialize(buffer, sizeof(buffer), sample);
+    
+    EC_CPoint Qcc (buffer, sizeof(buffer));
+
+    std::cout << "Decompress serialized Q = " << Qcc.decompress(sample) << std::endl;
     
     
     return 0;

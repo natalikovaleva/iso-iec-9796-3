@@ -6,6 +6,11 @@
 using namespace std;
 using namespace NTL;
 
+const EC_Defaults::Sizes EC_Defaults::__size_matrix[] =
+{
+    EC0, EC128, EC192, EC256, EC512
+};
+
 EC_Defaults::EC_Defaults(Sizes size)
     : __this_size(size)
 {
@@ -63,4 +68,21 @@ EC EC_Defaults::create() const
               _SEED);
 }
 
+
+EC_Defaults::Sizes EC_Defaults::getSize(unsigned int id)
+{
+    if (id > sizeof(__size_matrix))
+        return EC0;
+    
+    return __size_matrix[id];
+}
+
+unsigned int EC_Defaults::getId(Sizes size) 
+{
+    for (unsigned int i = 0; i<sizeof(__size_matrix); i++)
+        if (__size_matrix[i] == size)
+            return i;
+
+    return getId(EC_Defaults::EC0); // throw ? 
+}
 
