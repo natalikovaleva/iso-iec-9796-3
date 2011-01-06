@@ -20,13 +20,12 @@ public:
     
     static inline unsigned char deserialize_tY(const unsigned char * data, size_t size)
         {
-            return ( data[size] & 0x1 );
+            return ( data[0] & 0x1 );
         }
     
     static inline unsigned char compress_tY(const EC_Point & X)
         {
-            const ZZ & zzY = rep(X.getY());
-            return (unsigned char) bit(zzY, NumBits(zzY));
+            return (unsigned char) IsOdd(rep(X.getY()));
         }
     
 public:

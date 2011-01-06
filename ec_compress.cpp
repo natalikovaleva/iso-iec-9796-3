@@ -1,8 +1,6 @@
 #include "ec_compress.hpp"
 #include "ec_defaults.hpp"
 
-
-
 EC_CPoint::~EC_CPoint()
 {}
 
@@ -26,11 +24,9 @@ EC_Point EC_CPoint::decompress(const EC & EC) const
 
     const ZZ X3 = PowerMod(X, 3, P);
 
-    const ZZ Y = tY ?
-        NegateMod(SqrRootMod((X3 + A*X + B) % P, P),P) :
-        SqrRootMod((X3 + A*X + B) % P, P);
+    const ZZ Y =  SqrRootMod((X3 + A*X + B) % P, P);
 
-    return EC.create(X, Y);
+    return EC.create(X, tY == IsOdd(Y) ? Y : NegateMod(Y,P));
 }
 
 unsigned char * EC_CPoint::serialize(unsigned char * buffer,
