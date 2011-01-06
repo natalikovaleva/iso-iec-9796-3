@@ -18,6 +18,8 @@ class EC_Point
 
 public:
     EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC); // Generic
+    EC_Point(const EC_Point & Point); // Same point in same field
+    EC_Point(const EC_Point & Point, bool isZero); // Copy zero point from same field
     EC_Point(const EC & __EC); // Zero
     ~EC_Point();
 
@@ -25,8 +27,8 @@ public:
     
 public:
 
-    inline bool isZero() const;
-   
+    inline bool isZero() const
+        { return IsZero(Y); }
     
     EC_Point & operator=  (const EC_Point & Y);
     EC_Point   operator+  (const EC_Point & Y) const;

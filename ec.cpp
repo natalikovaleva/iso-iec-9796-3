@@ -2,6 +2,15 @@
 
 /* ---------------------- Points ------------------------ */
 
+EC_Point::EC_Point(const EC_Point & Point)
+    : X(Point.X), Y(Point.Y), __EC(Point.__EC)
+{}
+
+EC_Point::EC_Point(const EC_Point & Point, bool isZero)
+    : X(Point.X), Y(isZero ? ZZ_p() : Point.Y), __EC(Point.__EC)
+{}
+
+
 EC_Point::EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC)
     : X(X), Y(Y), __EC(__EC)
 {
@@ -73,10 +82,8 @@ void EC_Point::operator+= (const EC_Point & _Y)
         *this = _Y;
         return;
     }
-
     
     ZZ_p L;
-    
     
     if ((this == &_Y) ||
         (X==YX) || (Y==YY))
@@ -94,7 +101,6 @@ void EC_Point::operator+= (const EC_Point & _Y)
     X = X3;
     Y = Y3;
 
-
     return;
 }
 
@@ -102,21 +108,23 @@ void EC_Point::operator*= (const ZZ_p & Y)
 {
     const ZZ & _Y = rep(Y);
     
-    EC_Point tmp(*this);
+    EC_Point S(*this);
+    EC_Point R(*this, true);
 
     if (IsZero(Y))
         this->Y = Y;
-    
-    
-    for (long i=0; i < NumBits(_Y); i++)
+
+    for (long i = 0; i < NumBits(_Y); i++)
     {
         if (bit(_Y, i))
         {
-            *this += tmp;
+            R += S;
         }
 
-        tmp += tmp;
+        S += S;
     }
+    
+    *this = R;
 
     return;
 }
@@ -130,20 +138,12 @@ EC_Point EC_Point::operator* (const ZZ_p & Y) const
     return __retval;
 }
 
-
-
-bool EC_Point::isZero() const
-{
-    return IsZero(Y);
-}
-
-
 /* --------------------- Curves ------------------------- */
 
 EC::EC(const ZZ_p & A,
        const ZZ_p & B,
        const ZZ_p & C,
-       const ZZ_p & P,
+       const ZZ_p & N,
        //--- TODO Something with it .. ---
        const ZZ_p & Gx,
        const ZZ_p & Gy,
