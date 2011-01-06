@@ -6,7 +6,7 @@
 #include "ec.hpp"
 #include "ec_compress.hpp"
 #include "ec_defaults.hpp"
-
+#include "utils.hpp"
 
 using namespace NTL;
 
@@ -51,23 +51,44 @@ int main(int argc, char *argv[])
 
     std::cout << "Q = G*d = " << Q << std::endl;
 
-    EC_CPoint Qc (Q);
-
-    std::cout << "Compress => Decompress Q = " << Qc.decompress(sample) << std::endl;
-    
     std::cout << "Check order correctness: " << sample.isCorrectOrder() <<
         std::endl;
+
+    std::cout << "Find point, with tY = 1" << std::endl;
+
+    EC_Point Y = Q * sample.generate_random();
     
-    std::cout << "Serialization corectness" << std::endl;
+    while (EC_CPoint::compress_tY(Y) == 0)
+        Y *= sample.generate_random();
+
+    std::cout << "Y = " << Y << std::endl;
+    
+    EC_CPoint Yc (Y);
+
+    std::cout << "Compress => Decompress Y = " << Yc.decompress(sample) << std::endl;
 
     unsigned char buffer[1024];
 
-    Qc.serialize(buffer, sizeof(buffer));
+    Yc.serialize(buffer, sizeof(buffer));
     
-    EC_CPoint Qcc (buffer, Qc.serializeSize());
+    EC_CPoint Ycc(buffer, Yc.serializeSize());
 
-    std::cout << "Decompress serialized Q = " << Qcc.decompress(sample) << std::endl;
+    std::cout << "Decompress serialized Y = " << Ycc.decompress(sample) << std::endl;
+
+    while (EC_CPoint::compress_tY(Y) == 1)
+        Y *= sample.generate_random();
+
+    std::cout << "Y' = " << Y << std::endl;
+
+    EC_CPoint Yd (Y);
+
+    std::cout << "Compress => Decompress Y' = " << Yd.decompress(sample) << std::endl;
+
+    Yd.serialize(buffer, sizeof(buffer));
     
+    EC_CPoint Ydd(buffer, Yd.serializeSize());
+
+    std::cout << "Decompress serialized Y' = " << Ydd.decompress(sample) << std::endl;
     
     return 0;
 }
