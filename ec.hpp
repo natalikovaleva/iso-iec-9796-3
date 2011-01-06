@@ -37,6 +37,9 @@ public:
     void operator+= (const EC_Point & Y);
     void operator*= (const ZZ_p & Y);
 
+    inline bool operator== (const EC_Point &Y_)
+        { return Y_.isZero() ? isZero() : (X == Y_.X) && (Y == Y_.Y); }
+
     inline const ZZ_p & getX() const
         { return X; }
 

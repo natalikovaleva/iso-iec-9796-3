@@ -212,7 +212,5 @@ std::ostream& operator<<(std::ostream& s, const EC_Point & _EC_Point)
 
 bool EC::isCorrectOrder() const
 {
-    std::cout << (G * N) << std::endl;
-    
-    return (G * N).isZero();
+    return (G * (N + 1)) == G;
 }
