@@ -10,6 +10,7 @@ public:
     {
         EC0   = 0,   /* Broken EC */
         EC128 = 128,
+        EC160 = 160,
         EC192 = 192,
         EC256 = 256,
         EC512 = 512
@@ -24,13 +25,12 @@ public:
     
     
 private:
-    const Sizes __this_size;
     static const Sizes __size_matrix[];
     
 public:
 
-    EC create(void) const;
-
-    EC_Defaults(Sizes size);
+    static EC create(Sizes size);
+    
+    EC_Defaults();
     ~EC_Defaults();
 };
