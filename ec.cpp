@@ -3,24 +3,31 @@
 /* ---------------------- Points ------------------------ */
 
 EC_Point::EC_Point(const EC_Point & Point)
-    : X(Point.X), Y(Point.Y), __EC(Point.__EC)
+    : X(Point.X),
+      Y(Point.Y),
+      __EC(Point.__EC),
+      isZeroPoint(Point.isZeroPoint)
 {}
 
 EC_Point::EC_Point(const EC_Point & Point, bool isZero)
-    : X(Point.X), Y(isZero ? ZZ_p() : Point.Y), __EC(Point.__EC)
+    : X(isZero ? ZZ_p() : Point.X),
+      Y(isZero ? ZZ_p() : Point.Y),
+      __EC(Point.__EC)
 {}
 
 
 EC_Point::EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC)
-    : X(X), Y(Y), __EC(__EC)
+    : X(X), Y(Y), __EC(__EC), isZeroPoint(false)
 {
     if (! _IsOnCurve())
         throw;
 }
 
-
 EC_Point::EC_Point(const EC & __EC)
-    : X(ZZ_p()), Y(ZZ_p()), __EC(__EC)
+    : X(ZZ_p()),
+      Y(ZZ_p()),
+      __EC(__EC),
+      isZeroPoint(true)
 {}
 
 EC_Point::~EC_Point()
@@ -29,9 +36,12 @@ EC_Point::~EC_Point()
 // ___ must be in proper context __
 bool EC_Point::_IsOnCurve() const
 {
+    if (isZeroPoint)
+        return true;
+    
     ZZ_p Y2, X3;
     bool __result = false;
-
+    
     sqr(Y2, Y);
     power(X3, X, 3);
 
@@ -51,9 +61,15 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
     // __EC field must be the same
     if (! isSameEC(__EC))
         throw; // assert
-    
-    this->X = Y.getX();
-    this->Y = Y.getY();
+
+    if (Y.isZeroPoint)
+        this->isZeroPoint = true;
+    else
+    {
+        this->X = Y.getX();
+        this->Y = Y.getY();
+        this->isZeroPoint = false;
+    }
     
     return *this;
 }
@@ -75,7 +91,10 @@ void EC_Point::operator+= (const EC_Point & _Y)
     const ZZ_p & YY = _Y.getY();
 
     if (_Y.isZero())
+    {
         return;
+    }
+    
     
     if (isZero())
     {
@@ -109,10 +128,12 @@ void EC_Point::operator*= (const ZZ_p & Y)
     const ZZ & _Y = rep(Y);
     
     EC_Point S(*this);
-    EC_Point R(*this, true);
+    EC_Point R(__EC);
 
     if (IsZero(Y))
-        this->Y = Y;
+    {
+        return;
+    }
 
     for (long i = 0; i < NumBits(_Y); i++)
     {
@@ -156,6 +177,11 @@ EC::EC(const ZZ_p & A,
 
 EC::~EC()
 {}
+
+EC_Point EC::create() const
+{
+    return EC_Point(*this);
+}
 
 
 EC_Point EC::create(const ZZ_p & x,
@@ -207,8 +233,6 @@ std::ostream& operator<<(std::ostream& s, const EC_Point & _EC_Point)
 
     return s;
 }
-
-#include <iostream>
 
 bool EC::isCorrectOrder() const
 {

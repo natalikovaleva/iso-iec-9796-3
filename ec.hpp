@@ -13,8 +13,10 @@ class EC_Point
     
     ZZ_p X;
     ZZ_p Y;
-    
+
     const EC & __EC;
+
+    bool isZeroPoint;
 
 public:
     EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC); // Generic
@@ -28,7 +30,7 @@ public:
 public:
 
     inline bool isZero() const
-        { return IsZero(Y); }
+        { return isZeroPoint; }
     
     EC_Point & operator=  (const EC_Point & Y);
     EC_Point   operator+  (const EC_Point & Y) const;
@@ -98,6 +100,8 @@ public:
        const ZZ_p & Seed);
     
     ~EC();
+
+    EC_Point create() const;
     
     EC_Point create(const ZZ_p & x,
                     const ZZ_p & y) const;
