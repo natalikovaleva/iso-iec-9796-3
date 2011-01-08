@@ -56,7 +56,8 @@ public:
 
 class EC
 {
-    const ZZ_p N;     // Point Order
+    const ZZ   N;     // Point Order
+    const ZZ_p N_pp;  // Point Order, moduled
     const ZZ   P;     // Modulus, get from creators context
     const ZZ_p Seed;  // Random generated seed
     const ZZ_p A;     // EC Params 
@@ -65,8 +66,21 @@ class EC
     
     const EC_Point G; // Base point
 
-    ZZ_pContext __mod; // Modulus context
-
+    ZZ_pContext __mod;   // Field Modulus context
+    ZZ_pContext __order; // Order Modulus context
+    ZZ_pContext __global;
+    bool __is_global_setted;
+    
+    
+    /* Types */
+public:
+    enum MOD_CONTEXT
+    {
+        FIELD_CONTEXT,
+        ORDER_CONTEXT
+    };
+    
+    
     /* Getters */
 public:
     inline const ZZ & getModulus() const 
@@ -85,14 +99,14 @@ public:
         { return G; }
 
     inline const ZZ_p & getOrder() const
-        { return N; }
+        { return N_pp; }
     
 public:
 
     EC(const ZZ_p & A,
        const ZZ_p & B,
        const ZZ_p & C,
-       const ZZ_p & N,
+       const ZZ   & N,
        //--- TODO Something with it .. ---
        const ZZ_p & Gx,
        const ZZ_p & Gy,
@@ -118,8 +132,24 @@ public:
     
     
 
-    inline void enter_mod_context(void) { __mod.save(); };
-    inline void leave_mod_context(void) const { __mod.restore(); } ;
+    inline void enter_mod_context(enum MOD_CONTEXT context)
+        {
+            if (! __is_global_setted)
+            {
+                __global.save();
+                __is_global_setted = true;
+            }
+            
+            switch(context)
+            {
+                case FIELD_CONTEXT: __mod.restore();   break;
+                case ORDER_CONTEXT: __order.restore(); break;
+                default: throw;
+            }
+        }
+    
+    inline void leave_mod_context()
+        { __global.restore(); __is_global_setted = false; }
 
 
     bool isCorrectOrder() const;

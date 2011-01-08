@@ -17,6 +17,15 @@ EC_Defaults::EC_Defaults()
 EC_Defaults::~EC_Defaults()
 {}
 
+static ZZ_pBak __backup_context;
+
+void EC_Defaults::restoreContext(void)
+{
+    __backup_context.restore();
+    
+}
+
+
 EC EC_Defaults::create(Sizes size)
 {
     istringstream A, B, C, P;
@@ -56,6 +65,8 @@ EC EC_Defaults::create(Sizes size)
     ZZ   _P;
     P >> _P;
 
+    __backup_context.save();
+        
     ZZ_p::init(_P);
     
     ZZ_p _GX, _GY;
@@ -63,7 +74,9 @@ EC EC_Defaults::create(Sizes size)
     GX >> _GX;
     GY >> _GY;
 
-    ZZ_p _A, _B, _C, _N, _SEED;
+    ZZ_p _A, _B, _C, _SEED;
+    ZZ _N;
+    
     
     A    >> _A;
     B    >> _B;

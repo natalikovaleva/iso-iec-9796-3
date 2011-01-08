@@ -1,4 +1,5 @@
 #include "ec.hpp"
+#include "utils.hpp"
 
 /* ---------------------- Points ------------------------ */
 
@@ -164,15 +165,18 @@ EC_Point EC_Point::operator* (const ZZ_p & Y) const
 EC::EC(const ZZ_p & A,
        const ZZ_p & B,
        const ZZ_p & C,
-       const ZZ_p & N,
+       const ZZ   & N,
        //--- TODO Something with it .. ---
        const ZZ_p & Gx,
        const ZZ_p & Gy,
        //---------------------------------
        const ZZ_p & Seed)
-    : N(N), P(ZZ_p::modulus()), Seed(Seed), A(A), B(B), C(C),
+    : N(N), N_pp(InMod(N)),
+      P(ZZ_p::modulus()), Seed(Seed), A(A), B(B), C(C),
       G(EC_Point(Gx, Gy, *this)),
-      __mod(ZZ_p::modulus())
+      __mod(ZZ_p::modulus()),
+      __order(N),
+      __is_global_setted(false)
 {}
 
 EC::~EC()
@@ -206,7 +210,7 @@ bool EC::generate_random(ZZ_p & d) const
 {
     random(d);
 
-    if ((rep(N) - 2) < rep(d))
+    if ((N - 2) < rep(d))
         return true;
     return false;
     
@@ -228,13 +232,13 @@ std::ostream& operator<<(std::ostream& s, const EC & _EC)
 
 std::ostream& operator<<(std::ostream& s, const EC_Point & _EC_Point)
 {
-    s << "(" << _EC_Point.X << ";" <<
-        _EC_Point.Y << ")";
+    s << "( x: " << I2OSP(_EC_Point.X) << "; y: " <<
+        I2OSP(_EC_Point.Y) << ")";
 
     return s;
 }
 
 bool EC::isCorrectOrder() const
 {
-    return (G * (N + 1)) == G;
+    return (G * (N_pp + 1)) == G;
 }

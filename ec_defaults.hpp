@@ -22,6 +22,8 @@ public:
         { return (EC_Defaults::Sizes) X; }
     static inline long toByteSize(const EC_Defaults::Sizes Size)
         { return (long) (Size+7)/8; }
+
+    static void restoreContext(void);
     
     
 private:
