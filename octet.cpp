@@ -1,25 +1,36 @@
 #include "octet.hpp"
 
-Octet::Octet()
-    : __data_size(0)
-{}
+#include <iomanip>
 
-Octet::Octet(const unsigned char * data, size_t data_size)
+void ByteSeq::setData(const unsigned char * data, size_t data_size)
 {
     __data_size = data_size < OCTET_MAX_SIZE ? data_size : OCTET_MAX_SIZE;
-    memcpy(__data, data, __data_size);
+
+    const long pad_need = __data_size%__pad;
+    const long pad_size = pad_need ? __pad-pad_need : 0;
+
+    if (pad_size)
+        memset(__data, 0x0, pad_size);
+    
+    if (__data_size + pad_size <= OCTET_MAX_SIZE)
+        memcpy(__data + pad_size, data, __data_size);
+    else
+        memcpy(__data + pad_size, data, OCTET_MAX_SIZE - pad_size);
+
+    __data_size += pad_size;
 }
 
-
-size_t Octet::rotateAndPad(
+size_t ByteSeq::rotateAndPad(
     unsigned char * dest,
     size_t dest_size,
     const unsigned char * source,
-    size_t source_size)
+    size_t source_size) const
 {
     const long rotate_size = source_size < dest_size ?
         source_size : dest_size;
-    const long rotate_pad  = 4 - (rotate_size % 4);
+    
+    const long pad_need = source_size%__pad;
+    const long rotate_pad  = pad_need ? __pad-pad_need : 0;
     
     memset(dest, 0x0, rotate_pad);
     
@@ -32,9 +43,9 @@ size_t Octet::rotateAndPad(
     return ( rotate_size + rotate_pad );
 }
 
-Octet::Octet(const ZZ & source)
+void ByteSeq::setData(const ZZ & source)
 {
-    unsigned char buffer [OCTET_MAX_SIZE-4];
+    unsigned char buffer [OCTET_MAX_SIZE-__pad];
 
     /* TODO: FIX BYTE ORDER */
     
@@ -46,7 +57,7 @@ Octet::Octet(const ZZ & source)
                                         source_size : sizeof(buffer)));
 }
 
-Octet::operator ZZ()
+ZZ ByteSeq::getZZ(void) const
 {
     unsigned char buffer [OCTET_MAX_SIZE];
 
@@ -54,15 +65,18 @@ Octet::operator ZZ()
                                __data, __data_size);
 
     return ZZFromBytes(buffer, size);
+
 }
 
-Octet Octet::operator|| (const Octet & y) const
+ByteSeq ByteSeq::operator|| (const ByteSeq & y) const
 {
-    Octet result(*this);
+    ByteSeq result(*this);
     
     if (result.__data_size + y.__data_size < OCTET_MAX_SIZE)
     {
         memcpy(result.__data+__data_size, y.__data, y.__data_size);
+        result.__data_size = result.__data_size + y.__data_size;
+        
     }
     else
     {
@@ -76,9 +90,30 @@ Octet Octet::operator|| (const Octet & y) const
             const size_t overflow = y.__data_size + result.__data_size - OCTET_MAX_SIZE;
             memmove(result.__data, result.__data+overflow, result.__data_size-overflow);
             memcpy(result.__data+result.__data_size-overflow, y.__data, y.__data_size);
+            result.__data_size = OCTET_MAX_SIZE;
         }
     }
 
     return result;
+}
+
+std::ostream& operator<<(std::ostream& s, const ByteSeq & octet)
+{
+
+    std::ios_base::fmtflags original_flags = s.flags();
+
+    s << std::hex;
+    
+    for (unsigned int i=0; i<octet.__data_size; i++)
+    {
+        s << std::setfill('0') << std::setw(2) <<
+            (unsigned int) octet.__data[i];
+        if ((i+1)%4==0)
+            s << " ";
+    }
+
+    s.flags(original_flags);
+
+    return s;
 }
 
