@@ -79,8 +79,13 @@ ZZ Hash_ZZ_p::toZZ(const unsigned char * hash, const size_t hash_size) const
     // Fix const in NTL ?
 
     const size_t this_hash_size = getHashSize();
+
+    unsigned char _hash_reverse[1024 + 4]; // Buffer for strict order data
+
+    for (unsigned int i=0; i<hash_size; i++)
+        _hash_reverse[i] = hash[hash_size-i-1];
     
-    return ZZFromBytes((unsigned char *) hash,
+    return ZZFromBytes((unsigned char *) _hash_reverse,
                        this_hash_size < hash_size ?
                        this_hash_size :
                        hash_size);
