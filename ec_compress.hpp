@@ -6,8 +6,10 @@
 
 class EC_CPoint
 {
+    typedef long Sign;
+    
     const ZZ X;
-    const unsigned char tY;
+    const Sign tY;
 
 public:
     
@@ -20,6 +22,7 @@ public:
     
     static inline unsigned char deserialize_tY(const unsigned char * data, size_t size)
         {
+            if (size < 1) return 0; // throw ?
             return ( data[0] & 0x1 );
         }
     
