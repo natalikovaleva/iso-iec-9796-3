@@ -3,6 +3,8 @@
 #include <NTL/ZZ_p.h>
 #include <sys/types.h>
 
+#include "octet.hpp"
+
 extern "C" 
 {
 #include "rmd160.h"
@@ -59,3 +61,14 @@ public:
     ZZ_p operator() (const ZZ_p & source) const;
     ZZ_p operator() (const ZZ   & source) const;
 };
+
+class Hash_Octet : public Hash
+{
+public:
+    Hash_Octet(Hash::Hash_Type type);
+
+    Octet operator() (const Octet & source) const;
+};
+
+    
+    

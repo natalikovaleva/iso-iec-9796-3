@@ -149,3 +149,20 @@ ZZ_p Hash_ZZ_p::operator() (const ZZ   & ZZ_source) const
     return toZZ_p(hash, getHashSize());
 }
 
+Hash_Octet::Hash_Octet(Hash::Hash_Type type)
+    :Hash(type) {}
+
+Octet Hash_Octet::operator() (const Octet & source) const
+{
+    /* TODO: Make this function friendly to Octet class */
+    /* TODO: Count const payment with macros */
+    
+    unsigned char buffer[128]; // const payment
+    
+    getHash(source.getData(), source.getDataSize(),
+            buffer, sizeof(buffer));
+
+    return Octet(buffer, getHashSize());
+}
+
+
