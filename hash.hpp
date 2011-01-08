@@ -48,20 +48,6 @@ public:
     
 };
 
-class Hash_ZZ_p : public Hash
-{
-    ZZ_p toZZ_p(const unsigned char * hash, size_t hash_size) const;
-    inline ZZ toZZ(const unsigned char * hash, size_t hash_size) const;
-    
-public:
-    Hash_ZZ_p(Hash::Hash_Type type);
-    ~Hash_ZZ_p();
-    
-    ZZ_p operator() (const unsigned char * source, size_t source_size) const;
-    ZZ_p operator() (const ZZ_p & source) const;
-    ZZ_p operator() (const ZZ   & source) const;
-};
-
 class Hash_Octet : public Hash
 {
 public:
