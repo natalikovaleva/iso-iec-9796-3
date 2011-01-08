@@ -6,7 +6,7 @@ void ByteSeq::setData(const unsigned char * data, size_t data_size)
 {
     __data_size = data_size < OCTET_MAX_SIZE ? data_size : OCTET_MAX_SIZE;
 
-    const long pad_need = __data_size%__pad;
+    const long pad_need = __pad ? __data_size%__pad : 0;
     const long pad_size = pad_need ? __pad-pad_need : 0;
 
     if (pad_size)
@@ -29,7 +29,7 @@ size_t ByteSeq::rotateAndPad(
     const long rotate_size = source_size < dest_size ?
         source_size : dest_size;
     
-    const long pad_need = source_size%__pad;
+    const long pad_need = __pad ? source_size%__pad : 0;
     const long rotate_pad  = pad_need ? __pad-pad_need : 0;
     
     memset(dest, 0x0, rotate_pad);
