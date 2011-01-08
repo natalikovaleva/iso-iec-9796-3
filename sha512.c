@@ -161,7 +161,7 @@ void sha256_write(sha256_context *ctx, unsigned char *datap, int length)
 {
     while(length > 0) {
         if(!ctx->sha_bufCnt) {
-            while(length >= sizeof(ctx->sha_out)) {
+            while((unsigned int)length >= sizeof(ctx->sha_out)) {
                 sha256_transform(ctx, datap);
                 datap += sizeof(ctx->sha_out);
                 length -= sizeof(ctx->sha_out);
@@ -319,7 +319,7 @@ void sha512_write(sha512_context *ctx, unsigned char *datap, int length)
 {
     while(length > 0) {
         if(!ctx->sha_bufCnt) {
-            while(length >= sizeof(ctx->sha_out)) {
+            while((unsigned int)length >= sizeof(ctx->sha_out)) {
                 sha512_transform(ctx, datap);
                 datap += sizeof(ctx->sha_out);
                 length -= sizeof(ctx->sha_out);
