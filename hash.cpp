@@ -67,10 +67,10 @@ unsigned char * Hash::getHash(const unsigned char * source, size_t source_size,
     return buffer;
 }
 
-Hash_Octet::Hash_Octet(Hash::Hash_Type type)
+Hash_Seq::Hash_Seq(Hash::Hash_Type type)
     :Hash(type) {}
 
-Octet Hash_Octet::operator() (const Octet & source) const
+ByteSeq Hash_Seq::operator() (const ByteSeq & source) const
 {
     /* TODO: Make this function friendly to Octet class */
     /* TODO: Count const payment with macros */
@@ -80,7 +80,7 @@ Octet Hash_Octet::operator() (const Octet & source) const
     getHash(source.getData(), source.getDataSize(),
             buffer, sizeof(buffer));
 
-    return Octet(buffer, getHashSize());
+    return ByteSeq(buffer, getHashSize());
 }
 
 

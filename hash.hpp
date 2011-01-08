@@ -48,12 +48,12 @@ public:
     
 };
 
-class Hash_Octet : public Hash
+class Hash_Seq : public Hash
 {
 public:
-    Hash_Octet(Hash::Hash_Type type);
+    Hash_Seq(Hash::Hash_Type type);
 
-    Octet operator() (const Octet & source) const;
+    ByteSeq operator() (const ByteSeq & source) const;
 };
 
     
