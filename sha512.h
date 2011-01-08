@@ -26,27 +26,20 @@ typedef struct {
 
 /* no sha384_context, use sha512_context */
 
-#ifdef __cplusplus
-extern "C" 
-{
-#endif
-    /* 256 bit hash, provides 128 bits of security against collision attacks */
-    extern void sha256_init(sha256_context *);
-    extern void sha256_write(sha256_context *, unsigned char *, int);
-    extern void sha256_final(sha256_context *);
-    extern void sha256_hash_buffer(unsigned char *, int, unsigned char *, int);
+/* 256 bit hash, provides 128 bits of security against collision attacks */
+extern void sha256_init(sha256_context *);
+extern void sha256_write(sha256_context *, unsigned char *, int);
+extern void sha256_final(sha256_context *);
+extern void sha256_hash_buffer(unsigned char *, int, unsigned char *, int);
 
-    /* 512 bit hash, provides 256 bits of security against collision attacks */
-    extern void sha512_init(sha512_context *);
-    extern void sha512_write(sha512_context *, unsigned char *, int);
-    extern void sha512_final(sha512_context *);
-    extern void sha512_hash_buffer(unsigned char *, int, unsigned char *, int);
+/* 512 bit hash, provides 256 bits of security against collision attacks */
+extern void sha512_init(sha512_context *);
+extern void sha512_write(sha512_context *, unsigned char *, int);
+extern void sha512_final(sha512_context *);
+extern void sha512_hash_buffer(unsigned char *, int, unsigned char *, int);
 
-    /* 384 bit hash, provides 192 bits of security against collision attacks */
-    extern void sha384_init(sha512_context *);
-    /* no sha384_write(), use sha512_write() */
-    /* no sha384_final(), use sha512_final(), result in ctx->sha_out[0...47]  */
-    extern void sha384_hash_buffer(unsigned char *, int, unsigned char *, int);
-#ifdef __cplusplus
-}
-#endif
+/* 384 bit hash, provides 192 bits of security against collision attacks */
+extern void sha384_init(sha512_context *);
+/* no sha384_write(), use sha512_write() */
+/* no sha384_final(), use sha512_final(), result in ctx->sha_out[0...47]  */
+extern void sha384_hash_buffer(unsigned char *, int, unsigned char *, int);
