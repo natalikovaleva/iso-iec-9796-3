@@ -19,7 +19,7 @@ sign:	sign.o \
 			sha512.o rmd160.o hash.o \
 			octet.cpp \
 			utils.o
-		g++ -Wall $(CXXFLAGS) -o  $@ $^ -lntl
+		g++ -Wall $(CXXFLAGS) -o  $@ $^ libntl.a
 		find -name "*.gcda" -delete
 
 clean: 
