@@ -4,8 +4,9 @@ INCLUDE += -Intl-5.5.2/include
 
 all:  sign 
 
-# CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg
-CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg 
+CXXFLAGS := -O3 -march=native -ftree-vectorize -fwhole-program -combine -flto -flto-report -fprofile-correction -fprofile-use
+# CXXFLAGS := -O2 -fprofile-correction -fprofile-generate -march=native -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg
+#CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg 
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 %.o : %.cpp
@@ -19,7 +20,7 @@ sign:	sign.o \
 			sha512.o rmd160.o hash.o \
 			octet.o \
 			utils.o
-		g++ -Wall $(CXXFLAGS) -o  $@ $^ libntl.a
+		g++ -Wall $(CXXFLAGS) -o  $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete
 
 clean: 
