@@ -16,7 +16,7 @@ static inline void __rmd160_hash_buffer (unsigned char *source, int source_size,
     rmd160_hash_buffer((char *)__buffer,
                        (const char *)source,
                        source_size);
-    memcpy(buffer, __buffer, buffer_size);
+    memmove(buffer, __buffer, buffer_size);
 }
 
 
