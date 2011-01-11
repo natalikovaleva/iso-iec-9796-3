@@ -116,10 +116,9 @@ void EC_Point::operator+= (const EC_Point & _Y)
     }
     
     ZZ_p X3 = sqr(L) - X - YX;
-    ZZ_p Y3 = L*(X-X3) - Y;
 
+    Y = L*(X-X3) - Y;
     X = X3;
-    Y = Y3;
 
     return;
 }
