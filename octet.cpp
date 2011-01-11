@@ -45,11 +45,11 @@ size_t ByteSeq::rotateAndPad(
 
 void ByteSeq::setData(const ZZ & source)
 {
-    unsigned char buffer [OCTET_MAX_SIZE-__pad];
+    unsigned char buffer [OCTET_MAX_SIZE];
 
     /* TODO: FIX BYTE ORDER */
     
-    BytesFromZZ(buffer, source, sizeof(buffer));
+    BytesFromZZ(buffer, source, sizeof(buffer)-__pad);
     const size_t source_size = NumBytes(source);
     
     __data_size = rotateAndPad(__data, sizeof(__data),
