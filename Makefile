@@ -17,7 +17,7 @@ WARNINGS := -Wall -Wextra -pedantic -Winit-self
 sign:	sign.o \
 			ec.o ec_defaults.o ec_compress.o \
 			sha512.o rmd160.o hash.o \
-			octet.cpp \
+			octet.o \
 			utils.o
 		g++ -Wall $(CXXFLAGS) -o  $@ $^ libntl.a
 		find -name "*.gcda" -delete
