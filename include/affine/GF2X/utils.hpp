@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "generic/octet.hpp"
+#include "generic/convhex.h"
 #include "affine/GF2X/ec.hpp"
 #include "affine/GF2X/ec_compress.hpp"
 
@@ -33,9 +34,28 @@ namespace Affine
 
         ByteSeq I2OSP(unsigned I, size_t pad=0);
 
-        inline GF2X GF2X_str(const char * source)
+        inline GF2X GF2X_str(const char * source, bool reverse = true)
         {
-            std::istringstream source_(source);
+            char * real = NULL;
+            
+            if (reverse)
+            {
+                size_t source_len = strlen(source);
+                real = (char *) alloca(source_len);
+                real[0] = '0'; real[1] = 'x';
+                real[source_len]  = 0x0;
+
+                unsigned char * dst_start = (unsigned char *) real   + 2;
+                unsigned char * src_start = (unsigned char *) source + 2;
+                
+                mkle16b(dst_start,
+                        src_start,
+                        source_len - 2);
+
+                std::cout << "mkle16b: " << source << " => " << real << std::endl;
+            }
+            
+            std::istringstream source_(reverse ? real : source);
             GF2X result;
             source_ >> result;
     

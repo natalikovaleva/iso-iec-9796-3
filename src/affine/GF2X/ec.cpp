@@ -45,10 +45,24 @@ bool EC_Point::_IsOnCurve() const
     GF2X Y2, X3;
     bool __result = false;
     
-    sqr(Y2, Y);
-    power(X3, X, 3);
+    SqrMod(Y2, Y, __EC.P_mod);
 
-    if (__EC.A *X  +  X3 + __EC.B == Y2 )
+    std::cout << "Y2: " << Y2 << std::endl;
+    std::cout << "__EC.P_mod: " << __EC.P_mod << std::endl;
+    
+    PowerMod(X3, X, 3, __EC.P_mod);
+
+    GF2X L_Part;
+    
+    MulMod(L_Part, __EC.A, X, __EC.P_mod);
+
+    L_Part += X3;
+    L_Part += __EC.B;
+
+    std::cout << "L_part: " << L_Part << std::endl;
+    std::cout << "Y2: " << Y2 << std::endl;
+    
+    if (L_Part == Y2 )
         __result = true;
 
     return __result;
@@ -110,17 +124,17 @@ void EC_Point::operator+= (const EC_Point & _Y)
     if ((this == &_Y) ||
         (X==YX) || (Y==YY))
     {
-        L = ( 3 * sqr(X) + __EC.A ) / (2 * Y);
+        L = (( 3 * sqr(X) + __EC.A ) / (2 * Y) ) % __EC.P_mod;
     }
     else
     {
-        L = (Y - YY) / (X - YX);
+        L = ((Y - YY) / (X - YX)) % __EC.P_mod;
     }
     
     GF2X X3 = sqr(L) - X - YX;
 
-    Y = L*(X-X3) - Y;
-    X = X3;
+    Y = (L*(X-X3) - Y) % __EC.P_mod;
+    X = X3             % __EC.P_mod;
 
     return;
 }
@@ -173,6 +187,7 @@ EC::EC(const GF2X & A,
        const GF2X & Seed)
     : N(N), P(P),
       Seed(Seed), A(A), B(B), C(C),
+      N_mod(N), P_mod(P), P_deg(deg(P)),
       G(EC_Point(Gx, Gy, *this))
 {}
 
@@ -193,18 +208,16 @@ EC_Point EC::create(const GF2X & x,
 
 bool EC::generate_random(GF2X & d) const
 {
-    random(d);
+    random(d, P_deg);
 
-    if ((N - 2) < rep(d))
-        return true;
-    
-    return false;
+    /* FIXME: Check, that d < N-1 */
+    return true;
     
 }
 
 GF2X EC::generate_random() const
 {
-    return random_GF2X();
+    return random_GF2X(deg(N));
 }
 
 
@@ -226,5 +239,5 @@ std::ostream& Affine::GF2X::operator<<(std::ostream& s, const EC_Point & _EC_Poi
 
 bool EC::isCorrectOrder() const
 {
-    return (G * (N_pp + 1)) == G;
+    return (G * (N + 1)) == G;
 }
