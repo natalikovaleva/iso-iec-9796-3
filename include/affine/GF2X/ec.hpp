@@ -1,6 +1,8 @@
 #pragma once
 
 #include <NTL/GF2X.h>
+#include <NTL/ZZ.h>
+
 #include <ostream>
 
 namespace Affine
@@ -9,6 +11,7 @@ namespace Affine
     {
         
         using NTL::GF2X;
+        using NTL::ZZ;
         using NTL::GF2XModulus;
         using NTL::random_GF2X;
         
@@ -70,6 +73,12 @@ namespace Affine
             const GF2X B;     // EC Params 
             const GF2X C;     // EC Params 
     
+            const GF2XModulus N_mod;
+            const GF2XModulus P_mod;
+            const long        P_deg;
+
+            /* Depends on P_mod */
+            
             const EC_Point G; // Base point
 
             /* Types */

@@ -11,11 +11,11 @@ EC_CPoint::~EC_CPoint()
 {}
 
 EC_CPoint::EC_CPoint(const EC_Point & Point)
-    : X(rep(Point.getX())), tY(compress_tY(Point))
+    : X(Point.getX()), tY(compress_tY(Point))
 {}
 
 EC_CPoint::EC_CPoint(const GF2X & X, unsigned char tY)
-    : X(rep(X)), tY(tY)
+    : X(X), tY(tY)
 {}
 
 EC_CPoint::EC_CPoint(const unsigned char * data, size_t size)
@@ -24,8 +24,8 @@ EC_CPoint::EC_CPoint(const unsigned char * data, size_t size)
 
 EC_Point EC_CPoint::decompress(const EC & EC) const
 {
-    const GF2X & A = rep(EC.getA());
-    const GF2X & B = rep(EC.getB());
+    const GF2X & A = EC.getA();
+    const GF2X & B = EC.getB();
     const GF2X & P = EC.getModulus();
 
     const GF2X X3 = PowerMod(X, 3, P);
