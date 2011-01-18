@@ -93,14 +93,10 @@ unsigned char * mkle16b(unsigned char * dest, const unsigned char * src, unsigne
     unsigned char carry_mask = 0x0;
     unsigned char carry = 0;
     unsigned int shift = 0;
-
-    printf("Source : %s, length:  %d\n", src, length);
     
     for (i = 0, j=0; i<length; i++)
     {
         const unsigned char this = hexc_to_dec(src[length - i - 1]);
-
-        printf(">byte: %01x\n", this);
 
         search_zeros = search_zeros ? search_zeros : ( (this == 0) ? 0 : 1 );
         
@@ -116,6 +112,8 @@ unsigned char * mkle16b(unsigned char * dest, const unsigned char * src, unsigne
                 carry_mask = 0xf >> (4 - shift);
                 
                 carry = bits >> shift;
+
+                dest[length - i - 1] = 0;
                 
                 j++;
             }
