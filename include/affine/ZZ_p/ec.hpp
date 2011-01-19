@@ -82,7 +82,7 @@ namespace Affine
             const EC_Point G; // Base point
 
 
-            static const ZZ & setAndUseMod(const ZZ & x)
+            const ZZ & setAndUseMod(const ZZ & x)
                 { __global.save(); ZZ_p::init(x); return x; }
             
     

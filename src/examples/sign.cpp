@@ -29,8 +29,6 @@ int main(int argc     __attribute__((unused)),
 
     cout << EC << endl;
     
-    EC_Defaults::restoreContext();
-    
     EC.enter_mod_context(EC::FIELD_CONTEXT);
         
     cout << "EC:N: " << I2OSP(EC.getOrder()) << endl;

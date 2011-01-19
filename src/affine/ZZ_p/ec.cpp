@@ -179,7 +179,7 @@ EC::EC(const ZZ & A,
       P(setAndUseMod(P)), N(N), N_pp(InMod(N)), 
       Seed(InMod(Seed)),
       A(InMod(A)), B(InMod(B)), C(InMod(C)),
-      G(EC_Point(InMod(Gx), InMod(Gy), *this)),
+      G(EC_Point(InMod(Gx), InMod(Gy), *this))
 {}
 
 
@@ -192,12 +192,12 @@ EC::EC(const ZZ_p & A,
        const ZZ_p & Gy,
        //---------------------------------
        const ZZ_p & Seed)
-    : P(ZZ_p::modulus()), N(N), N_pp(InMod(N)),
-      Seed(Seed), A(A), B(B), C(C),
-      G(EC_Point(Gx, Gy, *this)),
-      __mod(ZZ_p::modulus()),
+    : __mod(ZZ_p::modulus()),
       __order(N),
-      __is_global_setted(false)
+      __is_global_setted(false),
+      P(ZZ_p::modulus()), N(N), N_pp(InMod(N)),
+      Seed(Seed), A(A), B(B), C(C),
+      G(EC_Point(Gx, Gy, *this))
 {}
 
 EC::~EC()
