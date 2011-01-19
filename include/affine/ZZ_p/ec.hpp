@@ -65,6 +65,12 @@ namespace Affine
 
         class EC
         {
+
+            ZZ_pContext __mod;   // Field Modulus context
+            ZZ_pContext __order; // Order Modulus context
+            ZZ_pContext __global;
+            bool __is_global_setted;
+
             const ZZ   P;     // Modulus, get from creators context
             const ZZ   N;     // Point Order
             const ZZ_p N_pp;  // Point Order, moduled
@@ -75,13 +81,9 @@ namespace Affine
     
             const EC_Point G; // Base point
 
-            ZZ_pContext __mod;   // Field Modulus context
-            ZZ_pContext __order; // Order Modulus context
-            ZZ_pContext __global;
-            bool __is_global_setted;
 
             static const ZZ & setAndUseMod(const ZZ & x)
-                { ZZ_p::init(x); return x; }
+                { __global.save(); ZZ_p::init(x); return x; }
             
     
             /* Types */
