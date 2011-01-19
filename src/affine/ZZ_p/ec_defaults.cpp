@@ -3,6 +3,7 @@
 
 #include "affine/ZZ_p/ec.hpp"
 #include "affine/ZZ_p/ec_defaults.hpp"
+#include "affine/ZZ_p/utils.hpp"
 
 using namespace std;
 using namespace NTL;
@@ -30,65 +31,33 @@ void EC_Defaults::restoreContext(void)
 
 EC EC_Defaults::create(Sizes size)
 {
-    istringstream A, B, C, P;
-    istringstream SEED;
-    istringstream N, GX, GY;
     
+    ZZ P,N;
+    ZZ GX, GY;
+    ZZ A, B, C, SEED;
+    
+    __backup_context.save();
+        
     switch (size)
     {
         case EC160:
-            P.str("1460561292756498603293233702061390149339739277637");
-            A.str("645124569210146932690244706073525923393765180628");
-            B.str("373312328028029709155915040744237848078440481625");
-            GX.str("343211939187247703360278081073954992441786175080");
-            GY.str("1120187316498206318592251033297336489377990586417");
-            N.str("243426882126083100548872686522511570103009817157");
-            C.str("0");
-            SEED.str("0");
+            P = ZZ_str("FFD5D55FA9934410D3EB8BC04648779F13174945");
+            A = ZZ_str("710062DCB53DC6E42F8227A4FBAC2240BD3504D4");
+            B = ZZ_str("4163E75BB92147D54E09B0F13822B076A0944359");
+            GX= ZZ_str("3C1E27D71F992260CF3C31C90D80B635E9FD0E68");
+            GY= ZZ_str("C436EFC0041BBF0947A304A005F8D43A36763031");
+            N = ZZ_str  ("2AA3A38FF1988B58235241EE59A73F4646443245");
             break;
-            
-        
-        case EC192:
-            P.str("6277101735386680763835789423207666416083908700390324961279");
-            N.str("6277101735386680763835789423176059013767194773182842284081");
-            A.str("-3");
-            B.str("2455155546008943817740293915197451784769108058161191238065");
-            C.str("1191689908718309326471930603292001425137626342642504031845");
-            SEED.str("275585503993527016686210752207080241786546919125");
-            GX.str("602046282375688656758213480587526111916698976636884684818");
-            GY.str("174050332293622031404857552280219410364023488927386650641");
-            break;
-            
             
         default:
             throw;
     }
     
-    ZZ   _P;
-    P >> _P;
 
-    __backup_context.save();
-        
-    ZZ_p::init(_P);
     
-    ZZ_p _GX, _GY;
-
-    GX >> _GX;
-    GY >> _GY;
-
-    ZZ_p _A, _B, _C, _SEED;
-    ZZ _N;
-    
-    
-    A    >> _A;
-    B    >> _B;
-    C    >> _C;
-    N    >> _N;
-    SEED >> _SEED;
-
-    return EC(_A, _B, _C,
-              _N, _GX, _GY,
-              _SEED);
+    return EC(A, B, C,
+              N, P, GX, GY,
+              SEED);
 }
 
 

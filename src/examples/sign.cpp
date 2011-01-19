@@ -43,14 +43,14 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Current modulus: " << ZZ_p::modulus() << endl;
     
-    const ZZ_p Xa = ZZ_p_str("209173461442612814547828376902112692552984027342");
+    const ZZ_p Xa = ZZ_p_str("24a3a993ab59b12ce7379a123487647e5ec9e0ce");
     
     const EC_Point Y = EC.getBasePoint() * Xa;
 
     cout << "Private key: " << I2OSP(Xa) << endl;
     cout << "Public key: " << Y << endl;
 
-    const ZZ_p k = ZZ_p_str("49435060524598955092027863610721442198924735270");
+    const ZZ_p k = ZZ_p_str("08a8bea9f2b40ce7400672261d5c05e5fd8ab326");
     const EC_Point kG = EC.getBasePoint() * k;
 
     cout << "Session key: " << I2OSP(k) << endl;

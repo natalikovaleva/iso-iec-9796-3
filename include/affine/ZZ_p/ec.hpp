@@ -65,9 +65,9 @@ namespace Affine
 
         class EC
         {
+            const ZZ   P;     // Modulus, get from creators context
             const ZZ   N;     // Point Order
             const ZZ_p N_pp;  // Point Order, moduled
-            const ZZ   P;     // Modulus, get from creators context
             const ZZ_p Seed;  // Random generated seed
             const ZZ_p A;     // EC Params 
             const ZZ_p B;     // EC Params 
@@ -79,7 +79,10 @@ namespace Affine
             ZZ_pContext __order; // Order Modulus context
             ZZ_pContext __global;
             bool __is_global_setted;
-    
+
+            static const ZZ & setAndUseMod(const ZZ & x)
+                { ZZ_p::init(x); return x; }
+            
     
             /* Types */
         public:
@@ -121,7 +124,18 @@ namespace Affine
                const ZZ_p & Gy,
                //---------------------------------
                const ZZ_p & Seed);
-    
+
+            EC(const ZZ & A,
+               const ZZ & B,
+               const ZZ & C,
+               const ZZ & N,
+               const ZZ & P,
+               //--- TODO Something with it .. ---
+               const ZZ & Gx,
+               const ZZ & Gy,
+               //---------------------------------
+               const ZZ & Seed);
+            
             ~EC();
 
             EC_Point create() const;
