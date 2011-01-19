@@ -163,6 +163,26 @@ EC_Point EC_Point::operator* (const ZZ_p & Y) const
 
 /* --------------------- Curves ------------------------- */
 
+EC::EC(const ZZ & A,
+       const ZZ & B,
+       const ZZ & C,
+       const ZZ & N,
+       const ZZ & P,
+       //--- TODO Something with it .. ---
+       const ZZ & Gx,
+       const ZZ & Gy,
+       //---------------------------------
+       const ZZ & Seed)
+    : P(setAndUseMod(P)), N(N), N_pp(InMod(N)), 
+      Seed(InMod(Seed)),
+      A(InMod(A)), B(InMod(B)), C(InMod(C)),
+      G(EC_Point(InMod(Gx), InMod(Gy), *this)),
+      __mod(P),
+      __order(N),
+      __is_global_setted(false)
+{}
+
+
 EC::EC(const ZZ_p & A,
        const ZZ_p & B,
        const ZZ_p & C,
@@ -172,8 +192,8 @@ EC::EC(const ZZ_p & A,
        const ZZ_p & Gy,
        //---------------------------------
        const ZZ_p & Seed)
-    : N(N), N_pp(InMod(N)),
-      P(ZZ_p::modulus()), Seed(Seed), A(A), B(B), C(C),
+    : P(ZZ_p::modulus()), N(N), N_pp(InMod(N)),
+      Seed(Seed), A(A), B(B), C(C),
       G(EC_Point(Gx, Gy, *this)),
       __mod(ZZ_p::modulus()),
       __order(N),

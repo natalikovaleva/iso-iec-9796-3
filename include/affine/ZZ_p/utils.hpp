@@ -33,14 +33,8 @@ namespace Affine
 
         ByteSeq I2OSP(unsigned I, size_t pad=0);
 
-        inline ZZ_p ZZ_p_str(const char * source)
-        {
-            std::istringstream source_(source);
-            ZZ_p result;
-            source_ >> result;
-    
-            return result;
-        }
+        ZZ_p ZZ_p_str(const char * source);
+        ZZ ZZ_str(const char * source);
 
         inline ByteSeq I2OSP(const ZZ & I, size_t pad=0)
         {
