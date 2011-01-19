@@ -173,13 +173,13 @@ EC::EC(const ZZ & A,
        const ZZ & Gy,
        //---------------------------------
        const ZZ & Seed)
-    : P(setAndUseMod(P)), N(N), N_pp(InMod(N)), 
+    : __mod(P),
+      __order(N),
+      __is_global_setted(true),
+      P(setAndUseMod(P)), N(N), N_pp(InMod(N)), 
       Seed(InMod(Seed)),
       A(InMod(A)), B(InMod(B)), C(InMod(C)),
       G(EC_Point(InMod(Gx), InMod(Gy), *this)),
-      __mod(P),
-      __order(N),
-      __is_global_setted(false)
 {}
 
 
