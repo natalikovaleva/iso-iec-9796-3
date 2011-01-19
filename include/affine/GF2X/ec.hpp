@@ -153,5 +153,8 @@ namespace Affine
 
         std::ostream& operator<<(std::ostream& s, const EC & _EC);
         std::ostream& operator<<(std::ostream& s, const EC_Point & _EC_Point);
+
     }
 }
+
+

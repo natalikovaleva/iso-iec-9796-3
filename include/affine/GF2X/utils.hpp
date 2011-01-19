@@ -34,33 +34,35 @@ namespace Affine
 
         ByteSeq I2OSP(unsigned I, size_t pad=0);
 
-        inline GF2X GF2X_str(const char * source, bool reverse = true)
-        {
-            char * real = NULL;
+        GF2X GF2X_str(const char * source);
+        
+        // inline GF2X GF2X_str(const char * source, bool reverse = false)
+        // {
+        //     char * real = NULL;
             
-            if (reverse)
-            {
-                size_t source_len = strlen(source);
-                real = (char *) alloca(source_len);
-                real[0] = '0'; real[1] = 'x';
-                real[source_len]  = 0x0;
+        //     if (reverse)
+        //     {
+        //         size_t source_len = strlen(source);
+        //         real = (char *) alloca(source_len);
+        //         real[0] = '0'; real[1] = 'x';
+        //         real[source_len]  = 0x0;
 
-                unsigned char * dst_start = (unsigned char *) real   + 2;
-                unsigned char * src_start = (unsigned char *) source + 2;
+        //         unsigned char * dst_start = (unsigned char *) real   + 2;
+        //         unsigned char * src_start = (unsigned char *) source + 2;
                 
-                mkle16b(dst_start,
-                        src_start,
-                        source_len - 2);
+        //         mkle16b(dst_start,
+        //                 src_start,
+        //                 source_len - 2);
 
-                std::cout << "mkle16b: " << source << " => " << real << std::endl;
-            }
+        //         std::cout << "mkle16b: " << source << " => " << real << std::endl;
+        //     }
             
-            std::istringstream source_(reverse ? real : source);
-            GF2X result;
-            source_ >> result;
+        //     std::istringstream source_(reverse ? real : source);
+        //     GF2X result;
+        //     source_ >> result;
     
-            return result;
-        }
+        //     return result;
+        // }
 
         inline ByteSeq I2OSP(const GF2X & I, size_t pad=0)
         {

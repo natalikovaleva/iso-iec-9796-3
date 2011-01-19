@@ -12,6 +12,30 @@ namespace Affine
 {
     namespace GF2X
     {
+
+        GF2X GF2X_str(const char * source)
+        {
+            const size_t source_size = strlen(source);
+            
+            GF2X r;
+
+            for (unsigned int i=0; i<source_size; i++)
+            {
+                const unsigned char q = hexc_to_dec(source[i]);
+
+                for (unsigned int j=0; j<4; j++)
+                {
+                    if ( q & (0x8 >> j) )
+                    {
+                        SetCoeff(r, ((source_size-1 - i) * 4) + (4-j-1));
+                    }
+                }
+            }
+            
+            return r;
+        }
+
+
         ByteSeq I2OSP(unsigned int I, size_t pad)
         {
             const size_t size = NumBytes(I);
