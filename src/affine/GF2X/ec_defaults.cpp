@@ -28,17 +28,15 @@ void EC_Defaults::restoreContext(void)
 
 EC EC_Defaults::create(Sizes size)
 {
-    istringstream P;
-
     GF2X A, B, C,
-        N, _P, GX, GY,
+        N, P, GX, GY,
         SEED;
     
     
     switch (size)
     {
         case EC185:
-            P.str("[1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]");
+            P  = GF2X_str("0x20000000000000000000000000000200000000000000001");
             A  = GF2X_str("0x072546b5435234a422e0789675f432c89435de5242");
             B  = GF2X_str("0x00c9517d06d5240d3cff38c74b20b6cd4d6f9dd4d9");
             GX = GF2X_str("0x07af69989546103d79329fcc3d74880f33bbe803cb");
@@ -52,10 +50,8 @@ EC EC_Defaults::create(Sizes size)
             throw;
     }
     
-    P >> _P;
-    
     return EC(A, B, C,
-              N, _P, GX, GY,
+              N, P, GX, GY,
               SEED);
 }
 
