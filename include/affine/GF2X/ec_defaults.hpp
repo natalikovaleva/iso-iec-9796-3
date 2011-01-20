@@ -14,7 +14,7 @@ namespace Affine
             {
                 EC0   = 0,   /* Broken EC */
                 EC128 = 128,
-                EC185 = 185,
+                EC163 = 163,
                 EC160 = 160,
                 EC192 = 192,
                 EC256 = 256,

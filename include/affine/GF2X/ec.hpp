@@ -43,10 +43,10 @@ namespace Affine
     
             EC_Point & operator=  (const EC_Point & Y);
             EC_Point   operator+  (const EC_Point & Y) const;
-            EC_Point   operator*  (const GF2X & Y) const;
+            EC_Point   operator*  (const ZZ & Y) const;
     
             void operator+= (const EC_Point & Y);
-            void operator*= (const GF2X & Y);
+            void operator*= (const ZZ & Y);
 
             inline bool operator== (const EC_Point &Y_)
                 { return Y_.isZero() ? isZero() : (X == Y_.X) && (Y == Y_.Y); }
@@ -66,14 +66,13 @@ namespace Affine
 
         class EC
         {
-            const GF2X N;     // Point Order
+            const ZZ   N;     // Point Order
             const GF2X P;     // Modulus, get from creators context
             const GF2X Seed;  // Random generated seed
             const GF2X A;     // EC Params 
             const GF2X B;     // EC Params 
             const GF2X C;     // EC Params 
     
-            const GF2XModulus N_mod;
             const GF2XModulus P_mod;
             const long        P_deg;
 
@@ -85,7 +84,6 @@ namespace Affine
         public:
             enum MOD_CONTEXT
             {
-                FIELD_CONTEXT,
                 ORDER_CONTEXT
             };
     
@@ -107,7 +105,7 @@ namespace Affine
             inline const EC_Point & getBasePoint() const
                 { return G; }
 
-            inline const GF2X & getOrder() const
+            inline const ZZ & getOrder() const
                 { return N; }
     
         public:
@@ -115,7 +113,7 @@ namespace Affine
             EC(const GF2X & A,
                const GF2X & B,
                const GF2X & C,
-               const GF2X & N,
+               const ZZ   & N,
                const GF2X & P,
                //--- TODO Something with it .. ---
                const GF2X & Gx,

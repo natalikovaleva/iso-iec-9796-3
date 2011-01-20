@@ -66,3 +66,20 @@ public:
         : ByteSeq(source, 4) {}
 };
 
+
+inline size_t Lb(const ByteSeq & x)
+{ return x.getDataSize()*8; }
+
+inline size_t L(const ByteSeq & x)
+{ return x.getDataSize(); }
+
+/* Octet/ByteSeq truncation */
+inline ByteSeq Truncate(const ByteSeq & input,
+                        const size_t octets)
+{
+    const size_t input_size = input.getDataSize();
+    return ByteSeq(input.getData(),
+                   input_size < octets ?
+                   input_size : octets);
+}
+
