@@ -29,42 +29,11 @@ namespace Affine
             EC2OSP_HYBRID
         };
 
-        ByteSeq EC2OSP(const EC_Point & Point,
-                       EC2OSP_COMPRESS_MODE mode = EC2OSP_COMPRESSED);
-
-        ByteSeq I2OSP(unsigned I, size_t pad=0);
+        ByteSeq FE2OSP(unsigned I, size_t pad=0);
 
         GF2X GF2X_str(const char * source);
         
-        // inline GF2X GF2X_str(const char * source, bool reverse = false)
-        // {
-        //     char * real = NULL;
-            
-        //     if (reverse)
-        //     {
-        //         size_t source_len = strlen(source);
-        //         real = (char *) alloca(source_len);
-        //         real[0] = '0'; real[1] = 'x';
-        //         real[source_len]  = 0x0;
-
-        //         unsigned char * dst_start = (unsigned char *) real   + 2;
-        //         unsigned char * src_start = (unsigned char *) source + 2;
-                
-        //         mkle16b(dst_start,
-        //                 src_start,
-        //                 source_len - 2);
-
-        //         std::cout << "mkle16b: " << source << " => " << real << std::endl;
-        //     }
-            
-        //     std::istringstream source_(reverse ? real : source);
-        //     GF2X result;
-        //     source_ >> result;
-    
-        //     return result;
-        // }
-
-        inline ByteSeq I2OSP(const GF2X & I, size_t pad=0)
+        inline ByteSeq FE2OSP(const GF2X & I, size_t pad=0)
         {
             unsigned char buffer [OCTET_MAX_SIZE];
     
@@ -76,7 +45,7 @@ namespace Affine
             return ByteSeq(buffer, source_size, pad, true);
         }
 
-        inline GF2X OS2IP(const ByteSeq & seq)
+        inline GF2X OS2FEP(const ByteSeq & seq)
         {
             unsigned char buffer [OCTET_MAX_SIZE];
     
@@ -106,18 +75,11 @@ namespace Affine
         inline size_t L(const GF2X & x)
         { return NumBytes(x); }
 
-        inline size_t L(const ByteSeq & x)
-        { return x.getDataSize(); }
-
-        /* Octet/ByteSeq truncation */
-        inline ByteSeq Truncate(const ByteSeq & input,
-                                const size_t octets)
-        {
-            const size_t input_size = input.getDataSize();
-            return ByteSeq(input.getData(),
-                           input_size < octets ?
-                           input_size : octets);
-        }
-
     }
 }
+
+#include "affine/ZZ_p/utils.hpp"
+using Affine::ZZ_p::ZZ_str;
+using Affine::ZZ_p::I2OSP;
+using Affine::ZZ_p::L;
+using Affine::ZZ_p::Lb;
