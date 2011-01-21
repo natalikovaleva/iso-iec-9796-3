@@ -1,12 +1,12 @@
 #include <string.h>
 #include "generic/hash.hpp"
 
-Hash::Hash(Hash_Type type)
+Hash_Generic::Hash_Generic(Hash_Type type)
 {
     setupHasher(type);
 }
 
-Hash::~Hash(){}
+Hash_Generic::~Hash_Generic(){}
 
 static inline void __rmd160_hash_buffer (unsigned char *source, int source_size,
                                     unsigned char * buffer, int buffer_size)
@@ -20,7 +20,7 @@ static inline void __rmd160_hash_buffer (unsigned char *source, int source_size,
 }
 
 
-void Hash::setupHasher(Hash_Type type)
+void Hash_Generic::setupHasher(Hash_Type type)
 {
     switch (type)
     {
@@ -54,12 +54,12 @@ void Hash::setupHasher(Hash_Type type)
     }
 }
 
-size_t Hash::getHashSize(void) const
+size_t Hash_Generic::getHashSize(void) const
 {
     return __hash_size;
 }
 
-unsigned char * Hash::getHash(const unsigned char * source, size_t source_size,
+unsigned char * Hash_Generic::getHash(const unsigned char * source, size_t source_size,
                      unsigned char * buffer, size_t buffer_size) const
 {
     int ss = source_size,
@@ -72,10 +72,10 @@ unsigned char * Hash::getHash(const unsigned char * source, size_t source_size,
     return buffer;
 }
 
-Hash_Seq::Hash_Seq(Hash::Hash_Type type)
-    :Hash(type) {}
+Hash::Hash(Hash_Generic::Hash_Type type)
+    :Hash_Generic(type) {}
 
-ByteSeq Hash_Seq::operator() (const ByteSeq & source) const
+ByteSeq Hash::operator() (const ByteSeq & source) const
 {
     /* TODO: Make this function friendly to Octet class */
     /* TODO: Count const payment with macros */
