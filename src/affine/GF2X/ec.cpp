@@ -210,6 +210,17 @@ bool EC::generate_random(GF2X & d) const
     
 }
 
+bool EC::generate_random(ZZ & d) const
+{
+    RandomBnd(d, N);
+
+    if (d < (N - 1))    
+        return true;
+
+    return false;
+}
+
+
 GF2X EC::generate_random() const
 {
     return random_GF2X(NumBits(N));

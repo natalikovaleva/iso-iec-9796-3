@@ -8,6 +8,7 @@ extern "C"
 {
 #include "hashes/rmd160.h"
 #include "hashes/sha512.h"
+#include "hashes/sha1.h"
 }
 
 
@@ -17,6 +18,7 @@ public:
     enum Hash_Type
     {
         RIPEMD160,
+        SHA1,
         SHA256,
         SHA384,
         SHA512
