@@ -17,7 +17,7 @@ using namespace std;
 using namespace Affine::ZZ_p;
 
 static const ByteSeq C = I2OSP(1, 4);
-static const Hash_Seq Hash(Hash::RIPEMD160);
+static const Hash Hash(Hash::RIPEMD160);
 
 
 

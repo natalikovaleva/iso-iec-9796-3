@@ -12,7 +12,7 @@ extern "C"
 }
 
 
-class Hash
+class Hash_Generic
 {
 public:
     enum Hash_Type
@@ -36,20 +36,20 @@ private:
     void setupHasher(Hash_Type type);
 
 public:
-    Hash(Hash_Type type);
-    ~Hash();
+    Hash_Generic(Hash_Type type);
+    ~Hash_Generic();
     
     unsigned char * getHash(const unsigned char * source, size_t source_size,
                    unsigned char * buffer, size_t buffer_size) const;
     
-    inline size_t getHashSize(void) const;
+    size_t getHashSize(void) const;
     
 };
 
-class Hash_Seq : public Hash
+class Hash : public Hash_Generic
 {
 public:
-    Hash_Seq(Hash::Hash_Type type);
+    Hash(Hash::Hash_Type type);
 
     ByteSeq operator() (const ByteSeq & source) const;
 };
