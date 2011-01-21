@@ -16,8 +16,6 @@ namespace Affine
 {
     namespace GF2X
     {
-
-        using NTL::GF2X;
         using NTL::GF2X;
         
         GF2X pi(const EC_Point & X);
@@ -70,9 +68,6 @@ namespace Affine
         /* Length in bits */
         inline size_t Lb(const GF2X & x)
         { return NumBits(x); }
-
-        inline size_t Lb(const ByteSeq & x)
-        { return x.getDataSize()*8; }
 
         /* Length in bytes */
 
