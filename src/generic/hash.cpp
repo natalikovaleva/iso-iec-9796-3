@@ -29,6 +29,11 @@ void Hash::setupHasher(Hash_Type type)
             __hash_size = 20;
             break;
             
+        case SHA1:
+            __hash_function = sha1_hash_buffer;
+            __hash_size = 20;
+            break;
+
         case SHA256:
             __hash_function = sha256_hash_buffer;
             __hash_size = 32;

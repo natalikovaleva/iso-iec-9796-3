@@ -81,7 +81,7 @@ namespace Affine
             const ByteSeq H(I2OSP(4*U+C*(2+tY)));
     
             if (U)
-                return H || X || I2OSP(Point.getY());
+                return H || X || I2OSP(Point.getY(),4);
             else
                 return H || X;
         }

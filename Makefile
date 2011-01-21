@@ -13,7 +13,7 @@ WARNINGS := -Wall -Wextra -pedantic -Winit-self
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
 AFFINE_GF2X := utils.o ec.o ec_defaults.o
 
-HASHES := rmd160.o sha512.o
+HASHES := rmd160.o sha512.o sha1.o
 GENERIC := octet.o hash.o convhex.o
 
 EXAMPLES := sign.o

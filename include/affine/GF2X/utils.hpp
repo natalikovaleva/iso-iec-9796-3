@@ -29,6 +29,8 @@ namespace Affine
             EC2OSP_HYBRID
         };
 
+        ByteSeq EC2OSP(const EC_Point & Point, EC2OSP_COMPRESS_MODE mode);
+
         ByteSeq FE2OSP(unsigned I, size_t pad=0);
 
         GF2X GF2X_str(const char * source);

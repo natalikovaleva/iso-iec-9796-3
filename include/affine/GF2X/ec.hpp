@@ -133,6 +133,7 @@ namespace Affine
 
         
             bool generate_random(GF2X & d) const;
+            bool generate_random(ZZ & d) const;
             GF2X generate_random(void) const;
     
     
