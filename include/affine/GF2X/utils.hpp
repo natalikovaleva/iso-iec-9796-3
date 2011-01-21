@@ -8,6 +8,8 @@
 #include "affine/GF2X/ec.hpp"
 #include "affine/GF2X/ec_compress.hpp"
 
+#include "affine/ZZ_p/utils.hpp"
+
 using namespace NTL;
 
 namespace Affine
@@ -77,11 +79,10 @@ namespace Affine
         inline size_t L(const GF2X & x)
         { return NumBytes(x); }
 
+        using Affine::ZZ_p::ZZ_str;
+        using Affine::ZZ_p::I2OSP;
+        using Affine::ZZ_p::L;
+        using Affine::ZZ_p::Lb;
     }
 }
 
-#include "affine/ZZ_p/utils.hpp"
-using Affine::ZZ_p::ZZ_str;
-using Affine::ZZ_p::I2OSP;
-using Affine::ZZ_p::L;
-using Affine::ZZ_p::Lb;
