@@ -54,15 +54,32 @@ class Octet : public ByteSeq
 public:
     
     Octet()
-        : ByteSeq(4) {}
+        : ByteSeq(1) {}
 
     Octet(const unsigned char * data, size_t data_size)
-        : ByteSeq(data, data_size, 4) {}
+        : ByteSeq(data, data_size, 1) {}
 
     Octet(const Octet & source)
-        : ByteSeq(source, 4) {}
+        : ByteSeq(source, 1) {}
 
     Octet(const ByteSeq & source)
+        : ByteSeq(source, 1) {}
+};
+
+class QuOctet : public ByteSeq
+{
+public:
+    
+    QuOctet()
+        : ByteSeq(4) {}
+
+    QuOctet(const unsigned char * data, size_t data_size)
+        : ByteSeq(data, data_size, 4) {}
+
+    QuOctet(const Octet & source)
+        : ByteSeq(source, 4) {}
+
+    QuOctet(const ByteSeq & source)
         : ByteSeq(source, 4) {}
 };
 
