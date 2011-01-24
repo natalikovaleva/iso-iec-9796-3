@@ -53,9 +53,13 @@ namespace Affine
             inline const ZZ_p & getX() const
                 { return X; }
 
+            
             inline const ZZ_p & getY() const
                 { return Y; }
-        
+
+            inline const EC & getEC() const
+                { return __EC; }
+            
             inline bool isSameEC(const EC & __EC) const;
 
             friend class Affine::ZZ_p::EC;
