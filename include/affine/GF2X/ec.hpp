@@ -57,6 +57,9 @@ namespace Affine
             inline const GF2X & getY() const
                 { return Y; }
         
+            inline const EC & getEC() const
+                { return __EC; }
+
             inline bool isSameEC(const EC & __EC) const;
 
             friend class Affine::GF2X::EC;
