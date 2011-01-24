@@ -3,7 +3,9 @@
 #include <ostream>
 #include <string.h>
 
-#define OCTET_MAX_SIZE 8196
+#include <iostream> //debug
+
+#define OCTET_MAX_SIZE 8196 * 4
 
 class ByteSeq
 {
@@ -26,8 +28,15 @@ public:
         : __pad(pad) 
         { setData(data, data_size, rotate); }
     
-    inline ByteSeq(const ByteSeq & source, long pad = 0)
+    inline ByteSeq(const ByteSeq & source, long pad)
         : __pad(pad)
+        {
+            __data_size = source.__data_size;
+            memcpy(__data, source.__data, source.__data_size);
+        }
+
+    inline ByteSeq(const ByteSeq & source)
+        : __pad(source.__pad)
         {
             __data_size = source.__data_size;
             memcpy(__data, source.__data, source.__data_size);
@@ -41,6 +50,15 @@ public:
         { return __data_size; }
 
     ByteSeq operator|| (const ByteSeq & y) const;
+
+    inline
+    ByteSeq operator= (const ByteSeq & y)
+        {
+            memcpy(__data, y.__data, y.__data_size);
+            __data_size = y.__data_size;
+            // OMIT __pad
+        }
+    
 
     friend std::ostream& operator<<(std::ostream& s, const ByteSeq & octet);
 };
