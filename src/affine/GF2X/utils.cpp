@@ -63,16 +63,21 @@ namespace Affine
             if (Point.isZero())
                 return ByteSeq(0);
 
+            /* Pad - according to example of 2^m/ECNR.
+             * Check this. Don't see much sense */
+            
+            const long Pad = L(Point.getEC().getModulus());
+            
             const unsigned int U = ((mode == EC2OSP_UNCOMPRESSED) ||
                                     (mode == EC2OSP_HYBRID)) ? 1 : 0;
             const unsigned int C = ((mode == EC2OSP_COMPRESSED) ||
                                     (mode == EC2OSP_HYBRID)) ? 1 : 0;
     
-            const Octet   X(FE2OSP(Point.getX(),4));
+            const ByteSeq X(FE2OSP(Point.getX(), Pad));
             const ByteSeq H(FE2OSP(4*U+C*(2+tY)));
     
             if (U)
-                return H || X || FE2OSP(Point.getY(),4);
+                return H || X || FE2OSP(Point.getY(), Pad);
             else
                 return H || X;
         }
