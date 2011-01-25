@@ -27,6 +27,10 @@ public:
     ByteSeq(const unsigned char * data, size_t data_size, long pad = 0, bool rotate = false)
         : __pad(pad) 
         { setData(data, data_size, rotate); }
+
+    ByteSeq(const char * data, size_t data_size, long pad = 0, bool rotate = false)
+        : __pad(pad)
+        { setData((const unsigned char *) data, data_size, rotate); }
     
     inline ByteSeq(const ByteSeq & source, long pad)
         : __pad(pad)
@@ -50,6 +54,7 @@ public:
         { return __data_size; }
 
     ByteSeq operator|| (const ByteSeq & y) const;
+    ByteSeq operator^ (const ByteSeq & y) const;
 
     inline
     ByteSeq operator= (const ByteSeq & y)
@@ -57,6 +62,7 @@ public:
             memcpy(__data, y.__data, y.__data_size);
             __data_size = y.__data_size;
             // OMIT __pad
+            return *this;
         }
     
 

@@ -25,15 +25,54 @@ void ByteSeq::setData(const unsigned char * data, size_t data_size, bool rotate)
     
 }
 
+ByteSeq ByteSeq::operator^ (const ByteSeq & y) const
+{
+    ByteSeq result(0);
+
+    unsigned int offset   = 0;
+    unsigned int t_offset = 0;
+    unsigned int y_offset = 0;
+    unsigned int rest     = __data_size;
+
+    if (__data_size != y.__data_size)
+    {
+        if ( __data_size > y.__data_size)
+        {
+            offset = y_offset = __data_size - y.__data_size;
+            rest     = y.__data_size;
+
+            memcpy(result.__data, __data, y_offset);
+        }
+        else
+        {
+            offset = t_offset = y.__data_size - __data_size;
+            rest     = __data_size;
+
+            memcpy(result.__data, y.__data, t_offset);
+        }
+    }
+
+    for (unsigned int i = 0; i< rest; i++)
+    {
+        result.__data[i+offset] =
+            __data[i+t_offset] ^ y.__data[i+y_offset];
+    }
+
+    result.__data_size = offset + rest;
+
+    return result;
+}
+
+
+
 ByteSeq ByteSeq::operator|| (const ByteSeq & y) const
 {
     ByteSeq result(*this);
-    
+
     if (result.__data_size + y.__data_size < OCTET_MAX_SIZE)
     {
         memcpy(result.__data+__data_size, y.__data, y.__data_size);
         result.__data_size = result.__data_size + y.__data_size;
-        
     }
     else
     {
