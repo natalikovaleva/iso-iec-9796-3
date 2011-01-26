@@ -22,7 +22,8 @@ void ByteSeq::setData(const unsigned char * data, size_t data_size, bool rotate)
             __data[i + pad_size] = data[copy_size - i - 1];
     else
         memcpy(__data + pad_size, data, data_size);
-    
+
+    __data_size += pad_size;
 }
 
 ByteSeq ByteSeq::operator^ (const ByteSeq & y) const
