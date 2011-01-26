@@ -74,10 +74,16 @@ namespace Affine
         inline size_t L(const GF2X & x)
         { return NumBytes(x); }
 
+
+        /* Some primitives, that can be used
+         * TODO: Move this stuff to other header */
+
         using Affine::ZZ_p::ZZ_str;
         using Affine::ZZ_p::I2OSP;
         using Affine::ZZ_p::L;
         using Affine::ZZ_p::Lb;
+        using Affine::ZZ_p::OS2IP;
+        using Affine::ZZ_p::InMod;
     }
 }
 
