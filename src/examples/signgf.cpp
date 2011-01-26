@@ -50,6 +50,43 @@ int main(int argc     __attribute__((unused)),
 
     const MGF MGF1(MGF::MGF1, Hash::SHA1);
 
-    cout << "Π : " << MGF1(OPoint, Ln) << endl;
+    const ByteSeq Pi = MGF1(OPoint, Ln);
+
+    cout << "Π : " << Pi << endl;
+
+    const string Message("TestVector");
+
+    const long L_rec = Message.length();
+    const long L_red = Ln - L_rec;
+    const long L_clr = 0;
+
+    cout << "Parameters: L_rec=" << L_rec << "; L_red=" << L_red
+         << "; L_clr=" << L_clr << endl;
+
+    const ByteSeq M(Message.c_str(), Message.length());
+    const ByteSeq & M_rec = M;
+
+    const Octet h = Truncate(Hash(Pi || M), L_red);
+
+    cout << "Hash token: " << h << endl;
+
+    const Octet d = h || M_rec;
+
+    cout << "Data input: " << d << endl;
+
+    const Octet r = d ^ Pi;
+
+    cout << "R: " << r << endl;
+
+    EC.enter_mod_context();
+
+    const ZZ_p s = InMod(OS2IP(r) * k - OS2IP(r) - 1) / InMod(Xa + 1);
+
+    EC.leave_mod_context();
+
+    const Octet S = I2OSP(s, Ln);
+
+    cout << "S: " << S << endl;
+
     return 0;
 }
