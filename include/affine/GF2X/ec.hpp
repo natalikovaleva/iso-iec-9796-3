@@ -2,6 +2,7 @@
 
 #include <NTL/GF2X.h>
 #include <NTL/ZZ.h>
+#include <NTL/ZZ_p.h>
 
 #include <ostream>
 
@@ -14,6 +15,7 @@ namespace Affine
         using NTL::ZZ;
         using NTL::GF2XModulus;
         using NTL::random_GF2X;
+        using NTL::ZZ_pContext;
         
         class EC;
 
@@ -69,6 +71,10 @@ namespace Affine
 
         class EC
         {
+            ZZ_pContext __order; // Order Modulus context
+            ZZ_pContext __global;
+            bool __is_global_setted;
+
             const ZZ   N;     // Point Order
             const GF2X P;     // Modulus, get from creators context
             const GF2X Seed;  // Random generated seed
@@ -130,22 +136,19 @@ namespace Affine
     
             EC_Point create(const GF2X & x,
                             const GF2X & y) const;
-
     
             inline const EC_Point & get_base_point(void) const { return G; } ;
-
         
             bool generate_random(GF2X & d) const;
             bool generate_random(ZZ & d) const;
             GF2X generate_random(void) const;
-    
-    
 
-            inline void enter_mod_context(enum MOD_CONTEXT context __attribute__ ((unused)))
-                { }
+            inline void enter_mod_context()
+                { if (! __is_global_setted) { __global.save(); __is_global_setted = true; }
+                    __order.restore(); }
     
-            inline void leave_mod_context()
-                { }
+            inline void leave_mod_context() const
+                {  if (__is_global_setted) __global.restore(); }
 
             bool isCorrectOrder() const;
     

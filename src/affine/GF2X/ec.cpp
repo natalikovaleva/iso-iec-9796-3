@@ -180,7 +180,8 @@ EC::EC(const GF2X & A,
        const GF2X & Gy,
        //---------------------------------
        const GF2X & Seed)
-    : N(N), P(P),
+    : __order(N), __global(), __is_global_setted(false),
+      N(N), P(P),
       Seed(Seed), A(A), B(B), C(C),
       P_mod(P), P_deg(deg(P)),
       G(EC_Point(Gx, Gy, *this))
