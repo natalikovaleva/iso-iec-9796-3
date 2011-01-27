@@ -74,6 +74,10 @@ namespace Affine
         inline size_t L(const GF2X & x)
         { return NumBytes(x); }
 
+        /* Some Number Theory functions */
+
+        GF2X Half_Trace(const GF2X & input, const GF2XModulus & m);
+        GF2X Z2ZB_Solve(const GF2X & b, const GF2XModulus & m);
 
         /* Some primitives, that can be used
          * TODO: Move this stuff to other header */

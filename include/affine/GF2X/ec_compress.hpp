@@ -10,7 +10,7 @@ namespace Affine
     {
 
         using NTL::GF2XFromBytes;
-        
+        using NTL::IsZero;
     
         class EC_CPoint
         {
@@ -36,7 +36,10 @@ namespace Affine
     
             static inline unsigned char compress_tY(const EC_Point & X)
                 {
-                    return (unsigned char) 0; // FIX FIX FIX
+                    if (X.isZero()) return 0;
+                    const GF2X & P = X.getEC().getModulus();
+                    const GF2X xy = MulMod(X.getX(),InvMod(X.getY(), P), P);
+                    return (unsigned char) rep(coeff(xy, 0)) & 0x1;
                 }
     
         public:
