@@ -3,6 +3,7 @@
 #include "affine/GF2X/ec.hpp"
 #include "affine/GF2X/ec_compress.hpp"
 #include "affine/GF2X/ec_defaults.hpp"
+#include "affine/GF2X/utils.hpp"
 
 using namespace NTL;
 using namespace Affine::GF2X;
@@ -24,15 +25,33 @@ EC_CPoint::EC_CPoint(const unsigned char * data, size_t size)
 
 EC_Point EC_CPoint::decompress(const EC & EC) const
 {
+    const GF2X & P = EC.getModulus();
     const GF2X & A = EC.getA();
     const GF2X & B = EC.getB();
-    const GF2X & P = EC.getModulus();
 
-    const GF2X X3 = PowerMod(X, 3, P);
+    if (IsZero(X))
+    {
+        const GF2X Y = InvMod(SqrMod(
+                                  A,  P),
+                                      P);
+        return EC.create(X, Y);
+    }
+    else
+    {
+        const GF2X X3 = PowerMod(X, 3, P);
+        const GF2X X2 = SqrMod(X, P);
 
-    const GF2X Y =  SqrRootMod((X3 + A*X + B) % P, P);
+        const GF2X a = X3 + MulMod(A,X2,P) + B;
+        const GF2X b = MulMod(InvMod(X2, P), a, P);
 
-    return EC.create(X, tY == IsOdd(Y) ? Y : NegateMod(Y,P));
+        const GF2X z = Z2ZB_Solve(b, P);
+
+        const long tZ = rep(coeff(z, 0));
+
+        const GF2X Y = MulMod(z + tY + tZ, X, P);
+
+        return EC.create(X, Y);
+    }
 }
 
 unsigned char * EC_CPoint::serialize(unsigned char * buffer,
