@@ -17,8 +17,8 @@ namespace Affine
                 EC163 = 163,
                 EC160 = 160,
                 EC192 = 192,
-                EC256 = 256,
-                EC512 = 512
+                EC283 = 283,
+                EC571 = 571
             };
 
             static Sizes getSize(unsigned int id);
