@@ -56,10 +56,15 @@ namespace Affine
             return r;
         }
 
+        int tY_cnt;
+        
         ByteSeq EC2OSP(const EC_Point & Point, EC2OSP_COMPRESS_MODE mode)
         {
-            const unsigned char tY = EC_CPoint::compress_tY(Point);
-
+            const unsigned char tY =
+                ((mode == EC2OSP_COMPRESSED) ||
+                 (mode == EC2OSP_HYBRID)) ?
+                EC_CPoint::compress_tY(Point) : 0;
+            
             if (Point.isZero())
                 return ByteSeq(0);
 
