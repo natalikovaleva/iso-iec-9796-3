@@ -99,8 +99,8 @@ namespace Affine
     
             /* Getters */
         public:
-            inline const GF2X & getModulus() const 
-                { return P; }
+            inline const GF2XModulus & getModulus() const 
+                { return P_mod; }
 
             inline const GF2X & getA() const
                 { return A; }

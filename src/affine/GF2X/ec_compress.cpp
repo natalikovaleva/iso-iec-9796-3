@@ -25,7 +25,7 @@ EC_CPoint::EC_CPoint(const unsigned char * data, size_t size)
 
 EC_Point EC_CPoint::decompress(const EC & EC) const
 {
-    const GF2X & P = EC.getModulus();
+    const GF2XModulus & P = EC.getModulus();
     const GF2X & A = EC.getA();
     const GF2X & B = EC.getB();
 
