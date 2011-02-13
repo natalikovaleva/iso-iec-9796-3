@@ -1,17 +1,17 @@
-#include "affine/ZZ_p/utils.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
 #include "generic/convhex.h"
 
 using namespace std;
 using namespace NTL;
-using namespace Affine::ZZ_p;
+using namespace ECZZ_p::Affine;
 
 /* Smart stupid !! OCTET !! concatentaion. Be carefull! :] */
 
 #include <stdio.h>
 
-namespace Affine
+namespace ECZZ_p
 {
-    namespace ZZ_p
+    namespace Affine
     {
         
         ZZ ZZ_str(const char * source)

@@ -4,14 +4,14 @@
 #include <sstream>
 
 #include "generic/octet.hpp"
-#include "affine/ZZ_p/ec.hpp"
-#include "affine/ZZ_p/ec_compress.hpp"
+#include "ec/ZZ_p/affine/ec.hpp"
+#include "ec/ZZ_p/affine/ec_compress.hpp"
 
 using namespace NTL;
 
-namespace Affine
+namespace ECZZ_p
 {
-    namespace ZZ_p
+    namespace Affine
     {
 
         using NTL::ZZ_p;

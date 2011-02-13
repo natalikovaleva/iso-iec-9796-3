@@ -1,11 +1,11 @@
 #include "NTL/ZZ_p.h"
 
-#include "affine/ZZ_p/ec.hpp"
-#include "affine/ZZ_p/ec_compress.hpp"
-#include "affine/ZZ_p/ec_defaults.hpp"
+#include "ec/ZZ_p/affine/ec.hpp"
+#include "ec/ZZ_p/affine/ec_compress.hpp"
+#include "ec/ZZ_p/affine/ec_defaults.hpp"
 
 using namespace NTL;
-using namespace Affine::ZZ_p;
+using namespace ECZZ_p::Affine;
 
 EC_CPoint::~EC_CPoint()
 {}

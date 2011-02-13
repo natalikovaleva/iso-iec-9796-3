@@ -5,16 +5,16 @@
 
 #include "generic/octet.hpp"
 #include "generic/convhex.h"
-#include "affine/GF2X/ec.hpp"
-#include "affine/GF2X/ec_compress.hpp"
+#include "ec/GF2X/affine/ec.hpp"
+#include "ec/GF2X/affine/ec_compress.hpp"
 
-#include "affine/ZZ_p/utils.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
 
 using namespace NTL;
 
-namespace Affine
+namespace ECGF2X
 {
-    namespace GF2X
+    namespace Affine
     {
         using NTL::GF2X;
         
@@ -82,12 +82,12 @@ namespace Affine
         /* Some primitives, that can be used
          * TODO: Move this stuff to other header */
 
-        using Affine::ZZ_p::ZZ_str;
-        using Affine::ZZ_p::I2OSP;
-        using Affine::ZZ_p::L;
-        using Affine::ZZ_p::Lb;
-        using Affine::ZZ_p::OS2IP;
-        using Affine::ZZ_p::InMod;
+        using ECZZ_p::Affine::ZZ_str;
+        using ECZZ_p::Affine::I2OSP;
+        using ECZZ_p::Affine::L;
+        using ECZZ_p::Affine::Lb;
+        using ECZZ_p::Affine::OS2IP;
+        using ECZZ_p::Affine::InMod;
     }
 }
 

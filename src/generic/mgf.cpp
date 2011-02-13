@@ -1,7 +1,7 @@
 #include "generic/mgf.hpp"
-#include "affine/ZZ_p/utils.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
 
-using Affine::ZZ_p::I2OSP;
+using ECZZ_p::Affine::I2OSP;
 
 MGF::MGF(MGF_Type type, const Hash & Hash)
     : _Hash(Hash), _Type(type)
