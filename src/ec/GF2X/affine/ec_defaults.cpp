@@ -1,16 +1,16 @@
 #include <string>
 #include <sstream>
 
-#include "affine/GF2X/ec.hpp"
-#include "affine/GF2X/ec_defaults.hpp"
-#include "affine/GF2X/utils.hpp"
-#include "affine/ZZ_p/utils.hpp"
+#include "ec/GF2X/affine/ec.hpp"
+#include "ec/GF2X/affine/ec_defaults.hpp"
+#include "ec/GF2X/affine/utils.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
 
 using namespace std;
 using namespace NTL;
-using namespace Affine::GF2X;
+using namespace ECGF2X::Affine;
 
-using Affine::ZZ_p::ZZ_str;
+using ECZZ_p::Affine::ZZ_str;
 using NTL::ZZ;
 
 

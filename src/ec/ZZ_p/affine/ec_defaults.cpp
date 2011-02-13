@@ -1,13 +1,13 @@
 #include <string>
 #include <sstream>
 
-#include "affine/ZZ_p/ec.hpp"
-#include "affine/ZZ_p/ec_defaults.hpp"
-#include "affine/ZZ_p/utils.hpp"
+#include "ec/ZZ_p/affine/ec.hpp"
+#include "ec/ZZ_p/affine/ec_defaults.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
 
 using namespace std;
 using namespace NTL;
-using namespace Affine::ZZ_p;
+using namespace ECZZ_p::Affine;
 
 const EC_Defaults::Sizes EC_Defaults::__size_matrix[] =
 {

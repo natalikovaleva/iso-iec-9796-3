@@ -1,7 +1,7 @@
-#include "affine/ZZ_p/ec.hpp"
-#include "affine/ZZ_p/utils.hpp"
+#include "ec/ZZ_p/affine/ec.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
 
-using namespace Affine::ZZ_p;
+using namespace ECZZ_p::Affine;
 
 /* ---------------------- Points ------------------------ */
 
@@ -243,7 +243,7 @@ ZZ_p EC::generate_random() const
 }
 
 
-std::ostream& Affine::ZZ_p::operator<<(std::ostream& s, const EC & _EC)
+std::ostream& ECZZ_p::Affine::operator<<(std::ostream& s, const EC & _EC)
 {
     s << "X^3 + " << _EC.getA() <<"X + " <<
         _EC.getB() << " (mod " << _EC.getModulus() << ")";
@@ -251,7 +251,7 @@ std::ostream& Affine::ZZ_p::operator<<(std::ostream& s, const EC & _EC)
     return s;
 }
 
-std::ostream& Affine::ZZ_p::operator<<(std::ostream& s, const EC_Point & _EC_Point)
+std::ostream& ECZZ_p::Affine::operator<<(std::ostream& s, const EC_Point & _EC_Point)
 {
     s << "( x: " << I2OSP(_EC_Point.X) << "; y: " <<
         I2OSP(_EC_Point.Y) << ")";

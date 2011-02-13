@@ -1,14 +1,14 @@
-#include "affine/GF2X/ec.hpp"
-#include "affine/ZZ_p/utils.hpp"
-#include "affine/GF2X/ec_defaults.hpp"
-#include "affine/GF2X/ec_compress.hpp"
+#include "ec/GF2X/affine/ec.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
+#include "ec/GF2X/affine/ec_defaults.hpp"
+#include "ec/GF2X/affine/ec_compress.hpp"
 
 #include <iostream>
 
-using namespace Affine::GF2X;
+using namespace ECGF2X::Affine;
 using namespace std;
 
-using Affine::ZZ_p::ZZ_str;
+using ECZZ_p::Affine::ZZ_str;
 
 int main(int argc     __attribute__ ((unused)),
          char *argv[] __attribute__ ((unused)))
