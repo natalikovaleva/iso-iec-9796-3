@@ -3,9 +3,9 @@
 #include <NTL/ZZ_p.h>
 #include <ostream>
 
-namespace Affine
+namespace ECZZ_p
 {
-    namespace ZZ_p
+    namespace Affine
     {
         
         using NTL::ZZ_p;
@@ -62,8 +62,8 @@ namespace Affine
             
             inline bool isSameEC(const EC & __EC) const;
 
-            friend class Affine::ZZ_p::EC;
-            friend std::ostream& Affine::ZZ_p::operator<<(std::ostream& s,
+            friend class ECZZ_p::Affine::EC;
+            friend std::ostream& ECZZ_p::Affine::operator<<(std::ostream& s,
                                                           const EC_Point & _EC_Point);
         };
 
@@ -183,8 +183,8 @@ namespace Affine
 
             bool isCorrectOrder() const;
     
-            friend class Affine::ZZ_p::EC_Point;
-            friend std::ostream& Affine::ZZ_p::operator<<(std::ostream& s, const EC & _EC);
+            friend class ECZZ_p::Affine::EC_Point;
+            friend std::ostream& ECZZ_p::Affine::operator<<(std::ostream& s, const EC & _EC);
         };
 
         std::ostream& operator<<(std::ostream& s, const EC & _EC);

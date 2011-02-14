@@ -2,9 +2,9 @@
 
 #include "ec.hpp"
 
-namespace Affine
+namespace ECGF2X
 {
-    namespace GF2X
+    namespace Affine
     {
         class EC_Defaults
         {

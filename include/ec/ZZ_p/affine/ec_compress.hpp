@@ -4,28 +4,28 @@
 
 #include "ec.hpp"
 
-namespace Affine
+namespace ECZZ_p
 {
-    namespace GF2X
+    namespace Affine
     {
 
-        using NTL::GF2XFromBytes;
-        using NTL::IsZero;
+        using NTL::ZZFromBytes;
+        
     
         class EC_CPoint
         {
             typedef long Sign;
     
-            const GF2X X;
+            const ZZ X;
             const Sign tY;
 
         public:
     
             static size_t serializeSize(const unsigned char * data, size_t size);
     
-            static inline GF2X deserialize_X(const unsigned char * data, size_t size)
+            static inline ZZ deserialize_X(const unsigned char * data, size_t size)
                 {
-                    return GF2XFromBytes(data+1, serializeSize(data, size));
+                    return ZZFromBytes(data+1, serializeSize(data, size));
                 }
     
             static inline unsigned char deserialize_tY(const unsigned char * data, size_t size)
@@ -36,17 +36,14 @@ namespace Affine
     
             static inline unsigned char compress_tY(const EC_Point & X)
                 {
-                    if (X.isZero()) return 0;
-                    const GF2XModulus & P = X.getEC().getModulus();
-                    const GF2X xy = MulMod(X.getX(),InvMod(X.getY(), P), P);
-                    return (unsigned char) rep(coeff(xy, 0)) & 0x1;
+                    return (unsigned char) IsOdd(rep(X.getY()));
                 }
     
         public:
             EC_CPoint(const EC_Point & Point);
-            EC_CPoint(const GF2X & X, unsigned char tY);
+            EC_CPoint(const ZZ_p & X, unsigned char tY);
             EC_CPoint(const unsigned char * data, size_t size);
-            
+    
             ~EC_CPoint();
     
             EC_Point decompress(const EC & EC) const;

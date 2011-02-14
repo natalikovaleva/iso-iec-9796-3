@@ -4,17 +4,17 @@
 
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
-#include "affine/ZZ_p/ec.hpp"
-#include "affine/ZZ_p/ec_compress.hpp"
-#include "affine/ZZ_p/ec_defaults.hpp"
-#include "affine/ZZ_p/utils.hpp"
+#include "ec/ZZ_p/affine/ec.hpp"
+#include "ec/ZZ_p/affine/ec_compress.hpp"
+#include "ec/ZZ_p/affine/ec_defaults.hpp"
+#include "ec/ZZ_p/affine/utils.hpp"
 
 #include <stdio.h>
 
 using namespace NTL;
 using namespace std;
 
-using namespace Affine::ZZ_p;
+using namespace ECZZ_p::Affine;
 
 static const ByteSeq C = I2OSP(1, 4);
 static const Hash Hash(Hash::RIPEMD160);

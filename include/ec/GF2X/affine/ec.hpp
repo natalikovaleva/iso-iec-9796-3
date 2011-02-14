@@ -6,9 +6,9 @@
 
 #include <ostream>
 
-namespace Affine
+namespace ECGF2X
 {
-    namespace GF2X
+    namespace Affine
     {
         
         using NTL::GF2X;
@@ -64,8 +64,8 @@ namespace Affine
 
             inline bool isSameEC(const EC & __EC) const;
 
-            friend class Affine::GF2X::EC;
-            friend std::ostream& Affine::GF2X::operator<<(std::ostream& s,
+            friend class ECGF2X::Affine::EC;
+            friend std::ostream& ECGF2X::Affine::operator<<(std::ostream& s,
                                                           const EC_Point & _EC_Point);
         };
 
@@ -152,8 +152,8 @@ namespace Affine
 
             bool isCorrectOrder() const;
     
-            friend class Affine::GF2X::EC_Point;
-            friend std::ostream& Affine::GF2X::operator<<(std::ostream& s, const EC & _EC);
+            friend class ECGF2X::Affine::EC_Point;
+            friend std::ostream& ECGF2X::Affine::operator<<(std::ostream& s, const EC & _EC);
         };
 
         std::ostream& operator<<(std::ostream& s, const EC & _EC);

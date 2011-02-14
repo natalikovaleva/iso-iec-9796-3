@@ -1,7 +1,7 @@
-#include "affine/GF2X/ec.hpp"
-#include "affine/GF2X/utils.hpp"
+#include "ec/GF2X/affine/ec.hpp"
+#include "ec/GF2X/affine/utils.hpp"
 
-using namespace Affine::GF2X;
+using namespace ECGF2X::Affine;
 
 /* ---------------------- Points ------------------------ */
 
@@ -228,7 +228,7 @@ GF2X EC::generate_random() const
 }
 
 
-std::ostream& Affine::GF2X::operator<<(std::ostream& s, const EC & _EC)
+std::ostream& ECGF2X::Affine::operator<<(std::ostream& s, const EC & _EC)
 {
     s << "X^3 + " << _EC.getA() <<"X + " <<
         _EC.getB() << " (mod " << _EC.getModulus() << ")";
@@ -236,7 +236,7 @@ std::ostream& Affine::GF2X::operator<<(std::ostream& s, const EC & _EC)
     return s;
 }
 
-std::ostream& Affine::GF2X::operator<<(std::ostream& s, const EC_Point & _EC_Point)
+std::ostream& ECGF2X::Affine::operator<<(std::ostream& s, const EC_Point & _EC_Point)
 {
     s << "( x: " << FE2OSP(_EC_Point.X) << "; y: " <<
         FE2OSP(_EC_Point.Y) << ")";
