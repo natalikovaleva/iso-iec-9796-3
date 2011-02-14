@@ -2,9 +2,9 @@
 
 #include "ec.hpp"
 
-namespace Affine
+namespace ECZZ_p
 {
-    namespace ZZ_p
+    namespace Affine
     {
         class EC_Defaults
         {

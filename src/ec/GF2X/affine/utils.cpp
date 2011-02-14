@@ -1,16 +1,16 @@
-#include "affine/GF2X/utils.hpp"
+#include "ec/GF2X/affine/utils.hpp"
 
 using namespace std;
 using namespace NTL;
-using namespace Affine::GF2X;
+using namespace ECGF2X::Affine;
 
 /* Smart stupid !! OCTET !! concatentaion. Be carefull! :] */
 
 #include <stdio.h>
 
-namespace Affine
+namespace ECGF2X
 {
-    namespace GF2X
+    namespace Affine
     {
 
         ByteSeq FE2OSP(unsigned int I, size_t pad)

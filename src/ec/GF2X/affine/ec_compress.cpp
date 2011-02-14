@@ -1,12 +1,12 @@
 #include "NTL/GF2X.h"
 
-#include "affine/GF2X/ec.hpp"
-#include "affine/GF2X/ec_compress.hpp"
-#include "affine/GF2X/ec_defaults.hpp"
-#include "affine/GF2X/utils.hpp"
+#include "ec/GF2X/affine/ec.hpp"
+#include "ec/GF2X/affine/ec_compress.hpp"
+#include "ec/GF2X/affine/ec_defaults.hpp"
+#include "ec/GF2X/affine/utils.hpp"
 
 using namespace NTL;
-using namespace Affine::GF2X;
+using namespace ECGF2X::Affine;
 
 EC_CPoint::~EC_CPoint()
 {}
