@@ -4,16 +4,16 @@
 
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
-#include "affine/GF2X/ec.hpp"
-#include "affine/GF2X/ec_defaults.hpp"
-#include "affine/GF2X/utils.hpp"
+#include "ec/GF2X/affine/ec.hpp"
+#include "ec/GF2X/affine/ec_defaults.hpp"
+#include "ec/GF2X/affine/utils.hpp"
 
 #include <stdio.h>
 
 using namespace NTL;
 using namespace std;
 
-using namespace Affine::GF2X;
+using namespace ECGF2X::Affine;
 
 static const ByteSeq C = I2OSP(1, 4);
 static const Hash Hash(Hash::RIPEMD160);

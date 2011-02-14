@@ -4,24 +4,25 @@ INCLUDE += -Intl-5.5.2/include
 
 INCLUDE += -Iinclude/
 
-all: sign signgf compressgf2x signmeasure signgfbench signecnrgfbench
+all: sign signgf compressgf2x basis signmeasure signecnrgfbench signgfbench
 
-CXXFLAGS := -O2 -march=native -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg
-#CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg  
+# CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg
+CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg 
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
 AFFINE_GF2X := utils.o ec.o ec_defaults.o ec_compress.o
-#AFFINE_ZZ_PX:= utils.o ec.o ec_defaults.o ec_compress.o
+
+PROJ_GF2X   := ec.o
 
 HASHES := rmd160.o sha512.o sha1.o
 GENERIC := octet.o hash.o mgf.o convhex.o
 
-lib/lib9796-3.a : $(addprefix build/affine/ZZ_p/, $(AFFINE_ZZ_P)) \
-									$(addprefix build/affine/GF2X/, $(AFFINE_GF2X)) \
-									$(addprefix build/affine/ZZ_pX/,$(AFFINE_ZZ_PX))\
-									$(addprefix build/hashes/,      $(HASHES))			\
-									$(addprefix build/generic/,			$(GENERIC))	
+lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
+									$(addprefix build/ec/GF2X/affine/,    $(AFFINE_GF2X)) \
+									$(addprefix build/ec/GF2X/projective/,$(PROJ_GF2X))	 \
+									$(addprefix build/hashes/,            $(HASHES))			 \
+									$(addprefix build/generic/,			      $(GENERIC))	
 		@mkdir -p $(dir $@)
 		rm -f $@
 		$(AR) r $@ $^
@@ -45,6 +46,11 @@ signgf:	build/examples/signgf.o  lib/lib9796-3.a
 		find -name "*.gcda" -delete
 
 compressgf2x:	build/examples/compressgf2x.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+basis:	build/examples/basis.o  lib/lib9796-3.a
 		@mkdir -p $(dir $@)
 		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete
