@@ -46,35 +46,61 @@ namespace ECGF2X
         Lopez_Dahab_Mixed_Addition(EC_Point & P1,
                                    const Affine::EC_Point & P2)
         {
-            const GF2XModulus & P = P1.getEC().getModulus();
+            // std::cout << "MIXED ADDITION" << std::endl;
+
             const GF2X & a = P1.getEC().getA();
-            /* -------------------------------------- */
-            const GF2X Z2  = SqrMod(P1.Z, P);
-            const GF2X aZ2 = MulMod(a, Z2, P);
-            /* -------------------------------------- */
-            const GF2X A = MulMod(P2.getY(), Z2, P) + P1.Y;
-            const GF2X B = MulMod(P2.getX(), P1.Z, P) + P1.X;
-            const GF2X C = MulMod(P1.Z, B, P);
+            const GF2X & b = P1.getEC().getB();
+            const GF2XModulus & P = P1.getEC().getModulus();
+            const GF2X Z2 = SqrMod(P1.Z, P);
+            const GF2X aZ2 = IsOne(a) ? Z2 : MulMod(a, Z2, P);
+
+            /* ------------------------------------- */
+            
+            const GF2X & X_2 = P2.getX();
+            const GF2X & Y_2 = P2.getY();
+            const GF2X & Z_1 = P1.getZ();
+            const GF2X & X_1 = P1.getX();
+            const GF2X & Y_1 = P1.getY();
+            
+            /* ------------------------------------- */
+
+            const GF2X A = MulMod(Y_2, Z2, P) + Y_1;
+            const GF2X B = MulMod(X_2, Z_1, P) + X_1;
+
+            if (IsZero(B))
+            {
+                P1.X = X_2;
+                P1.Y = Y_2;
+                P1.Z = GF2X(0, 1);
+                
+                Lopez_Dahab_Double(P1.X,
+                                   P1.Y,
+                                   P1.Z,
+                                   a,
+                                   b,
+                                   P);
+
+                return;
+            }
+            
+            const GF2X C = MulMod(Z_1, B, P);
             const GF2X D = MulMod(SqrMod(B, P),
-                                  C + aZ2,
+                                  (C + aZ2),
                                   P);
-            const GF2X E = MulMod(A, C, P);
-    
-            SqrMod(P1.Z, C, P);
-            /* P1.Z == Z_3 */ 
-            add(P1.X, SqrMod(A, P), D);
-            P1.X += E;
-            /* P1.X == X_3 */
+            const GF2X Z_3 = SqrMod(C, P);
+            const GF2X E   = MulMod(A, C, P);
+            const GF2X X_3 = SqrMod(A, P) + D + E;
+            const GF2X F   = MulMod(X_2, Z_3, P) + X_3;
+            const GF2X G   = MulMod(X_2 + Y_2,
+                                    SqrMod(Z_3, P),
+                                    P);
+            const GF2X Y_3 = MulMod(E+Z_3, F, P) + G;
 
-            const GF2X F = MulMod(P2.getX(), P1.Z, P) + P1.X;
-            const GF2X G = MulMod(SqrMod(P1.Z, P),
-                                  (P2.getX() + P2.getY()),
-                                  P);
-    
-            P1.Y = MulMod(E + P1.Z, F, P) + G;
-
-            /* P1 == P3 */
+            P1.X = X_3;
+            P1.Y = Y_3;
+            P1.Z = Z_3;
         }
+
 
         /* LNCS. 2000 / 1977, 10.1.1.75.402 */
         inline void 
@@ -120,32 +146,35 @@ namespace ECGF2X
                 {
                     R += S;
                 }
-
+                
                 S += S;
             }
     
             P = R;
         }
+        
     }
 
     Projective::EC_Point
     toProjective(const Affine::EC_Point & Point,
                  const Projective::EC & EC)
     {
-        
-        return EC.create(Point.getX(), Point.getY(),
-                         GF2X(0, 1));
+        if (Point.isZero())
+            return EC.create();
+        else
+            return EC.create(Point.getX(), Point.getY(),
+                             GF2X(0, 1));
     }
-
+    
 
 
     Affine::EC_Point 
     toAffine(const Projective::EC_Point & Point,
              const Affine::EC & EC)
     {
+
         const GF2X & P = EC.getModulus();
         const GF2X iZ = InvMod(Point.getZ(), P);
-
         return EC.create(MulMod(Point.getX(), iZ, P),
                          MulMod(Point.getY(), SqrMod(iZ, P), P));
     }
@@ -160,32 +189,52 @@ EC_Point::EC_Point(const EC_Point & Point)
       Y(Point.Y),
       Z(Point.Z),
       __EC(Point.__EC),
-      __isZeroPoint(Point.__isZeroPoint),
-      __isPrecomputed(false),
-      __precomputations(NULL),
-      __precomputations_window(0)
-{}
+      __isZeroPoint(Point.__isZeroPoint)
+{
+    __precomputations = Point.__precomputations ?
+        ( Point.__precomputations->isReady() ?
+          Point.__precomputations : NULL) : NULL;
+}
 
 EC_Point::EC_Point(const EC_Point & Point, bool isZero)
     : X(isZero ? GF2X() : Point.X),
       Y(isZero ? GF2X() : Point.Y),
       Z(isZero ? GF2X() : Point.Z),
       __EC(Point.__EC),
-      __isZeroPoint(isZero),
-      __isPrecomputed(false)
+      __isZeroPoint(isZero)
+{
+    if (! isZero && Point.__precomputations)
+    {
+        __precomputations = Point.__precomputations->isReady() ?
+            Point.__precomputations : NULL;
+    }
+    
+}
 
-{}
-
+EC_Point::EC_Point(const EC_Point & Point, EC_Point_Precomputations_Logic * comp)
+    : X(Point.X),
+      Y(Point.Y),
+      Z(Point.Z),
+      __EC(Point.__EC),
+      __isZeroPoint(Point.__isZeroPoint)
+{
+    if (comp->isReady())
+    {
+        __precomputations = new EC_Point_Precomputations(comp);
+    }
+}
 
 EC_Point::EC_Point(const GF2X &X,
                    const GF2X &Y,
                    const GF2X &Z, const EC & __EC)
     : X(X), Y(Y), Z(Z), __EC(__EC),
       __isZeroPoint(false),
-      __isPrecomputed(false)
+      __precomputations(NULL)
 {
     if (! _IsOnCurve())
+    {
         throw;
+    }
 }
 
 EC_Point::EC_Point(const EC & __EC)
@@ -194,11 +243,18 @@ EC_Point::EC_Point(const EC & __EC)
       Z(GF2X()),
       __EC(__EC),
       __isZeroPoint(true),
-      __isPrecomputed(false)
+      __precomputations(NULL)
 {}
 
 EC_Point::~EC_Point()
-{}
+{
+    if (__precomputations)
+    {
+        // std::cout << "__precomputations at: " << __precomputations << std::endl;
+        delete __precomputations;
+    }
+    
+}
 
 /* Lopez - Dahab */
 
@@ -246,6 +302,10 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         this->Y = Y.getY();
         this->Z = Y.getZ();
         this->__isZeroPoint = false;
+        this->__precomputations = Y.__precomputations ?
+            ( Y.__precomputations->isReady() ?
+              Y.__precomputations : NULL)
+            : NULL;
     }
     
     return *this;
@@ -294,6 +354,8 @@ EC_Point EC_Point::operator+  (const Affine::EC_Point & _Y) const
 
     __retval+= _Y;
     
+    delete __retval.__precomputations;
+    
     return __retval;
 }
 
@@ -311,51 +373,58 @@ void EC_Point::operator+= (const Affine::EC_Point & _Y)
     }
 
     /* Doubling couldn't be */
-    Lopez_Dahab_Mixed_Addition(*this, _Y);
+    if ((IsOne(__EC.getA())) || (IsZero(__EC.getA())))
+        Lopez_Dahab_Mixed_Addition(*this, _Y);
+    else
+    {
+        /* FIXME ADD GENERIC ADDITIONS */
+        abort();
+        
+    }
+    
     
     return;
 }
 
 void EC_Point::operator*= (const ZZ & Y)
 {
+    if (IsZero(Y))
+    {
+        __isZeroPoint = true;
+        return;
+    }
+    
+    
     if (isPrecomputed())
     {
+        __precomputations->Multiply(*this, Y);
     }
     else
+    {
         Right_To_Left_Multiplication(*this, Y);
+    }
+    
     return;
 }
 
 EC_Point EC_Point::operator* (const ZZ & Y) const
 {
     EC_Point __retval(*this);
-
+    
     __retval*= Y;
+
+    delete __retval.__precomputations;
 
     return __retval;
 }
-
-bool EC_Point::precompute(void)
-{
-    __precomputations_window = 1 * sizeof(char) * 8;
-    
-    __precomputations = new EC_Point *[1 << __precomputations_window];
-
-    for (unsigned int i = 0; i < (1 << __precomputations_window); i++)
-    {
-        char bytes[4096]; // FIXME
-    }
-    
-    
-    return true;
-}
-
 
 
 /* ----------------------- EC ---------------------------------- */
 
 EC::EC(const Affine::EC & EC)
-    : Affine::EC(EC), G(toProjective(EC.getBasePoint(), *this))
+    : Affine::EC(EC),
+      G(toProjective(EC.getBasePoint()), *this),
+      G_a(EC.getBasePoint())
 {}
 
 EC::~EC()

@@ -23,14 +23,27 @@ int main(int argc     __attribute__ ((unused)),
     const EC_Point G = EC.getBasePoint();
     const Projective::EC_Point G_p = EC_p.getBasePoint();
 
-    ZZ k;
+    ZZ seed;
+    seed += time(NULL);
+    SetSeed(seed);
 
+    
+    ZZ k;
+    
     EC.generate_random(k);
 
     cout << "Original: " << G << endl;
     cout << "k: " << k << endl;
     cout << "O*k: " << G * k << endl;
     cout << "P*k => O: " << toAffine( G_p * k, EC ) << endl;
+
+    cout << "Try to precompute" << endl;
+
+    Projective::EC_Point_Precomputations_Comb comb(G_p);
+
+    Projective::EC_Point G_pp(G_p, & comb);
+    
+    cout << "PP*k => O:" << toAffine(G_pp * k, EC) << endl;
 
     return 0;
 }

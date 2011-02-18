@@ -6,6 +6,7 @@
 #include "generic/hash.hpp"
 #include "generic/mgf.hpp"
 #include "ec/GF2X/affine/ec.hpp"
+#include "ec/GF2X/projective/ec.hpp"
 #include "ec/GF2X/affine/ec_defaults.hpp"
 #include "ec/GF2X/affine/utils.hpp"
 
@@ -14,6 +15,7 @@
 using namespace NTL;
 using namespace std;
 
+using namespace ECGF2X;
 using namespace ECGF2X::Affine;
 
 static const Hash Hash(Hash::SHA1);
@@ -24,6 +26,11 @@ int main(int argc     __attribute__((unused)),
     GF2X::HexOutput = 1;
 
     EC EC = EC_Defaults::create(EC_Defaults::EC163);
+
+    Projective::EC EC_p(EC);
+    Projective::EC_Point_Precomputations_Comb comb(EC_p.getBasePoint());
+    Projective::EC_Point G_pp(EC_p.getBasePoint(), & comb);
+    
     const size_t Ln = L(EC.getOrder());
 
     int time1, time2 = time(NULL);
@@ -37,7 +44,7 @@ int main(int argc     __attribute__((unused)),
         
     SetSeed(seed);
     
-    for (unsigned int i=0; i<30000; i++)
+    for (unsigned int i=0; i<10000; i++)
     {
         ZZ Xa;
         ZZ k;
@@ -45,7 +52,7 @@ int main(int argc     __attribute__((unused)),
         EC.generate_random(Xa);
         EC.generate_random(k);
     
-        const EC_Point R = EC.getBasePoint() * k;
+        const EC_Point R = toAffine(G_pp * k, EC);
         const ByteSeq OPoint = EC2OSP(R, EC2OSP_UNCOMPRESSED);
         const MGF MGF1(MGF::MGF1, Hash::SHA1);
         const ByteSeq Pi = MGF1(OPoint, Ln);
