@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ec/GF2X/affine/ec.hpp"
+#include "ec/GF2X/projective/ec_precomputations.hpp"
+
 
 namespace ECGF2X
 {
@@ -27,20 +29,16 @@ namespace ECGF2X
             GF2X Z;
 
             const EC & __EC;
-
+            
             bool __isZeroPoint;
-            bool __isPrecomputed;
-
-            /* ------ FIXED POINT PRECOMPUTATION DATA ------- */
-            /* TODO: Make precomputations duplications in copy constructor */
-            EC_Point ** __precomputations;
-            int __precomputations_window;
-            const unsigned char * __point_as_byte[2048];
-            unsigned int __point_byte_size;
-            /* ---------------------------------------------- */
+            
+            EC_Point_Precomputations * __precomputations;
             
         public:
-            
+
+            /* Create point from point and it's precomputations */
+            EC_Point(const EC_Point & Point,
+                     EC_Point_Precomputations_Logic * Precomputations);
             
             EC_Point(const GF2X &X, const GF2X &Y, const GF2X &Z, const EC & __EC); // Projective
             EC_Point(const EC_Point & Point); // Same point in same field
@@ -53,13 +51,17 @@ namespace ECGF2X
         public:
             bool precompute(void);
             
-            
             inline bool isPrecomputed() const
-                { return __isPrecomputed; }
+                { if (__precomputations)
+                        return __precomputations->isReady();
+                    else
+                        return false; }
             
-
             inline bool isZero() const
                 { return __isZeroPoint; }
+
+            inline void setZero() 
+                { __isZeroPoint = true; }
     
             EC_Point & operator=  (const EC_Point & Y);
             EC_Point   operator+  (const EC_Point & Y) const;
@@ -110,11 +112,16 @@ namespace ECGF2X
 
         class EC : public Affine::EC
         {
-            const EC_Point G; // Base point in GF2X/Projective
-
+            EC_Point G; // Base point in GF2X/Projective
+                        // Can be precomputed
+            
+            const Affine::EC_Point G_a;
+            
         public:
             inline const EC_Point & getBasePoint() const
                 { return G; }
+            inline const Affine::EC_Point & getAffineBasePoint() const
+                { return G_a; }
 
         public:
             /* This EC curve class exists only for precomputations.
