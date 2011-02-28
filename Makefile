@@ -4,7 +4,7 @@ INCLUDE += -Intl-5.5.2/include
 
 INCLUDE += -Iinclude/
 
-all: sign signgf compressgf2x basis signmeasure signecnrgfbench signgfbench
+all: sign signgf signkfix compressgf2x basis signmeasure signecnrgfbench signgfbench
 
 CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg
 # CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg 
@@ -13,7 +13,7 @@ WARNINGS := -Wall -Wextra -pedantic -Winit-self
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
 AFFINE_GF2X := utils.o ec.o ec_defaults.o ec_compress.o
 
-PROJ_GF2X   := ec.o ec_comb.o
+PROJ_GF2X   := ec.o
 
 HASHES := rmd160.o sha512.o sha1.o
 GENERIC := octet.o hash.o mgf.o convhex.o
@@ -36,6 +36,11 @@ build/%.o : src/%.c
 		gcc --std=gnu99 $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
 
 sign:	build/examples/sign.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+signkfix:	build/examples/signkfix.o  lib/lib9796-3.a
 		@mkdir -p $(dir $@)
 		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete

@@ -3,6 +3,9 @@
 #include "ec/ZZ_p/affine/utils.hpp"
 #include "ec/GF2X/affine/ec_defaults.hpp"
 #include "ec/GF2X/affine/ec_compress.hpp"
+
+#include "algorithm/comb.hpp"
+
 #include <iostream>
 
 using namespace ECGF2X;
@@ -21,7 +24,8 @@ int main(int argc     __attribute__ ((unused)),
     Projective::EC EC_p(EC);
 
     const EC_Point G = EC.getBasePoint();
-    const Projective::EC_Point G_p = EC_p.getBasePoint();
+    const Projective::EC_Point G_p  = EC_p.getBasePoint();
+          Projective::EC_Point G_pp = EC_p.getBasePoint();
 
     ZZ seed;
     seed += time(NULL);
@@ -39,9 +43,11 @@ int main(int argc     __attribute__ ((unused)),
 
     cout << "Try to precompute" << endl;
 
-    Projective::EC_Point_Precomputations_Comb comb(G_p);
-
-    Projective::EC_Point G_pp(G_p, & comb);
+    Algorithm::Precomputations_Method_Comb<Projective::EC_Point,
+                                           ZZ,
+                                           Affine::EC_Point> Method (NumBits(EC_p.getModulus()));
+        
+    G_pp.precompute(Method);
     
     cout << "PP*k => O:" << toAffine(G_pp * k, EC) << endl;
 

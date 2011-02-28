@@ -102,7 +102,7 @@ int main(int argc     __attribute__((unused)),
     const ZZ_p pi = InMod(OS2IP(Pi));
 
     cout << "d: " << d << endl;
-    cout << "π: " << pi << endl;
+    cout << "π: " << pi << " ( "<< I2OSP(pi) << ")" <<endl;
     
     const ZZ_p r = (d + pi);
     const ZZ_p s = (k - Xa*r);

@@ -189,47 +189,25 @@ EC_Point::EC_Point(const EC_Point & Point)
       Y(Point.Y),
       Z(Point.Z),
       __EC(Point.__EC),
-      __isZeroPoint(Point.__isZeroPoint)
-{
-    __precomputations = Point.__precomputations ?
-        ( Point.__precomputations->isReady() ?
-          Point.__precomputations : NULL) : NULL;
-}
+      __isZeroPoint(Point.__isZeroPoint),
+      __precomputations(Point.__precomputations)
+{}
 
 EC_Point::EC_Point(const EC_Point & Point, bool isZero)
     : X(isZero ? GF2X() : Point.X),
       Y(isZero ? GF2X() : Point.Y),
       Z(isZero ? GF2X() : Point.Z),
       __EC(Point.__EC),
-      __isZeroPoint(isZero)
-{
-    if (! isZero && Point.__precomputations)
-    {
-        __precomputations = Point.__precomputations->isReady() ?
-            Point.__precomputations : NULL;
-    }
-    
-}
-
-EC_Point::EC_Point(const EC_Point & Point, EC_Point_Precomputations_Logic * comp)
-    : X(Point.X),
-      Y(Point.Y),
-      Z(Point.Z),
-      __EC(Point.__EC),
-      __isZeroPoint(Point.__isZeroPoint)
-{
-    if (comp->isReady())
-    {
-        __precomputations = new EC_Point_Precomputations(comp);
-    }
-}
+      __isZeroPoint(isZero),
+      __precomputations(Point.__precomputations)
+{}
 
 EC_Point::EC_Point(const GF2X &X,
                    const GF2X &Y,
                    const GF2X &Z, const EC & __EC)
     : X(X), Y(Y), Z(Z), __EC(__EC),
       __isZeroPoint(false),
-      __precomputations(NULL)
+      __precomputations()
 {
     if (! _IsOnCurve())
     {
@@ -243,18 +221,11 @@ EC_Point::EC_Point(const EC & __EC)
       Z(GF2X()),
       __EC(__EC),
       __isZeroPoint(true),
-      __precomputations(NULL)
+      __precomputations()
 {}
 
 EC_Point::~EC_Point()
-{
-    if (__precomputations)
-    {
-        // std::cout << "__precomputations at: " << __precomputations << std::endl;
-        delete __precomputations;
-    }
-    
-}
+{}
 
 /* Lopez - Dahab */
 
@@ -302,10 +273,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         this->Y = Y.getY();
         this->Z = Y.getZ();
         this->__isZeroPoint = false;
-        this->__precomputations = Y.__precomputations ?
-            ( Y.__precomputations->isReady() ?
-              Y.__precomputations : NULL)
-            : NULL;
+        this->__precomputations = Y.__precomputations;
     }
     
     return *this;
@@ -354,8 +322,6 @@ EC_Point EC_Point::operator+  (const Affine::EC_Point & _Y) const
 
     __retval+= _Y;
     
-    delete __retval.__precomputations;
-    
     return __retval;
 }
 
@@ -379,9 +345,9 @@ void EC_Point::operator+= (const Affine::EC_Point & _Y)
     {
         /* FIXME ADD GENERIC ADDITIONS */
         abort();
-        
     }
     
+    __precomputations.drop();
     
     return;
 }
@@ -394,18 +360,31 @@ void EC_Point::operator*= (const ZZ & Y)
         return;
     }
     
-    
     if (isPrecomputed())
     {
-        __precomputations->Multiply(*this, Y);
+        __precomputations.Multiply(*this, Y);
     }
     else
     {
         Right_To_Left_Multiplication(*this, Y);
     }
+
+    __precomputations.drop();
     
     return;
 }
+
+void EC_Point::operator*= (const long Y)
+{
+    if (Y == 0)
+    {
+        __isZeroPoint = true;
+        return;
+    }
+    else
+        operator*=(ZZ() + Y);
+}
+
 
 EC_Point EC_Point::operator* (const ZZ & Y) const
 {
@@ -413,17 +392,25 @@ EC_Point EC_Point::operator* (const ZZ & Y) const
     
     __retval*= Y;
 
-    delete __retval.__precomputations;
+    return __retval;
+}
+
+EC_Point EC_Point::operator* (const long Y) const
+{
+    EC_Point __retval(*this);
+    
+    __retval*= Y;
 
     return __retval;
 }
+
 
 
 /* ----------------------- EC ---------------------------------- */
 
 EC::EC(const Affine::EC & EC)
     : Affine::EC(EC),
-      G(toProjective(EC.getBasePoint()), *this),
+      G(toProjective(EC.getBasePoint(), *this)),
       G_a(EC.getBasePoint())
 {}
 

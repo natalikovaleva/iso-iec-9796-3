@@ -159,6 +159,17 @@ void EC_Point::operator*= (const ZZ & Y)
     return;
 }
 
+void EC_Point::operator*= (const long Y)
+{
+    if (Y == 0)
+    {
+        return;
+    }
+    else
+        operator*=(ZZ() + Y);
+}
+
+
 EC_Point EC_Point::operator* (const ZZ & Y) const
 {
     EC_Point __retval(*this);
@@ -167,6 +178,17 @@ EC_Point EC_Point::operator* (const ZZ & Y) const
 
     return __retval;
 }
+
+EC_Point EC_Point::operator* (const long Y) const
+{
+    EC_Point __retval(*this);
+
+    __retval*= Y;
+
+    return __retval;
+}
+
+
 
 /* --------------------- Curves ------------------------- */
 

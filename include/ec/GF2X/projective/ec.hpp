@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ec/GF2X/affine/ec.hpp"
-#include "ec/GF2X/projective/ec_precomputations.hpp"
-
+#include "algorithm/convertors.hpp"
+#include "algorithm/precomputations.hpp"
 
 namespace ECGF2X
 {
@@ -32,13 +32,10 @@ namespace ECGF2X
             
             bool __isZeroPoint;
             
-            EC_Point_Precomputations * __precomputations;
+            Algorithm::Precomputations<EC_Point,
+                                       ZZ> __precomputations;
             
         public:
-
-            /* Create point from point and it's precomputations */
-            EC_Point(const EC_Point & Point,
-                     EC_Point_Precomputations_Logic * Precomputations);
             
             EC_Point(const GF2X &X, const GF2X &Y, const GF2X &Z, const EC & __EC); // Projective
             EC_Point(const EC_Point & Point); // Same point in same field
@@ -49,13 +46,11 @@ namespace ECGF2X
             bool _IsOnCurve() const;
     
         public:
-            bool precompute(void);
-            
+            bool precompute(const Algorithm::Precomputations_Method<EC_Point, ZZ> & method)
+                { __precomputations = method(*this); return __precomputations.isReady(); }
+
             inline bool isPrecomputed() const
-                { if (__precomputations)
-                        return __precomputations->isReady();
-                    else
-                        return false; }
+                { return __precomputations.isReady(); }
             
             inline bool isZero() const
                 { return __isZeroPoint; }
@@ -67,9 +62,11 @@ namespace ECGF2X
             EC_Point   operator+  (const EC_Point & Y) const;
             EC_Point   operator+  (const Affine::EC_Point & Y) const;
             EC_Point   operator*  (const ZZ & Y) const;
+            EC_Point   operator*  (const long Y) const;
     
             void operator+= (const Affine::EC_Point & Y);
             void operator+= (const EC_Point & Y);
+            void operator*= (const long Y);
             void operator*= (const ZZ & Y);
 
             inline bool operator== (const EC_Point &Y_)
@@ -144,5 +141,24 @@ namespace ECGF2X
     
     Affine::EC_Point toAffine(const Projective::EC_Point & Point,
                               const Affine::EC & EC);
+
+        
 }
 
+namespace Algorithm
+{
+    /* For templates/algorithms */
+    template <>
+    struct conv1 <ECGF2X::Affine::EC_Point, ECGF2X::Projective::EC_Point>
+    {
+        inline ECGF2X::Affine::EC_Point operator()(const ECGF2X::Projective::EC_Point & from)
+            { return ECGF2X::toAffine(from, from.getEC().getAffineBasePoint().getEC()); }
+    };
+
+    template <>
+    struct conv1 <ECGF2X::Projective::EC_Point, ECGF2X::Projective::EC_Point>
+    {
+        inline ECGF2X::Projective::EC_Point operator()(const ECGF2X::Projective::EC_Point & from)
+            { return from; }
+    };
+}

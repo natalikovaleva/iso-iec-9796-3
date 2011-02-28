@@ -46,9 +46,11 @@ namespace ECGF2X
             EC_Point & operator=  (const EC_Point & Y);
             EC_Point   operator+  (const EC_Point & Y) const;
             EC_Point   operator*  (const ZZ & Y) const;
-    
+            EC_Point   operator*  (const long Y) const;
+
             void operator+= (const EC_Point & Y);
             void operator*= (const ZZ & Y);
+            void operator*= (const long Y);
 
             inline bool operator== (const EC_Point &Y_)
                 { return Y_.isZero() ? isZero() : (X == Y_.X) && (Y == Y_.Y); }
