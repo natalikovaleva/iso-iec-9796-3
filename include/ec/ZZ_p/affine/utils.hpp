@@ -41,7 +41,7 @@ namespace ECZZ_p
             unsigned char buffer [OCTET_MAX_SIZE];
     
             /* TODO: FIX BYTE ORDER */
-    
+            
             BytesFromZZ(buffer, I, sizeof(buffer));
             const size_t source_size = NumBytes(I);
 

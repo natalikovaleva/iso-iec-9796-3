@@ -10,6 +10,7 @@
 #include "ec/GF2X/affine/ec.hpp"
 #include "algorithm/convertors.hpp"
 #include "algorithm/precomputations.hpp"
+#include "algorithm/multiplication.hpp"
 
 namespace ECGF2X
 {
@@ -34,12 +35,13 @@ namespace ECGF2X
             
             Algorithm::Precomputations<EC_Point,
                                        ZZ> __precomputations;
+            const Algorithm::RLMul<EC_Point,
+                                   ZZ> __generic_multiplication;
             
         public:
             
             EC_Point(const GF2X &X, const GF2X &Y, const GF2X &Z, const EC & __EC); // Projective
             EC_Point(const EC_Point & Point); // Same point in same field
-            EC_Point(const EC_Point & Point, bool isZero); // Copy zero point from same field
             EC_Point(const EC & __EC); // Zero
             ~EC_Point();
 
@@ -55,9 +57,6 @@ namespace ECGF2X
             inline bool isZero() const
                 { return __isZeroPoint; }
 
-            inline void setZero() 
-                { __isZeroPoint = true; }
-    
             EC_Point & operator=  (const EC_Point & Y);
             EC_Point   operator+  (const EC_Point & Y) const;
             EC_Point   operator+  (const Affine::EC_Point & Y) const;
@@ -134,6 +133,11 @@ namespace ECGF2X
                             const GF2X & z) const;
 
         };
+        
+        inline bool IsZero(const EC_Point & EC_Point) 
+        {
+            return EC_Point.isZero();
+        }
     }
 
     Projective::EC_Point toProjective(const Affine::EC_Point & Point,
@@ -141,7 +145,7 @@ namespace ECGF2X
     
     Affine::EC_Point toAffine(const Projective::EC_Point & Point,
                               const Affine::EC & EC);
-
+    
         
 }
 

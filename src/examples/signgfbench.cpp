@@ -18,6 +18,8 @@ using namespace std;
 using namespace ECGF2X;
 using namespace ECGF2X::Affine;
 
+#include "algorithm/comb.hpp"
+
 static const Hash Hash(Hash::SHA1);
 
 int main(int argc     __attribute__((unused)),
@@ -28,9 +30,15 @@ int main(int argc     __attribute__((unused)),
     EC EC = EC_Defaults::create(EC_Defaults::EC163);
 
     Projective::EC EC_p(EC);
-    Projective::EC_Point_Precomputations_Comb comb(EC_p.getBasePoint());
-    Projective::EC_Point G_pp(EC_p.getBasePoint(), & comb);
     
+    Algorithm::Precomputations_Method_Comb<Projective::EC_Point,
+                                           ZZ,
+                                           Affine::EC_Point> Method (NumBits(EC_p.getModulus()));
+    
+    Projective::EC_Point G_pp(EC_p.getBasePoint());
+    
+    G_pp.precompute(Method);
+
     const size_t Ln = L(EC.getOrder());
 
     int time1, time2 = time(NULL);

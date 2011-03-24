@@ -9,18 +9,17 @@ EC_Point::EC_Point(const EC_Point & Point)
     : X(Point.X),
       Y(Point.Y),
       __EC(Point.__EC),
-      isZeroPoint(Point.isZeroPoint)
-{}
+      isZeroPoint(Point.isZeroPoint),
+      __precomputations(Point.__precomputations),
+      __generic_multiplication()
 
-EC_Point::EC_Point(const EC_Point & Point, bool isZero)
-    : X(isZero ? ZZ_p() : Point.X),
-      Y(isZero ? ZZ_p() : Point.Y),
-      __EC(Point.__EC)
 {}
-
 
 EC_Point::EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC)
-    : X(X), Y(Y), __EC(__EC), isZeroPoint(false)
+    : X(X), Y(Y), __EC(__EC), isZeroPoint(false),
+      __precomputations(),
+      __generic_multiplication()
+
 {
     if (! _IsOnCurve())
         throw;
@@ -30,7 +29,10 @@ EC_Point::EC_Point(const EC & __EC)
     : X(ZZ_p()),
       Y(ZZ_p()),
       __EC(__EC),
-      isZeroPoint(true)
+      isZeroPoint(true),
+      __precomputations(),
+      __generic_multiplication()
+
 {}
 
 EC_Point::~EC_Point()
@@ -66,12 +68,16 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         throw; // assert
 
     if (Y.isZeroPoint)
+    {
         this->isZeroPoint = true;
+        this->__precomputations.drop();
+    }
     else
     {
         this->X = Y.getX();
         this->Y = Y.getY();
         this->isZeroPoint = false;
+        this->__precomputations = Y.__precomputations;
     }
     
     return *this;
@@ -98,7 +104,6 @@ void EC_Point::operator+= (const EC_Point & _Y)
         return;
     }
     
-    
     if (isZero())
     {
         *this = _Y;
@@ -122,37 +127,55 @@ void EC_Point::operator+= (const EC_Point & _Y)
     Y = L*(X-X3) - Y;
     X = X3;
 
+    __precomputations.drop();
+    
     return;
 }
 
 void EC_Point::operator*= (const ZZ_p & Y)
 {
-    const ZZ & _Y = rep(Y);
-    
-    EC_Point S(*this);
-    EC_Point R(__EC);
-
     if (IsZero(Y))
     {
+        isZeroPoint = true;
         return;
     }
 
-    for (long i = 0; i < NumBits(_Y); i++)
+    if (isPrecomputed())
     {
-        if (bit(_Y, i))
-        {
-            R += S;
-        }
-
-        S += S;
+        __precomputations.Multiply(*this, Y);
     }
-    
-    *this = R;
+    else
+    {
+        __generic_multiplication.Multiply(*this, Y);
+    }
+
+    __precomputations.drop();
 
     return;
 }
 
 EC_Point EC_Point::operator* (const ZZ_p & Y) const
+{
+    EC_Point __retval(*this);
+
+    __retval*= Y;
+
+    return __retval;
+}
+
+void EC_Point::operator*= (const long Y)
+{
+    if (Y == 0)
+    {
+        isZeroPoint = true;
+        __precomputations.drop();
+        return;
+    }
+    else
+        operator*=(ZZ_p() + Y);
+}
+
+EC_Point EC_Point::operator* (const long Y) const
 {
     EC_Point __retval(*this);
 

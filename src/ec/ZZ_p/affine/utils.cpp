@@ -54,15 +54,21 @@ namespace ECZZ_p
    
             memset(buffer, 0x0, sizeof(buffer));
 
+            /* If size = 0, then return 00000000 octet */
+            
+            if (I == 0)
+            {
+                return ByteSeq(buffer, sizeof(buffer), pad);
+            }
+            
             /* slow memcopy; LE */
             for (unsigned int i = 0; i<size; i++)
             {
                 buffer[sizeof(int)-i-1] = *((unsigned char *)(&I) + i);
             }
 
-            /* If size = 0, then return 00000000 octet. */
             return ByteSeq(buffer + (sizeof(int) - (size + this_pad)),
-                           size == 0 ? sizeof(buffer) : ( size + this_pad ) , pad);
+                           ( size + this_pad ) , pad);
         }
 
 
@@ -86,7 +92,5 @@ namespace ECZZ_p
             else
                 return H || X;
         }
-
-
     }
 }
