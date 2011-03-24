@@ -96,7 +96,7 @@ namespace Algorithm
                       const Group2 & Y)
             {
                 P *= 0;
-                
+
                 for (long i = 0;
                      i < getMulPortions();
                      i++)

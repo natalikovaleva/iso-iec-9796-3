@@ -4,21 +4,22 @@
 
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
+
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
 #include "ec/ZZ_p/affine/ec_defaults.hpp"
 #include "ec/ZZ_p/affine/utils.hpp"
 
-#include <stdio.h>
-
 using namespace NTL;
 using namespace std;
-
 using namespace ECZZ_p::Affine;
+
+#include "algorithm/comb.hpp"
+
+#include <stdio.h>
 
 static const ByteSeq C = I2OSP(1, 4);
 static const Hash Hash(Hash::RIPEMD160);
-
 
 
 int main(int argc     __attribute__((unused)),
@@ -47,9 +48,22 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Private key: " << I2OSP(Xa) << endl;
     cout << "Public key: " << Y << endl;
+    cout << "Generator: " << EC.getBasePoint() << endl;
+
+    cout << "Try to precompute" << endl;
+
+    EC_Point G_pp = EC.getBasePoint();
+    
+    Algorithm::Precomputations_Method_Comb<EC_Point,
+                                           ZZ_p,
+                                           EC_Point> Method (NumBits(EC.getModulus()));
+        
+    G_pp.precompute(Method);
+    
+    cout << "Is EC Correct order: " << EC.isCorrectOrder() << endl;
 
     const ZZ_p k = ZZ_p_str("08a8bea9f2b40ce7400672261d5c05e5fd8ab326");
-    const EC_Point kG = EC.getBasePoint() * k;
+    const EC_Point kG = G_pp * k;
 
     cout << "Session key: " << I2OSP(k) << endl;
     cout << "Session radical: " << kG << endl;

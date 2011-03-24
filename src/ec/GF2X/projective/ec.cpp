@@ -127,32 +127,6 @@ namespace ECGF2X
             P1.Y = MulMod(MulMod(A1, G, P) + MulMod(E1, D, P),
                           D, P) + MulMod(G + P1.Z, P1.X, P);
         }
-
-        inline void
-        Right_To_Left_Multiplication(EC_Point & P,
-                                     const ZZ & Y)
-        {
-            EC_Point S(P);
-            EC_Point R(P.getEC());
-
-            if (IsZero(Y))
-            {
-                return;
-            }
-
-            for (long i = 0; i < NumBits(Y); i++)
-            {
-                if (bit(Y, i))
-                {
-                    R += S;
-                }
-                
-                S += S;
-            }
-    
-            P = R;
-        }
-        
     }
 
     Projective::EC_Point
@@ -190,16 +164,8 @@ EC_Point::EC_Point(const EC_Point & Point)
       Z(Point.Z),
       __EC(Point.__EC),
       __isZeroPoint(Point.__isZeroPoint),
-      __precomputations(Point.__precomputations)
-{}
-
-EC_Point::EC_Point(const EC_Point & Point, bool isZero)
-    : X(isZero ? GF2X() : Point.X),
-      Y(isZero ? GF2X() : Point.Y),
-      Z(isZero ? GF2X() : Point.Z),
-      __EC(Point.__EC),
-      __isZeroPoint(isZero),
-      __precomputations(Point.__precomputations)
+      __precomputations(Point.__precomputations),
+      __generic_multiplication()
 {}
 
 EC_Point::EC_Point(const GF2X &X,
@@ -207,7 +173,8 @@ EC_Point::EC_Point(const GF2X &X,
                    const GF2X &Z, const EC & __EC)
     : X(X), Y(Y), Z(Z), __EC(__EC),
       __isZeroPoint(false),
-      __precomputations()
+      __precomputations(),
+      __generic_multiplication()
 {
     if (! _IsOnCurve())
     {
@@ -221,7 +188,8 @@ EC_Point::EC_Point(const EC & __EC)
       Z(GF2X()),
       __EC(__EC),
       __isZeroPoint(true),
-      __precomputations()
+      __precomputations(),
+      __generic_multiplication()
 {}
 
 EC_Point::~EC_Point()
@@ -266,7 +234,11 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         throw; // assert
 
     if (Y.__isZeroPoint)
+    {
         this->__isZeroPoint = true;
+        this->__precomputations.drop();
+    }
+    
     else
     {
         this->X = Y.getX();
@@ -366,7 +338,7 @@ void EC_Point::operator*= (const ZZ & Y)
     }
     else
     {
-        Right_To_Left_Multiplication(*this, Y);
+        __generic_multiplication.Multiply(*this, Y);
     }
 
     __precomputations.drop();
@@ -379,6 +351,7 @@ void EC_Point::operator*= (const long Y)
     if (Y == 0)
     {
         __isZeroPoint = true;
+        __precomputations.drop();
         return;
     }
     else

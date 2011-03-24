@@ -81,7 +81,7 @@ ByteSeq Hash::operator() (const ByteSeq & source) const
     /* TODO: Count const payment with macros */
     
     unsigned char buffer[128]; // const payment
-    
+
     getHash(source.getData(), source.getDataSize(),
             buffer, sizeof(buffer));
 

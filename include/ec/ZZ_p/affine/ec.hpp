@@ -3,6 +3,10 @@
 #include <NTL/ZZ_p.h>
 #include <ostream>
 
+#include "algorithm/convertors.hpp"
+#include "algorithm/precomputations.hpp"
+#include "algorithm/multiplication.hpp"
+
 namespace ECZZ_p
 {
     namespace Affine
@@ -26,17 +30,26 @@ namespace ECZZ_p
 
             bool isZeroPoint;
 
+            Algorithm::Precomputations<EC_Point,
+                                       ZZ_p> __precomputations;
+            const Algorithm::RLMul<EC_Point,
+                                   ZZ_p> __generic_multiplication;
+            
         public:
             EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC); // Generic
             EC_Point(const EC_Point & Point); // Same point in same field
-            EC_Point(const EC_Point & Point, bool isZero); // Copy zero point from same field
             EC_Point(const EC & __EC); // Zero
             ~EC_Point();
 
             bool _IsOnCurve() const;
     
         public:
+            bool precompute(const Algorithm::Precomputations_Method<EC_Point, ZZ_p> & method)
+                { __precomputations = method(*this); return __precomputations.isReady(); }
 
+            inline bool isPrecomputed() const
+                { return __precomputations.isReady(); }
+            
             inline bool isZero() const
                 { return isZeroPoint; }
     
@@ -54,8 +67,7 @@ namespace ECZZ_p
 
             inline const ZZ_p & getX() const
                 { return X; }
-
-            
+                        
             inline const ZZ_p & getY() const
                 { return Y; }
 
@@ -66,9 +78,9 @@ namespace ECZZ_p
 
             friend class ECZZ_p::Affine::EC;
             friend std::ostream& ECZZ_p::Affine::operator<<(std::ostream& s,
-                                                          const EC_Point & _EC_Point);
+                                                            const EC_Point & _EC_Point);
         };
-
+        
         class EC
         {
 
@@ -99,8 +111,7 @@ namespace ECZZ_p
                 FIELD_CONTEXT,
                 ORDER_CONTEXT
             };
-    
-    
+            
             /* Getters */
         public:
             inline const ZZ & getModulus() const 
@@ -191,5 +202,19 @@ namespace ECZZ_p
 
         std::ostream& operator<<(std::ostream& s, const EC & _EC);
         std::ostream& operator<<(std::ostream& s, const EC_Point & _EC_Point);
+
+        inline long int NumBits(const NTL::ZZ_p & x) { return NumBits(rep(x)); }
+        inline long int bit(const NTL::ZZ_p & x, long int i) { return bit(rep(x), i); }
     }
+}
+
+namespace Algorithm
+{
+    /* For templates/algorithms */
+    template <>
+    struct conv1 <ECZZ_p::Affine::EC_Point, ECZZ_p::Affine::EC_Point>
+    {
+        inline ECZZ_p::Affine::EC_Point operator()(const ECZZ_p::Affine::EC_Point & from)
+            { return from; }
+    };
 }

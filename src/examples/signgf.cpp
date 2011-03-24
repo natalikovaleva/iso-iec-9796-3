@@ -40,6 +40,8 @@ int main(int argc     __attribute__((unused)),
     const ZZ Xa = ZZ_str("2ddd259e3d30a77abc31cdf299a0e6cff7d78f869");
     const ZZ k  = ZZ_str("397e49b664b13079fa8f2992e5bcdb38d6895a31b");
 
+    cout << "k: " << I2OSP(k) << endl;
+    
     const EC_Point R = EC.getBasePoint() * k;
 
     cout << "kG: " << R << endl;

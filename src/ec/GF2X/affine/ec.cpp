@@ -9,18 +9,15 @@ EC_Point::EC_Point(const EC_Point & Point)
     : X(Point.X),
       Y(Point.Y),
       __EC(Point.__EC),
-      isZeroPoint(Point.isZeroPoint)
+      isZeroPoint(Point.isZeroPoint),
+      __precomputations(Point.__precomputations),
+      __generic_multiplication()
 {}
-
-EC_Point::EC_Point(const EC_Point & Point, bool isZero)
-    : X(isZero ? GF2X() : Point.X),
-      Y(isZero ? GF2X() : Point.Y),
-      __EC(Point.__EC)
-{}
-
 
 EC_Point::EC_Point(const GF2X &X, const GF2X &Y, const EC & __EC)
-    : X(X), Y(Y), __EC(__EC), isZeroPoint(false)
+    : X(X), Y(Y), __EC(__EC), isZeroPoint(false),
+      __precomputations(),
+      __generic_multiplication()
 {
     if (! _IsOnCurve())
         throw;
@@ -30,7 +27,9 @@ EC_Point::EC_Point(const EC & __EC)
     : X(GF2X()),
       Y(GF2X()),
       __EC(__EC),
-      isZeroPoint(true)
+      isZeroPoint(true),
+      __precomputations(),
+      __generic_multiplication()
 {}
 
 EC_Point::~EC_Point()
@@ -67,12 +66,16 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         throw; // assert
 
     if (Y.isZeroPoint)
+    {
         this->isZeroPoint = true;
+        this->__precomputations.drop();
+    }
     else
     {
         this->X = Y.getX();
         this->Y = Y.getY();
         this->isZeroPoint = false;
+        this->__precomputations = Y.__precomputations;
     }
     
     return *this;
@@ -130,31 +133,30 @@ void EC_Point::operator+= (const EC_Point & _Y)
         X = X3;
         Y = Y3;
     }
+
+    __precomputations.drop();
     
     return;
 }
 
 void EC_Point::operator*= (const ZZ & Y)
 {
-    EC_Point S(*this);
-    EC_Point R(__EC);
-
     if (IsZero(Y))
     {
+        isZeroPoint = true;
         return;
     }
 
-    for (long i = 0; i < NumBits(Y); i++)
+    if (isPrecomputed())
     {
-        if (bit(Y, i))
-        {
-            R += S;
-        }
-
-        S += S;
+        __precomputations.Multiply(*this, Y);
     }
-    
-    *this = R;
+    else
+    {
+        __generic_multiplication.Multiply(*this, Y);
+    }
+
+    __precomputations.drop();
 
     return;
 }
@@ -163,6 +165,8 @@ void EC_Point::operator*= (const long Y)
 {
     if (Y == 0)
     {
+        isZeroPoint = true;
+        __precomputations.drop();
         return;
     }
     else
