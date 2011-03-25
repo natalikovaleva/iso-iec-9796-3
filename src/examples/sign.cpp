@@ -10,8 +10,11 @@
 #include "ec/ZZ_p/affine/ec_defaults.hpp"
 #include "ec/ZZ_p/affine/utils.hpp"
 
+#include "ec/ZZ_p/projective/ec.hpp"
+
 using namespace NTL;
 using namespace std;
+using namespace ECZZ_p;
 using namespace ECZZ_p::Affine;
 
 #include "algorithm/comb.hpp"
@@ -28,12 +31,15 @@ int main(int argc     __attribute__((unused)),
 
     EC EC = EC_Defaults::create(EC_Defaults::EC160);
 
+    Projective::EC EC_p(EC);
+    Projective::EC_Point G_p(EC_p.getBasePoint());
+
     cout << EC << endl;
     
     EC.enter_mod_context(EC::FIELD_CONTEXT);
         
     cout << "EC:N: " << I2OSP(EC.getOrder()) << endl;
-
+    
     const size_t Ln = L(EC.getOrder());
     
     cout << "L_bits(N): " << Ln << endl;
@@ -45,9 +51,14 @@ int main(int argc     __attribute__((unused)),
     const ZZ_p Xa = ZZ_p_str("24a3a993ab59b12ce7379a123487647e5ec9e0ce");
     
     const EC_Point Y = EC.getBasePoint() * Xa;
+    const EC_Point Y_a = toAffine(G_p * Xa);
 
     cout << "Private key: " << I2OSP(Xa) << endl;
-    cout << "Public key: " << Y << endl;
+    cout << "Public key (norm): " << Y << endl;
+    cout << "Public key (proj): " << Y_a << endl;
+
+
+    
     cout << "Generator: " << EC.getBasePoint() << endl;
 
     cout << "Try to precompute" << endl;

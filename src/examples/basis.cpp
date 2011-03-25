@@ -39,7 +39,7 @@ int main(int argc     __attribute__ ((unused)),
     cout << "Original: " << G << endl;
     cout << "k: " << k << endl;
     cout << "O*k: " << G * k << endl;
-    cout << "P*k => O: " << toAffine( G_p * k, EC ) << endl;
+    cout << "P*k => O: " << toAffine( G_p * k) << endl;
 
     cout << "Try to precompute" << endl;
 
@@ -49,7 +49,7 @@ int main(int argc     __attribute__ ((unused)),
         
     G_pp.precompute(Method);
     
-    cout << "PP*k => O:" << toAffine(G_pp * k, EC) << endl;
+    cout << "PP*k => O:" << toAffine(G_pp * k) << endl;
 
     return 0;
 }

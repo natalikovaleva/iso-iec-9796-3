@@ -143,16 +143,14 @@ namespace ECGF2X
 
 
     Affine::EC_Point 
-    toAffine(const Projective::EC_Point & Point,
-             const Affine::EC & EC)
+    toAffine(const Projective::EC_Point & Point)
     {
-
+        const Affine::EC & EC = Point.getEC().getAffineBasePoint().getEC();
         const GF2X & P = EC.getModulus();
         const GF2X iZ = InvMod(Point.getZ(), P);
         return EC.create(MulMod(Point.getX(), iZ, P),
                          MulMod(Point.getY(), SqrMod(iZ, P), P));
     }
-
 }
 
 
@@ -383,8 +381,7 @@ EC_Point EC_Point::operator* (const long Y) const
 
 EC::EC(const Affine::EC & EC)
     : Affine::EC(EC),
-      G(toProjective(EC.getBasePoint(), *this)),
-      G_a(EC.getBasePoint())
+      G(toProjective(EC.getBasePoint(), *this))
 {}
 
 EC::~EC()
