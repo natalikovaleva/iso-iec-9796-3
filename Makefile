@@ -14,14 +14,16 @@ AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
 AFFINE_GF2X := utils.o ec.o ec_defaults.o ec_compress.o
 
 PROJ_GF2X   := ec.o
+PROJ_ZZ_P		:= ec.o
 
 HASHES := rmd160.o sha512.o sha1.o
 GENERIC := octet.o hash.o mgf.o convhex.o
 
 lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 									$(addprefix build/ec/GF2X/affine/,    $(AFFINE_GF2X)) \
-									$(addprefix build/ec/GF2X/projective/,$(PROJ_GF2X))	 \
-									$(addprefix build/hashes/,            $(HASHES))			 \
+									$(addprefix build/ec/GF2X/projective/,$(PROJ_GF2X))	  \
+									$(addprefix build/ec/ZZ_p/projective/,$(PROJ_ZZ_P))	  \
+									$(addprefix build/hashes/,            $(HASHES))		  \
 									$(addprefix build/generic/,			      $(GENERIC))	
 		@mkdir -p $(dir $@)
 		rm -f $@
