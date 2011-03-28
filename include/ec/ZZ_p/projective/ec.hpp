@@ -33,9 +33,9 @@ namespace ECZZ_p
             bool __isZeroPoint;
 
             Algorithm::Precomputations<EC_Point,
-                                       ZZ_p> __precomputations;
+                                       ZZ> __precomputations;
             const Algorithm::RLMul<EC_Point,
-                                   ZZ_p> __generic_multiplication;
+                                   ZZ> __generic_multiplication;
 
         public:
 
@@ -47,7 +47,7 @@ namespace ECZZ_p
             bool _IsOnCurve() const;
 
         public:
-            bool precompute(const Algorithm::Precomputations_Method<EC_Point, ZZ_p> & method)
+            bool precompute(const Algorithm::Precomputations_Method<EC_Point, ZZ> & method)
                 { __precomputations = method(*this); return __precomputations.isReady(); }
 
             inline bool isPrecomputed() const
@@ -59,13 +59,13 @@ namespace ECZZ_p
             EC_Point & operator=  (const EC_Point & Y);
             EC_Point   operator+  (const EC_Point & Y) const;
             EC_Point   operator+  (const Affine::EC_Point & Y) const;
-            EC_Point   operator*  (const ZZ_p & Y) const;
+            EC_Point   operator*  (const ZZ & Y) const;
             EC_Point   operator*  (const long Y) const;
 
             void operator+= (const Affine::EC_Point & Y);
             void operator+= (const EC_Point & Y);
             void operator*= (const long Y);
-            void operator*= (const ZZ_p & Y);
+            void operator*= (const ZZ & Y);
 
             inline bool operator== (const EC_Point &Y_)
                 { return Y_.isZero() ? isZero() : (X == Y_.X) && (Y == Y_.Y); }

@@ -48,7 +48,7 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Current modulus: " << ZZ_p::modulus() << endl;
     
-    const ZZ_p Xa = ZZ_p_str("24a3a993ab59b12ce7379a123487647e5ec9e0ce");
+    const ZZ Xa = ZZ_str("24a3a993ab59b12ce7379a123487647e5ec9e0ce");
     
     const EC_Point Y = EC.getBasePoint() * Xa;
     const EC_Point Y_a = toAffine(G_p * Xa);
@@ -66,14 +66,14 @@ int main(int argc     __attribute__((unused)),
     EC_Point G_pp = EC.getBasePoint();
     
     Algorithm::Precomputations_Method_Comb<EC_Point,
-                                           ZZ_p,
+                                           ZZ,
                                            EC_Point> Method (NumBits(EC.getModulus()));
         
     G_pp.precompute(Method);
     
     cout << "Is EC Correct order: " << EC.isCorrectOrder() << endl;
 
-    const ZZ_p k = ZZ_p_str("08a8bea9f2b40ce7400672261d5c05e5fd8ab326");
+    const ZZ k = ZZ_str("08a8bea9f2b40ce7400672261d5c05e5fd8ab326");
     const EC_Point kG = G_pp * k;
 
     cout << "Session key: " << I2OSP(k) << endl;
@@ -130,7 +130,7 @@ int main(int argc     __attribute__((unused)),
     cout << "π: " << pi << " ( "<< I2OSP(pi) << ")" <<endl;
     
     const ZZ_p r = (d + pi);
-    const ZZ_p s = (k - Xa*r);
+    const ZZ_p s = (InMod(k) - InMod(Xa)*r);
 
     cout << "r: " << r << endl;
     cout << "s: " << s << endl;
