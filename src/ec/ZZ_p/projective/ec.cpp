@@ -50,7 +50,7 @@ namespace ECZZ_p
 
             const ZZ_p E2 = sqr(E);
             const ZZ_p E3 = power(E, 3);
-
+            
             _X.X = - E3 - 2*A*E2 + sqr(F);
             _X.Y = - C*E3 + F*(A*E2 - _X.X);
             _X.Z *= _Y.getZ() * E;
@@ -232,7 +232,7 @@ void EC_Point::operator+= (const Affine::EC_Point & _Y)
 using ECZZ_p::Affine::NumBits;
 using ECZZ_p::Affine::bit;
 
-void EC_Point::operator*= (const ZZ_p & Y)
+void EC_Point::operator*= (const ZZ & Y)
 {
     if (IsZero(Y))
     {
@@ -263,11 +263,11 @@ void EC_Point::operator*= (const long Y)
         return;
     }
     else
-        operator*=(ZZ_p() + Y);
+        operator*=(ZZ() + Y);
 }
 
 
-EC_Point EC_Point::operator* (const ZZ_p & Y) const
+EC_Point EC_Point::operator* (const ZZ & Y) const
 {
     EC_Point __retval(*this);
 

@@ -271,7 +271,11 @@ void EC_Point::operator+= (const EC_Point & _Y)
         return;
     }
     
-    if ((this == &_Y) || (Y== _Y.getY()))
+    if ((this == &_Y) ||
+        ((Y == _Y.getY()) &&
+         (X == _Y.getX()) &&
+         (Z == _Y.getZ())))
+            
     {
         Lopez_Dahab_Double(X, Y, Z,
                            __EC.getA(),

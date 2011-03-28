@@ -31,9 +31,9 @@ namespace ECZZ_p
             bool isZeroPoint;
 
             Algorithm::Precomputations<EC_Point,
-                                       ZZ_p> __precomputations;
+                                       ZZ> __precomputations;
             const Algorithm::RLMul<EC_Point,
-                                   ZZ_p> __generic_multiplication;
+                                   ZZ> __generic_multiplication;
             
         public:
             EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC); // Generic
@@ -44,7 +44,7 @@ namespace ECZZ_p
             bool _IsOnCurve() const;
     
         public:
-            bool precompute(const Algorithm::Precomputations_Method<EC_Point, ZZ_p> & method)
+            bool precompute(const Algorithm::Precomputations_Method<EC_Point, ZZ> & method)
                 { __precomputations = method(*this); return __precomputations.isReady(); }
 
             inline bool isPrecomputed() const
@@ -55,11 +55,11 @@ namespace ECZZ_p
     
             EC_Point & operator=  (const EC_Point & Y);
             EC_Point   operator+  (const EC_Point & Y) const;
-            EC_Point   operator*  (const ZZ_p & Y) const;
+            EC_Point   operator*  (const ZZ   & Y) const;
             EC_Point   operator*  (const long Y) const;
     
             void operator+= (const EC_Point & Y);
-            void operator*= (const ZZ_p & Y);
+            void operator*= (const ZZ & Y);
             void operator*= (const long Y);
 
             inline bool operator== (const EC_Point &Y_)
@@ -91,7 +91,6 @@ namespace ECZZ_p
 
             const ZZ   P;     // Modulus, get from creators context
             const ZZ   N;     // Point Order
-            const ZZ_p N_pp;  // Point Order, moduled
             const ZZ_p Seed;  // Random generated seed
             const ZZ_p A;     // EC Params 
             const ZZ_p B;     // EC Params 
@@ -129,8 +128,8 @@ namespace ECZZ_p
             inline const EC_Point & getBasePoint() const
                 { return G; }
 
-            inline const ZZ_p & getOrder() const
-                { return N_pp; }
+            inline const ZZ & getOrder() const
+                { return N; }
     
         public:
 

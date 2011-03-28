@@ -132,7 +132,7 @@ void EC_Point::operator+= (const EC_Point & _Y)
     return;
 }
 
-void EC_Point::operator*= (const ZZ_p & Y)
+void EC_Point::operator*= (const ZZ & Y)
 {
     if (IsZero(Y))
     {
@@ -154,7 +154,7 @@ void EC_Point::operator*= (const ZZ_p & Y)
     return;
 }
 
-EC_Point EC_Point::operator* (const ZZ_p & Y) const
+EC_Point EC_Point::operator* (const ZZ & Y) const
 {
     EC_Point __retval(*this);
 
@@ -172,7 +172,7 @@ void EC_Point::operator*= (const long Y)
         return;
     }
     else
-        operator*=(ZZ_p() + Y);
+        operator*=(ZZ() + Y);
 }
 
 EC_Point EC_Point::operator* (const long Y) const
@@ -199,7 +199,7 @@ EC::EC(const ZZ & A,
     : __mod(P),
       __order(N),
       __is_global_setted(true),
-      P(setAndUseMod(P)), N(N), N_pp(InMod(N)), 
+      P(setAndUseMod(P)), N(N),
       Seed(InMod(Seed)),
       A(InMod(A)), B(InMod(B)), C(InMod(C)),
       G(EC_Point(InMod(Gx), InMod(Gy), *this))
@@ -218,7 +218,7 @@ EC::EC(const ZZ_p & A,
     : __mod(ZZ_p::modulus()),
       __order(N),
       __is_global_setted(false),
-      P(ZZ_p::modulus()), N(N), N_pp(InMod(N)),
+      P(ZZ_p::modulus()), N(N),
       Seed(Seed), A(A), B(B), C(C),
       G(EC_Point(Gx, Gy, *this))
 {}
@@ -284,5 +284,5 @@ std::ostream& ECZZ_p::Affine::operator<<(std::ostream& s, const EC_Point & _EC_P
 
 bool EC::isCorrectOrder() const
 {
-    return (G * (N_pp + 1)) == G;
+    return (G * (N + 1)) == G;
 }
