@@ -1,7 +1,7 @@
 #include "generic/mgf.hpp"
-#include "ec/ZZ_p/affine/utils.hpp"
+#include "generic/zz_utils.hpp"
 
-using ECZZ_p::Affine::I2OSP;
+using namespace NTL;
 
 MGF::MGF(MGF_Type type, const Hash & Hash)
     : _Hash(Hash), _Type(type)
