@@ -10,9 +10,7 @@ using namespace std;
 using namespace NTL;
 using namespace ECGF2X::Affine;
 
-using ECZZ_p::Affine::ZZ_str;
 using NTL::ZZ;
-
 
 const EC_Defaults::Sizes EC_Defaults::__size_matrix[] =
 {
@@ -38,8 +36,6 @@ EC EC_Defaults::create(Sizes size, Version ver)
         SEED;
     ZZ N;
 
-
-
     switch (size)
     {
         case EC163:
@@ -57,9 +53,25 @@ EC EC_Defaults::create(Sizes size, Version ver)
                     C  = GF2X_str("0x0");
                     SEED=GF2X_str("0x0");
                     break;
+
+                case V2:
+                    SetCoeff(P, 163);
+                    SetCoeff(P, 8);
+                    SetCoeff(P, 2);
+                    SetCoeff(P, 1);
+                    SetCoeff(P, 0);
+
+                    A = GF2X_str("072546b5435234a422e0789675f432c89435de5242");
+                    B = GF2X_str("00c9517d06d5240d3cff38c74b20b6cd4d6f9dd4d9");
+                    GX= GF2X_str("07af69989546103d79329fcc3d74880f33bbe803cb");
+                    GY= GF2X_str("01ec23211b5966adea1d3f87f7ea5848aef0b7ca9f");
+                    N = ZZ_str("0400000000000000000001e60fc8821cc74daeafc1");
+
+                    break;
                 default:
                     throw;
             }
+            break;
 
         case EC571:
             switch (ver)
@@ -78,7 +90,6 @@ EC EC_Defaults::create(Sizes size, Version ver)
                         N_ >> N;
                     }
 
-
                     A  = GF2X_str("1");
                     B  = GF2X_str("2f40e7e2221f295de297117b7f3d62f5c6a97ffcb8ceff1cd6ba8ce4a9a18ad84ffabbd8efa59332be7ad6756a66e294afd185a78ff12aa520e4de739baca0c7ffeff7f2955727a");
 
@@ -91,6 +102,7 @@ EC EC_Defaults::create(Sizes size, Version ver)
                 default:
                     throw;
             }
+            break;
 
         case EC283:
             switch (ver)
@@ -121,6 +133,7 @@ EC EC_Defaults::create(Sizes size, Version ver)
                 default:
                     throw;
             }
+            break;
 
         default:
             throw;
