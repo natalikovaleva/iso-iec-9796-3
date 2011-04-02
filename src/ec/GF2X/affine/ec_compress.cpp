@@ -58,16 +58,16 @@ unsigned char * EC_CPoint::serialize(unsigned char * buffer,
                                      size_t size) const
 {
     const size_t reqSize = serializeSize();
-    
+
     if (size < reqSize)
         /* No sence to use broken points */
         return NULL;
 
     /* 8 | Modulus, no way to inject EC info to zeros */
-    
+
     /* We can use 16 precalculated EC's (4 bit),
      * and reserve 3 bits for some usefull  */
-    
+
     const unsigned char Metadata =
           (tY & 1)
         | ((EC_Defaults::getId(EC_Defaults::EC0) & 0xF) << 1);
@@ -87,13 +87,13 @@ unsigned char * EC_CPoint::serialize(unsigned char * buffer,
 
     /* Add default EC info */
     const unsigned char Metadata = buffer[0];
-    
+
     buffer[0] =
         ( EC_Defaults::getId(EC_Defaults::toSizes(NumBits(EC.getModulus()))) << 1 )
         | ( Metadata & 0x1 );
 
     return buffer;
-    
+
 }
 
 size_t EC_CPoint::serializeSize(const unsigned char * data, size_t size)
@@ -105,6 +105,6 @@ size_t EC_CPoint::serializeSize(const unsigned char * data, size_t size)
 
     if (IncludedSizeID == EC_Defaults::EC0)
         return size-1;
-    
+
     return EC_Defaults::toByteSize(Size);
 }

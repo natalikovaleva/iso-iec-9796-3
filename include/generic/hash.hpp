@@ -4,7 +4,7 @@
 
 #include "octet.hpp"
 
-extern "C" 
+extern "C"
 {
 #include "hashes/rmd160.h"
 #include "hashes/sha512.h"
@@ -25,25 +25,26 @@ public:
     };
 
 private:
-    
+
     void (* __hash_function) (unsigned char *ib,
                               int ile,
                               unsigned char *ob,
                               int ole);
-    
+
     size_t __hash_size;
+    size_t __input_size;
 
     void setupHasher(Hash_Type type);
 
 public:
     Hash_Generic(Hash_Type type);
     ~Hash_Generic();
-    
+
     unsigned char * getHash(const unsigned char * source, size_t source_size,
                    unsigned char * buffer, size_t buffer_size) const;
-    
+
     size_t getHashSize(void) const;
-    
+    size_t getInputSize(void) const;
 };
 
 class Hash : public Hash_Generic
@@ -54,5 +55,5 @@ public:
     ByteSeq operator() (const ByteSeq & source) const;
 };
 
-    
-    
+
+
