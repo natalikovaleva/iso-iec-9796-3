@@ -15,6 +15,7 @@ namespace ECZZ_p
                 EC0   = 0,   /* Broken EC */
                 EC128 = 128,
                 EC160 = 160,
+                EC161 = 161,
                 EC192 = 192,
                 EC256 = 256,
                 EC512 = 512
@@ -27,7 +28,6 @@ namespace ECZZ_p
                 V3
             };
 
-
             static Sizes getSize(unsigned int id);
             static unsigned int getId(Sizes size);
             static inline EC_Defaults::Sizes toSizes(long X)
@@ -36,7 +36,6 @@ namespace ECZZ_p
                 { return (long) (Size+7)/8; }
 
             static void restoreContext(void);
-
 
         private:
             static const Sizes __size_matrix[];
@@ -50,3 +49,4 @@ namespace ECZZ_p
         };
     }
 }
+
