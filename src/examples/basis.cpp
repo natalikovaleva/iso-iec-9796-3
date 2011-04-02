@@ -12,8 +12,6 @@ using namespace ECGF2X;
 using namespace ECGF2X::Affine;
 using namespace std;
 
-using ECZZ_p::Affine::ZZ_str;
-
 int main(int argc     __attribute__ ((unused)),
          char *argv[] __attribute__ ((unused)))
 {
