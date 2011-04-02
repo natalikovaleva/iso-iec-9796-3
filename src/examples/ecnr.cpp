@@ -35,21 +35,21 @@ int main(int argc     __attribute__((unused)),
     Projective::EC_Point G_p(EC_p.getBasePoint());
 
     cout << EC << endl;
-    
+
     EC.enter_mod_context(EC::FIELD_CONTEXT);
-        
+
     cout << "EC:N: " << I2OSP(EC.getOrder()) << endl;
-    
+
     const size_t Ln = L(EC.getOrder());
-    
+
     cout << "L_bits(N): " << Ln << endl;
-    
+
     cout << "L(N): " << L(EC.getOrder()) << endl;
 
     cout << "Current modulus: " << ZZ_p::modulus() << endl;
-    
+
     const ZZ Xa = ZZ_str("24a3a993ab59b12ce7379a123487647e5ec9e0ce");
-    
+
     const EC_Point Y = EC.getBasePoint() * Xa;
     const EC_Point Y_a = toAffine(G_p * Xa);
 
@@ -58,19 +58,19 @@ int main(int argc     __attribute__((unused)),
     cout << "Public key (proj): " << Y_a << endl;
 
 
-    
+
     cout << "Generator: " << EC.getBasePoint() << endl;
 
     cout << "Try to precompute" << endl;
 
     EC_Point G_pp = EC.getBasePoint();
-    
+
     Algorithm::Precomputations_Method_Comb<EC_Point,
                                            ZZ,
                                            EC_Point> Method (NumBits(EC.getModulus()));
-        
+
     G_pp.precompute(Method);
-    
+
     cout << "Is EC Correct order: " << EC.isCorrectOrder() << endl;
 
     const ZZ k = ZZ_str("08a8bea9f2b40ce7400672261d5c05e5fd8ab326");
@@ -88,7 +88,7 @@ int main(int argc     __attribute__((unused)),
     const long L_rec = 10;
     const long L_red = 9;
     const long L_clr = M.length() - L_rec;
-    
+
     cout << "Message: '" << M << "'" << endl;
     cout << "[ L_rec: " << L_rec << "; L_clr: "
          << L_clr << "; L_red: " << L_red << endl;
@@ -114,7 +114,7 @@ int main(int argc     __attribute__((unused)),
     cout << "Hash Input: " << Hash_Input << endl;
 
     ByteSeq Hash_Token = Truncate(Hash(Hash_Input), L_red);
-    
+
     cout << "Hash_Token: " << Hash_Token << endl;
 
     ByteSeq D = Hash_Token || M_rec;
@@ -122,19 +122,19 @@ int main(int argc     __attribute__((unused)),
     cout << "D: " << D << endl;
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
-    
+
     const ZZ_p d = InMod(OS2IP(D));
     const ZZ_p pi = InMod(OS2IP(Pi));
 
     cout << "d: " << d << endl;
     cout << "π: " << pi << " ( "<< I2OSP(pi) << ")" <<endl;
-    
+
     const ZZ_p r = (d + pi);
     const ZZ_p s = (InMod(k) - InMod(Xa)*r);
 
     cout << "r: " << r << endl;
     cout << "s: " << s << endl;
-    
+
     const ByteSeq R = I2OSP(r,Ln);
     const ByteSeq S = I2OSP(s,Ln);
 
@@ -144,6 +144,6 @@ int main(int argc     __attribute__((unused)),
     cout << "Current modulus: " << ZZ_p::modulus() << endl;
 
     EC.leave_mod_context();
-    
+
     return 0;
 }
