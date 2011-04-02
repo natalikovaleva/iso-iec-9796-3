@@ -3,4 +3,11 @@ ntl-5.5.2/.*
 .*\.gcda
 .o
 .a
-sign
+ecmr
+ecnr
+ecao
+ecpv
+ecknr
+signgf
+signgfbench
+signkfix

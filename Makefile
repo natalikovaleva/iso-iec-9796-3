@@ -4,7 +4,9 @@ INCLUDE += -Intl-5.5.2/include
 
 INCLUDE += -Iinclude/
 
-all: sign signgf signkfix compressgf2x basis signmeasure signecnrgfbench signgfbench
+EXAMPLES := signkfix compressgf2x basis signmeasure signecnrgfbench signgfbench ecnr ecmr ecao ecpv ecknr
+
+all: $(EXAMPLES)
 
 CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg
 # CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg 
@@ -17,7 +19,7 @@ PROJ_GF2X   := ec.o
 PROJ_ZZ_P		:= ec.o
 
 HASHES := rmd160.o sha512.o sha1.o
-GENERIC := octet.o hash.o mgf.o convhex.o
+GENERIC := octet.o hash.o mgf.o convhex.o zz_utils.o gf2x_utils.o
 
 lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 									$(addprefix build/ec/GF2X/affine/,    $(AFFINE_GF2X)) \
@@ -37,7 +39,22 @@ build/%.o : src/%.c
 		@mkdir -p $(dir $@)
 		gcc --std=gnu99 $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
 
-sign:	build/examples/sign.o  lib/lib9796-3.a
+ecknr:	build/examples/ecknr.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+ecao:	build/examples/ecao.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+ecpv:	build/examples/ecpv.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+ecnr:	build/examples/ecnr.o  lib/lib9796-3.a
 		@mkdir -p $(dir $@)
 		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete
@@ -47,7 +64,7 @@ signkfix:	build/examples/signkfix.o  lib/lib9796-3.a
 		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete
 
-signgf:	build/examples/signgf.o  lib/lib9796-3.a
+ecmr:	build/examples/ecmr.o  lib/lib9796-3.a
 		@mkdir -p $(dir $@)
 		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete
@@ -83,4 +100,4 @@ clean:
 		[ -d build ] && find build -name "*.o" -delete || true
 		rm -rf build
 		rm -rf lib
-		rm -rf sign
+		rm -rf $(EXAMPLES)
