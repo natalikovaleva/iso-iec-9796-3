@@ -8,7 +8,7 @@ namespace ECGF2X
     {
         class EC_Defaults
         {
-   
+
         public:
             enum Sizes
             {
@@ -21,6 +21,13 @@ namespace ECGF2X
                 EC571 = 571
             };
 
+            enum Version
+            {
+                V1 = 0,
+                V2,
+                V3
+            };
+
             static Sizes getSize(unsigned int id);
             static unsigned int getId(Sizes size);
             static inline EC_Defaults::Sizes toSizes(long X)
@@ -29,15 +36,14 @@ namespace ECGF2X
                 { return (long) (Size+7)/8; }
 
             static void restoreContext(void);
-    
-    
+
         private:
             static const Sizes __size_matrix[];
-    
+
         public:
 
-            static EC create(Sizes size);
-    
+            static EC create(Sizes size, Version ver = V1);
+
             EC_Defaults();
             ~EC_Defaults();
         };
