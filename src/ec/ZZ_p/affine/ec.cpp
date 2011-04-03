@@ -43,10 +43,10 @@ bool EC_Point::_IsOnCurve() const
 {
     if (isZeroPoint)
         return true;
-    
+
     ZZ_p Y2, X3;
     bool __result = false;
-    
+
     sqr(Y2, Y);
     power(X3, X, 3);
 
@@ -79,7 +79,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         this->isZeroPoint = false;
         this->__precomputations = Y.__precomputations;
     }
-    
+
     return *this;
 }
 
@@ -88,7 +88,7 @@ EC_Point EC_Point::operator+  (const EC_Point & _Y) const
     EC_Point __retval(*this);
 
     __retval+= _Y;
-    
+
     return __retval;
 }
 
@@ -103,15 +103,15 @@ void EC_Point::operator+= (const EC_Point & _Y)
     {
         return;
     }
-    
+
     if (isZero())
     {
         *this = _Y;
         return;
     }
-    
+
     ZZ_p L;
-    
+
     if ((this == &_Y) ||
         (X==YX) || (Y==YY))
     {
@@ -121,14 +121,14 @@ void EC_Point::operator+= (const EC_Point & _Y)
     {
         L = (Y - YY) / (X - YX);
     }
-    
+
     ZZ_p X3 = sqr(L) - X - YX;
 
     Y = L*(X-X3) - Y;
     X = X3;
 
     __precomputations.drop();
-    
+
     return;
 }
 
@@ -245,7 +245,7 @@ EC_Point EC::create(const ZZ & x,
 
     conv(x_ZZp, x);
     conv(y_ZZp, y);
-    
+
     return EC_Point(x_ZZp, y_ZZp, *this);
 }
 
@@ -257,7 +257,7 @@ bool EC::generate_random(ZZ_p & d) const
     if ((N - 2) < rep(d))
         return true;
     return false;
-    
+
 }
 
 ZZ_p EC::generate_random() const
