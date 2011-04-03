@@ -4,7 +4,7 @@ INCLUDE += -Intl-5.5.2/include
 
 INCLUDE += -Iinclude/
 
-EXAMPLES := signkfix compressgf2x basis signmeasure signecnrgfbench signgfbench ecnr ecmr ecao ecpv ecknr
+EXAMPLES := compressgf2x basis signmeasure signecnrgfbench signgfbench ecnr ecmr ecao ecpv ecknr
 
 all: $(EXAMPLES)
 
