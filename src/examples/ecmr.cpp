@@ -59,7 +59,7 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Π : " << Pi << endl;
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(10, 11, Hash::SHA1));
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(10, 11, Hash::SHA1));
     const DataInput * ECMR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECMR);
 
     const string Message("TestVector");

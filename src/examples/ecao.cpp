@@ -59,7 +59,7 @@ int main(int argc     __attribute__((unused)),
 
     const size_t Lf = L(ZZ_p::modulus());
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(9, 12, Hash::SHA256, -1, Lf));
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(9, 12, Hash::SHA256, -1, Lf));
     const DataInput * ECAO_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECAO);
 
     string M("plaintext");

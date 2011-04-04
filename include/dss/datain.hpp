@@ -26,13 +26,13 @@ public:
                                       const ByteSeq & Randomizer) const = 0;
 };
 
-class DataInputPolitic
+class DataInputPolicy
 {
     const long _L_rec, _L_red, _L_max, _L_clr;
     Hash::Hash_Type _Hash_type;
 
 protected:
-    DataInputPolitic(long L_rec, long L_red,
+    DataInputPolicy(long L_rec, long L_red,
                      Hash::Hash_Type Hash_type,
                      long L_clr,
                      long L_max)
@@ -44,7 +44,7 @@ protected:
         {}
 
 public:
-    virtual ~DataInputPolitic() {}
+    virtual ~DataInputPolicy() {}
 
     inline virtual long getRecoverableSize() const     { return _L_rec; }
     inline virtual long getCleartextSize() const       { return _L_clr; }
@@ -53,21 +53,21 @@ public:
     inline virtual Hash::Hash_Type getHashType() const { return _Hash_type; }
 };
 
-class StaticDataInputPolitic : public DataInputPolitic
+class StaticDataInputPolicy : public DataInputPolicy
 {
 public:
-    StaticDataInputPolitic(long L_rec, long L_red,
+    StaticDataInputPolicy(long L_rec, long L_red,
                            Hash::Hash_Type Hash_type,
                            long L_clr = -1,
                            long L_max = -1)
-        : DataInputPolitic(L_rec, L_red, Hash_type, L_clr, L_max)
+        : DataInputPolicy(L_rec, L_red, Hash_type, L_clr, L_max)
         {}
 };
 
 
 class DataInputProvider
 {
-    const DataInputPolitic & _dip;
+    const DataInputPolicy & _dip;
 
 public:
     enum DataInputType
@@ -81,7 +81,7 @@ public:
     };
 
 public:
-    DataInputProvider(const DataInputPolitic & dip)
+    DataInputProvider(const DataInputPolicy & dip)
         : _dip (dip)
         {}
 
