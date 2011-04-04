@@ -70,7 +70,7 @@ int main(int argc     __attribute__((unused)),
 
     cout << "R: " << r << endl;
 
-    EC.enter_mod_context();
+    EC.enter_mod_context(EC::ORDER_CONTEXT);
 
     const ZZ_p s = InMod(OS2IP(r) * k - OS2IP(r) - 1) / InMod(Xa + 1);
 
