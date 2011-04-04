@@ -108,10 +108,10 @@ namespace ECGF2X
         public:
             enum MOD_CONTEXT
             {
+                FIELD_CONTEXT,
                 ORDER_CONTEXT
             };
-    
-    
+
             /* Getters */
         public:
             inline const GF2XModulus & getModulus() const 
@@ -158,9 +158,9 @@ namespace ECGF2X
             bool generate_random(ZZ & d) const;
             GF2X generate_random(void) const;
 
-            inline void enter_mod_context()
+            inline void enter_mod_context(enum MOD_CONTEXT context)
                 { if (! __is_global_setted) { __global.save(); __is_global_setted = true; }
-                    __order.restore(); }
+                    if (context == ORDER_CONTEXT) __order.restore(); }
     
             inline void leave_mod_context() const
                 {  if (__is_global_setted) __global.restore(); }

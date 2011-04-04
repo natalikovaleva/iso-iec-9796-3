@@ -72,7 +72,7 @@ int main(int argc     __attribute__((unused)),
         const Octet h = Truncate(Hash(Pi || M), L_red);
         const Octet d = h || M_rec;
         const Octet r = r_ = d ^ Pi;
-        EC.enter_mod_context();
+        EC.enter_mod_context(EC::ORDER_CONTEXT);
 
         const ZZ_p s = InMod(OS2IP(r) * k - OS2IP(r) - 1) / InMod(Xa + 1);
 

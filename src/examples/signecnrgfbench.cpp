@@ -63,7 +63,7 @@ int main(int argc     __attribute__((unused)),
         ByteSeq Hash_Token = Truncate(Hash(Hash_Input), L_red);
         ByteSeq D = Hash_Token || M_rec;
     
-        EC.enter_mod_context();
+        EC.enter_mod_context(EC::ORDER_CONTEXT);
     
         const ZZ d  = OS2IP(D);
         const ZZ pi = OS2IP(Pi);
