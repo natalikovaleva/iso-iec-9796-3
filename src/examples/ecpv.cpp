@@ -8,6 +8,8 @@
 #include "generic/kdf.hpp"
 #include "generic/sym.hpp"
 
+#include "dss/datain.hpp"
+
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
 #include "ec/ZZ_p/affine/ec_defaults.hpp"
@@ -80,40 +82,27 @@ int main(int argc     __attribute__((unused)),
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(13, 5, Hash::SHA1));
+    const DataInput * ECPV_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECPV);
+
+    /* ----------------------------------------------------- */
+
     string M("Test User 1");
 
-    const Octet DERPrintableString = I2OSP(0x13);
-    const Octet DERSize = I2OSP(M.length());
+    unsigned char M_clr_data[] = {0xfa, 0x2b, 0x0c, 0xbe, 0x77, 0x0};
 
-    const Octet M_rec =
-        DERPrintableString ||
-        DERSize ||
-        ByteSeq((const unsigned char *)
-                M.c_str(),
-                M.length());
+    const Octet  M_clr_octet = Octet((unsigned char *) M_clr_data,
+                                     (size_t) sizeof(M_clr_data));
 
-    const size_t L_red = 5;
+    const Octet Message = Octet((unsigned char *) M.c_str(),
+                                M.length()) || M_clr_octet;
 
-    unsigned char M_clr_data[] = {0xfa, 0x2b, 0x0c, 0xbe, 0x77};
+    /* ---------------------------------------------- */
 
-    const Octet  M_clr = Octet((unsigned char *) M_clr_data,
-                               (size_t) sizeof(M_clr_data));
+    DataInput::DSSDataInput SignData = ECPV_Data->createInput((const char *) Message.getData(), P);
 
-    cout << "M_rec: "  << M_rec << endl;
-    cout << "M_clr: "  << M_clr << endl;
-
-    const Octet C_red_ = I2OSP(L_red);
-    Octet C_red;
-
-    for (unsigned int i = 0; i<L_red; i++)
-        C_red = C_red || C_red_ ;
-
-    const Octet d = C_red || M_rec;
-
-    cout << "d: " << d << endl;
-
-    const Octet r = d ^ P;
-    const Octet u = Hash(r || M_clr);
+    const Octet r = SignData.d ^ P;
+    const Octet u = Hash(r || SignData.M_clr);
     const ZZ_p  t = InMod(OS2IP(u));
     const ZZ_p  s = (InMod(k) - InMod(Xa)*t);
 
@@ -124,6 +113,8 @@ int main(int argc     __attribute__((unused)),
 
     cout << "R: " << r << endl;
     cout << "S: " << s << endl;
+
+    delete ECPV_Data;
 
     return 0;
 }

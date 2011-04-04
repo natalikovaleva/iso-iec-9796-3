@@ -5,6 +5,8 @@
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
 
+#include "dss/datain.hpp"
+
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
 #include "ec/ZZ_p/affine/ec_defaults.hpp"
@@ -20,10 +22,6 @@ using namespace ECZZ_p::Affine;
 #include "algorithm/comb.hpp"
 
 #include <stdio.h>
-
-static const ByteSeq C = I2OSP(1, 4);
-static const Hash Hash(Hash::RIPEMD160);
-
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -83,47 +81,16 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Π : " << Pi << endl;
 
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(10, 9, Hash::RIPEMD160));
+    const DataInput * ECNR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECNR);
+
     string M("This is a test message!");
 
-    const long L_rec = 10;
-    const long L_red = 9;
-    const long L_clr = M.length() - L_rec;
-
-    cout << "Message: '" << M << "'" << endl;
-    cout << "[ L_rec: " << L_rec << "; L_clr: "
-         << L_clr << "; L_red: " << L_red << endl;
-
-    const Octet   C_rec = I2OSP(L_rec, 4);
-    const Octet   C_clr = I2OSP(L_clr, 4);
-
-    cout << "C_rec: "  << C_rec << endl;
-    cout << "C_clr: "  << C_clr << endl;
-
-    const ByteSeq M_rec = ByteSeq((const unsigned char *)
-                                  M.substr(0, L_rec).c_str(),
-                                  L_rec);
-    const ByteSeq M_clr = ByteSeq((const unsigned char *)
-                                  M.substr(L_rec, L_clr).c_str(),
-                                  L_clr);
-
-    cout << "M_rec: "  << M_rec << endl;
-    cout << "M_clr: "  << M_clr << endl;
-
-    Octet Hash_Input = C_rec || C_clr || M_rec || M_clr || Pi || C;
-
-    cout << "Hash Input: " << Hash_Input << endl;
-
-    ByteSeq Hash_Token = Truncate(Hash(Hash_Input), L_red);
-
-    cout << "Hash_Token: " << Hash_Token << endl;
-
-    ByteSeq D = Hash_Token || M_rec;
-
-    cout << "D: " << D << endl;
+    DataInput::DSSDataInput SignData = ECNR_Data->createInput(M, Pi);
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
-    const ZZ_p d = InMod(OS2IP(D));
+    const ZZ_p d = InMod(OS2IP(SignData.d));
     const ZZ_p pi = InMod(OS2IP(Pi));
 
     cout << "d: " << d << endl;
@@ -144,6 +111,8 @@ int main(int argc     __attribute__((unused)),
     cout << "Current modulus: " << ZZ_p::modulus() << endl;
 
     EC.leave_mod_context();
+
+    delete ECNR_Data;
 
     return 0;
 }

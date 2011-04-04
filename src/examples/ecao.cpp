@@ -6,6 +6,8 @@
 #include "generic/hash.hpp"
 #include "generic/mgf.hpp"
 
+#include "dss/datain.hpp"
+
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
 #include "ec/ZZ_p/affine/ec_defaults.hpp"
@@ -22,7 +24,6 @@ using namespace ECZZ_p::Affine;
 
 #include <stdio.h>
 
-static const Hash Hash(Hash::SHA256);
 static const MGF  MGF1(MGF::MGF1, Hash::SHA256);
 
 int main(int argc     __attribute__((unused)),
@@ -58,37 +59,17 @@ int main(int argc     __attribute__((unused)),
 
     const size_t Lf = L(ZZ_p::modulus());
 
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(9, 12, Hash::SHA256, -1, Lf));
+    const DataInput * ECAO_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECAO);
+
     string M("plaintext");
 
-    const size_t L_red = 12;
-    const size_t L_max = Lf - L_red;
-    const size_t L_rec = M.length();
-    const size_t L_clr = M.length() - L_rec;
-
-    const ByteSeq M_rec = ByteSeq((const unsigned char *)
-                                  M.substr(0, L_rec).c_str(),
-                                  L_rec);
-    const ByteSeq M_clr = ByteSeq((const unsigned char *)
-                                  M.substr(L_rec, L_clr).c_str(),
-                                  L_clr);
-
-    cout << "M_rec: "  << M_rec << endl;
-    cout << "M_clr: "  << M_clr << endl;
-
-    const Octet pad = I2OSP(1, L_max + 1 - L_rec);
-    const Octet M_pad = pad || M_rec;
-
-    cout << "M_pad: " << M_pad << endl;
-
-    const Octet h = Truncate(Hash(M_pad), L_red);
-    const Octet d = h || (Truncate(Hash(h), Lf + 1 - L_red) ^ M_pad);
-
-    cout << "d: " << d << endl;
+    DataInput::DSSDataInput SignData = ECAO_Data->createInput(M, P);
 
     const size_t K = Ln; // Security parameter
 
-    const Octet r = d ^ P;
-    const Octet u = MGF1(r || L_clr, Ln + K);
+    const Octet r = SignData.d ^ P;
+    const Octet u = MGF1(r || SignData.M_clr.getDataSize(), Ln + K);
     const ZZ_p  t = InMod(OS2IP(u));
     const ZZ_p  s = (InMod(k) - InMod(Xa)*t);
 
@@ -99,6 +80,8 @@ int main(int argc     __attribute__((unused)),
 
     cout << "R: " << r << endl;
     cout << "S: " << S << endl;
+
+    delete ECAO_Data;
 
     return 0;
 }

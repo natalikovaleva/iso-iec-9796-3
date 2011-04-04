@@ -5,6 +5,9 @@
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
 #include "generic/mgf.hpp"
+
+#include "dss/datain.hpp"
+
 #include "ec/GF2X/affine/ec.hpp"
 #include "ec/GF2X/affine/ec_defaults.hpp"
 #include "ec/GF2X/affine/utils.hpp"
@@ -56,27 +59,14 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Π : " << Pi << endl;
 
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(10, 11, Hash::SHA1));
+    const DataInput * ECMR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECMR);
+
     const string Message("TestVector");
 
-    const long L_rec = Message.length();
-    const long L_red = Ln - L_rec;
-    const long L_clr = 0;
+    DataInput::DSSDataInput SignData = ECMR_Data->createInput(Message, Pi);
 
-    cout << "Parameters: L_rec=" << L_rec << "; L_red=" << L_red
-         << "; L_clr=" << L_clr << endl;
-
-    const ByteSeq M(Message.c_str(), Message.length());
-    const ByteSeq & M_rec = M;
-
-    const Octet h = Truncate(Hash(Pi || M), L_red);
-
-    cout << "Hash token: " << h << endl;
-
-    const Octet d = h || M_rec;
-
-    cout << "Data input: " << d << endl;
-
-    const Octet r = d ^ Pi;
+    const Octet r = SignData.d ^ Pi;
 
     cout << "R: " << r << endl;
 
@@ -89,6 +79,8 @@ int main(int argc     __attribute__((unused)),
     const Octet S = I2OSP(s, Ln);
 
     cout << "S: " << S << endl;
+
+    delete ECMR_Data;
 
     return 0;
 }
