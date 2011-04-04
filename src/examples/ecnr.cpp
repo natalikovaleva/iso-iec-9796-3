@@ -81,7 +81,7 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Π : " << Pi << endl;
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(10, 9, Hash::RIPEMD160));
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(10, 9, Hash::RIPEMD160));
     const DataInput * ECNR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECNR);
 
     string M("This is a test message!");

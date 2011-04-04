@@ -67,7 +67,7 @@ int main(int argc     __attribute__((unused)),
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(10, 10, Hash::RIPEMD160));
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(10, 10, Hash::RIPEMD160));
     const DataInput * ECKNR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECKNR);
 
     string M("This is a test message!");

@@ -82,7 +82,7 @@ int main(int argc     __attribute__((unused)),
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolitic(13, 5, Hash::SHA1));
+    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(13, 5, Hash::SHA1));
     const DataInput * ECPV_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECPV);
 
     /* ----------------------------------------------------- */
