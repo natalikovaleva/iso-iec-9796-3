@@ -5,7 +5,7 @@
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
 
-#include "dss/datain.hpp"
+#include "dss/datain_isoiec9796-3.hpp"
 
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
@@ -22,6 +22,8 @@ using namespace ECZZ_p::Affine;
 #include "algorithm/comb.hpp"
 
 #include <stdio.h>
+
+static const StaticDataInputPolicy InputPolicy(10, 9, Hash::RIPEMD160);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -81,12 +83,11 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Π : " << Pi << endl;
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(10, 9, Hash::RIPEMD160));
-    const DataInput * ECNR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECNR);
+    const TDataInput<ECNR_Input> ECNR_Data(InputPolicy);
 
     string M("This is a test message!");
 
-    DataInput::DSSDataInput SignData = ECNR_Data->createInput(M, Pi);
+    DSSDataInput SignData = ECNR_Data.createInput(M, Pi);
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
@@ -111,8 +112,6 @@ int main(int argc     __attribute__((unused)),
     cout << "Current modulus: " << ZZ_p::modulus() << endl;
 
     EC.leave_mod_context();
-
-    delete ECNR_Data;
 
     return 0;
 }

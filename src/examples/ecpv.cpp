@@ -8,7 +8,7 @@
 #include "generic/kdf.hpp"
 #include "generic/sym.hpp"
 
-#include "dss/datain.hpp"
+#include "dss/datain_isoiec9796-3.hpp"
 
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
@@ -47,6 +47,7 @@ static const SymXor  Sym(18);
 static const ECPVKDF KDF(18);
 static const Hash    Hash(Hash::SHA1);
 static const MGF     MGF1(MGF::MGF1, Hash::SHA1);
+static const StaticDataInputPolicy InputPolicy(13, 5, Hash::SHA1);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -82,14 +83,13 @@ int main(int argc     __attribute__((unused)),
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(13, 5, Hash::SHA1));
-    const DataInput * ECPV_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECPV);
+    const TDataInput<ECPV_Input> ECPV_Data(InputPolicy);
 
     /* ----------------------------------------------------- */
 
     string M("Test User 1");
 
-    unsigned char M_clr_data[] = {0xfa, 0x2b, 0x0c, 0xbe, 0x77, 0x0};
+    unsigned char M_clr_data[] = {0xfa, 0x2b, 0x0c, 0xbe, 0x77};
 
     const Octet  M_clr_octet = Octet((unsigned char *) M_clr_data,
                                      (size_t) sizeof(M_clr_data));
@@ -99,7 +99,7 @@ int main(int argc     __attribute__((unused)),
 
     /* ---------------------------------------------- */
 
-    DataInput::DSSDataInput SignData = ECPV_Data->createInput((const char *) Message.getData(), P);
+    DSSDataInput SignData = ECPV_Data.createInput(Message, P);
 
     const Octet r = SignData.d ^ P;
     const Octet u = Hash(r || SignData.M_clr);
@@ -113,8 +113,6 @@ int main(int argc     __attribute__((unused)),
 
     cout << "R: " << r << endl;
     cout << "S: " << s << endl;
-
-    delete ECPV_Data;
 
     return 0;
 }

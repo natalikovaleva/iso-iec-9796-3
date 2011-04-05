@@ -6,7 +6,7 @@
 #include "generic/hash.hpp"
 #include "generic/mgf.hpp"
 
-#include "dss/datain.hpp"
+#include "dss/datain_isoiec9796-3.hpp"
 
 #include "ec/GF2X/affine/ec.hpp"
 #include "ec/GF2X/affine/ec_defaults.hpp"
@@ -20,6 +20,7 @@ using namespace std;
 using namespace ECGF2X::Affine;
 
 static const Hash Hash(Hash::SHA1);
+static const StaticDataInputPolicy InputPolicy(10, 11, Hash::SHA1);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -59,12 +60,11 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Π : " << Pi << endl;
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(10, 11, Hash::SHA1));
-    const DataInput * ECMR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECMR);
+    const TDataInput<ECMR_Input> ECMR_Data(InputPolicy);
 
     const string Message("TestVector");
 
-    DataInput::DSSDataInput SignData = ECMR_Data->createInput(Message, Pi);
+    DSSDataInput SignData = ECMR_Data.createInput(Message, Pi);
 
     const Octet r = SignData.d ^ Pi;
 
@@ -79,8 +79,6 @@ int main(int argc     __attribute__((unused)),
     const Octet S = I2OSP(s, Ln);
 
     cout << "S: " << S << endl;
-
-    delete ECMR_Data;
 
     return 0;
 }
