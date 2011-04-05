@@ -4,20 +4,82 @@
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
 
+struct DataInputHints
+{
+    const long L_rec;
+    const long L_red;
+    const long L_max;
+    const long L_clr;
+    const Hash::Hash_Type H;
+
+    inline DataInputHints(const long L_rec,
+                          const long L_red,
+                          const long L_max,
+                          const long L_clr,
+                          const Hash::Hash_Type H)
+        : L_rec(L_rec),
+          L_red(L_red),
+          L_max(L_max),
+          L_clr(L_clr),
+          H(H)
+        {}
+};
+
+struct DSSDataInput
+{
+    const Octet d;
+    const Octet M_clr;
+
+    inline DSSDataInput(const Octet & d,
+                        const Octet & M_clr)
+        : d(d),
+          M_clr(M_clr)
+        {}
+};
+
+class DataInputPolicy
+{
+protected:
+    DataInputPolicy() {}
+
+public:
+    virtual ~DataInputPolicy() {}
+    virtual DataInputHints getHints(long L_msg) const = 0;
+    inline DataInputHints operator() (long L_msg) const
+        { return getHints(L_msg); };
+
+};
+
+class StaticDataInputPolicy : public DataInputPolicy
+{
+    const DataInputHints _staticHints;
+
+public:
+    StaticDataInputPolicy(long L_rec, long L_red,
+                           Hash::Hash_Type Hash_type,
+                           long L_clr = -1,
+                           long L_max = -1)
+        : _staticHints(DataInputHints(L_rec, L_red, L_max, L_clr, Hash_type))
+        {}
+    inline DataInputHints getHints(long L_msg
+                                   __attribute__((unused))) const
+        { return _staticHints; }
+};
+
 class DataInput
 {
 protected:
-    inline DataInput() {}
+    const DataInputPolicy & _Policy;
 
 public:
-    struct DSSDataInput
-    {
-        Octet d;
-        Octet M_clr;
-    };
+    inline DataInput(const DataInputPolicy & Policy)
+        : _Policy(Policy)
+        {}
 
-public:
     virtual inline ~DataInput() {}
+
+    virtual DSSDataInput createInput (const ByteSeq & Message,
+                                      const ByteSeq & Randomizer) const = 0;
 
     virtual DSSDataInput createInput (const std::string & Message,
                                       const ByteSeq & Randomizer) const = 0;
@@ -26,67 +88,30 @@ public:
                                       const ByteSeq & Randomizer) const = 0;
 };
 
-class DataInputPolicy
+template <class Logic>
+class TDataInput : public DataInput
 {
-    const long _L_rec, _L_red, _L_max, _L_clr;
-    Hash::Hash_Type _Hash_type;
+    const Logic logic;
 
-protected:
-    DataInputPolicy(long L_rec, long L_red,
-                     Hash::Hash_Type Hash_type,
-                     long L_clr,
-                     long L_max)
-        : _L_rec(L_rec),
-          _L_red(L_red),
-          _L_max(L_max),
-          _L_clr(L_clr),
-          _Hash_type(Hash_type)
+public:
+    TDataInput(const DataInputPolicy & Policy)
+        : DataInput(Policy),
+          logic(DataInput::_Policy)
         {}
 
-public:
-    virtual ~DataInputPolicy() {}
-
-    inline virtual long getRecoverableSize() const     { return _L_rec; }
-    inline virtual long getCleartextSize() const       { return _L_clr; }
-    inline virtual long getRedundancySize() const      { return _L_red; }
-    inline virtual long getMaximalRedundancySize()const{ return _L_max; }
-    inline virtual Hash::Hash_Type getHashType() const { return _Hash_type; }
-};
-
-class StaticDataInputPolicy : public DataInputPolicy
-{
-public:
-    StaticDataInputPolicy(long L_rec, long L_red,
-                           Hash::Hash_Type Hash_type,
-                           long L_clr = -1,
-                           long L_max = -1)
-        : DataInputPolicy(L_rec, L_red, Hash_type, L_clr, L_max)
-        {}
-};
+    inline DSSDataInput createInput (const std::string & Message,
+                                      const ByteSeq & Randomizer) const
+        { return createInput(ByteSeq(Message.c_str(), Message.length()),
+                             Randomizer); }
 
 
-class DataInputProvider
-{
-    const DataInputPolicy & _dip;
+    inline DSSDataInput createInput (const char * Message,
+                                      const ByteSeq & Randomizer) const
+        { return createInput(ByteSeq(Message, strlen(Message)),
+                             Randomizer); }
 
-public:
-    enum DataInputType
-    {
-        DATA_ECKNR = 0,
-        DATA_ECNR,
-        DATA_ECMR,
-        DATA_ECAO,
-        DATA_ECPV,
-        DATA_USER
-    };
 
-public:
-    DataInputProvider(const DataInputPolicy & dip)
-        : _dip (dip)
-        {}
-
-    ~DataInputProvider() {};
-
-public:
-    DataInput * newDataInput(DataInputType type) const;
+    inline DSSDataInput createInput (const ByteSeq & Message,
+                                     const ByteSeq & Randomizer) const
+        { return logic(Message, Randomizer); }
 };

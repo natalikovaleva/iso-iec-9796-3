@@ -6,7 +6,7 @@
 #include "generic/hash.hpp"
 #include "generic/mgf.hpp"
 
-#include "dss/datain.hpp"
+#include "dss/datain_isoiec9796-3.hpp"
 
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
@@ -59,12 +59,12 @@ int main(int argc     __attribute__((unused)),
 
     const size_t Lf = L(ZZ_p::modulus());
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(9, 12, Hash::SHA256, -1, Lf));
-    const DataInput * ECAO_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECAO);
+    const StaticDataInputPolicy InputPolicy(9, 12, Hash::SHA256, -1, Lf);
+    const TDataInput<ECAO_Input> ECAO_Data(InputPolicy);
 
     string M("plaintext");
 
-    DataInput::DSSDataInput SignData = ECAO_Data->createInput(M, P);
+    DSSDataInput SignData = ECAO_Data.createInput(M, P);
 
     const size_t K = Ln; // Security parameter
 
@@ -80,8 +80,6 @@ int main(int argc     __attribute__((unused)),
 
     cout << "R: " << r << endl;
     cout << "S: " << S << endl;
-
-    delete ECAO_Data;
 
     return 0;
 }

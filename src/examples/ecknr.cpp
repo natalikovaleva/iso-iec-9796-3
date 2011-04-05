@@ -6,7 +6,7 @@
 #include "generic/hash.hpp"
 #include "generic/mgf.hpp"
 
-#include "dss/datain.hpp"
+#include "dss/datain_isoiec9796-3.hpp"
 
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
@@ -26,6 +26,8 @@ using namespace ECZZ_p::Affine;
 
 static const Hash    Hash(Hash::RIPEMD160);
 static const MGF     MGF(MGF::MGF2, Hash::RIPEMD160);
+
+static const StaticDataInputPolicy InputPolicy(10, 10, Hash::RIPEMD160);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -67,12 +69,11 @@ int main(int argc     __attribute__((unused)),
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
-    const DataInputProvider ExampleStaticProvider(StaticDataInputPolicy(10, 10, Hash::RIPEMD160));
-    const DataInput * ECKNR_Data = ExampleStaticProvider.newDataInput(DataInputProvider::DATA_ECKNR);
+    const TDataInput<STD4_Input> ECKNR_Data(InputPolicy);
 
     string M("This is a test message!");
 
-    DataInput::DSSDataInput SignData = ECKNR_Data->createInput(M, P);
+    DSSDataInput SignData = ECKNR_Data.createInput(M, P);
 
     const Octet m = MGF(Za || SignData.M_clr, Ln);
 
@@ -88,8 +89,6 @@ int main(int argc     __attribute__((unused)),
 
     cout << "R: " << r << endl;
     cout << "S: " << S << endl;
-
-    delete ECKNR_Data;
 
     return 0;
 }
