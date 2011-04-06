@@ -68,6 +68,13 @@ public:
             return *this;
         }
 
+    inline
+    bool operator== (const ByteSeq & y) const
+        {
+            if (__data_size != y.__data_size)
+                return false;
+            return (memcmp(__data, y.__data, __data_size) == 0);
+        }
 
     friend std::ostream& operator<<(std::ostream& s, const ByteSeq & octet);
     friend inline ByteSeq Truncate(const ByteSeq & input,

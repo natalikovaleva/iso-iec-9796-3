@@ -46,7 +46,7 @@ int main(int argc     __attribute__((unused)),
         ZZ k;  EC.generate_random(k);
     
         const EC_Point kG = EC.getBasePoint() * k;
-        const ByteSeq Pi = EC2OSP(kG,EC2OSP_COMPRESSED);
+        const ByteSeq Pi = EC2OSP(kG,EC::EC2OSP_COMPRESSED);
         string M("This is a test message!");
         const long L_rec = 10;
         const long L_red = 9;

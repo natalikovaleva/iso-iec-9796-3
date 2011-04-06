@@ -46,7 +46,7 @@ int main(int argc     __attribute__((unused)),
     const ZZ k  = ZZ_str("887ac5728a8390818b535fcbf04e827b0f8b543c");
 
     const ZZ e = InvMod(Xa, EC.getOrder());
-
+    
     const EC_Point Y  = EC.getBasePoint() * e;
     const EC_Point PP = Y * k;
 
@@ -63,7 +63,7 @@ int main(int argc     __attribute__((unused)),
     cout << "Cert Data:   " << CertData << endl;
     cout << "Za:          " << Za << endl;
 
-    const Octet P  = MGF(EC2OSP(PP, EC2OSP_COMPRESSED), Ln);
+    const Octet P  = MGF(EC2OSP(PP, EC::EC2OSP_COMPRESSED), Ln);
 
     cout << "Π : " << P << endl;
 

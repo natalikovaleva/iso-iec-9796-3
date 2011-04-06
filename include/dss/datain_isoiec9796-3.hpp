@@ -18,7 +18,8 @@ public:
         {}
 
     DSSDataInput operator() (const ByteSeq & Message,
-                             const ByteSeq & Randomizer) const
+                             const ByteSeq & Randomizer,
+                             DataInput::LOGIC logic) const
         {
             const long L_msg = Message.getDataSize();
 
@@ -26,6 +27,14 @@ public:
 
             const long L_rec = Hints.L_rec;
             const long L_red = Hints.L_red;
+
+            if (logic == DataInput::VERIFY_LOFIC)
+            {
+                return DSSDataInput(ByteSeq(Message.getData() + L_red,
+                                            Message.getDataSize() - L_red),
+                                    Octet());
+            }
+
             const Hash H = Hints.H;
 
             const long L_clr = L_msg - L_rec;
@@ -57,7 +66,8 @@ public:
         {}
 
     DSSDataInput operator() (const ByteSeq & Message,
-                             const ByteSeq & Randomizer) const
+                             const ByteSeq & Randomizer,
+                             DataInput::LOGIC logic) const
         {
             const ByteSeq C = I2OSP(1, 4);
 
@@ -67,6 +77,14 @@ public:
 
             const long L_rec = Hints.L_rec;
             const long L_red = Hints.L_red;
+
+            if (logic == DataInput::VERIFY_LOFIC)
+            {
+                return DSSDataInput(ByteSeq(Message.getData() + L_red,
+                                            Message.getDataSize() - L_red),
+                                    Octet());
+            }
+
             const Hash H = Hints.H;
 
             const long L_clr = L_msg - L_rec;
@@ -98,7 +116,8 @@ public:
         {}
 
     DSSDataInput operator() (const ByteSeq & Message,
-                             const ByteSeq & Randomizer) const
+                             const ByteSeq & Randomizer,
+                             DataInput::LOGIC logic) const
         {
             const long L_msg = Message.getDataSize();
 
@@ -106,6 +125,14 @@ public:
 
             const long L_rec = Hints.L_rec;
             const long L_red = Hints.L_red;
+
+            if (logic == DataInput::VERIFY_LOFIC)
+            {
+                return DSSDataInput(ByteSeq(Message.getData() + L_red,
+                                            Message.getDataSize() - L_red),
+                                    Octet());
+            }
+
             const Hash H = Hints.H;
 
             const long L_clr = L_msg - L_rec;
@@ -133,7 +160,8 @@ public:
 
     DSSDataInput operator() (const ByteSeq & Message,
                              const ByteSeq & Randomizer
-                             __attribute__ ((unused))) const
+                             __attribute__ ((unused)),
+                             DataInput::LOGIC logic) const
         {
             const long L_msg = Message.getDataSize();
 
@@ -145,18 +173,44 @@ public:
 
             const long L_clr = L_msg - L_rec;
 
-            const ByteSeq M_rec = ByteSeq(Message.getData(), L_rec);
-            const ByteSeq M_clr = ByteSeq(Message.getData() + L_rec,
-                                          L_clr);
+            if (logic == DataInput::SIGN_LOGIC)
+            {
+                const ByteSeq M_rec = ByteSeq(Message.getData(), L_rec);
+                const ByteSeq M_clr = ByteSeq(Message.getData() + L_rec,
+                                              L_clr);
 
-            const Octet pad = I2OSP(1, Hints.L_max - L_red + 1 - L_rec);
-            const Octet M_pad = pad || M_rec;
+                const Octet pad = I2OSP(1, Hints.L_max - L_red + 1 - L_rec);
+                const Octet M_pad = pad || M_rec;
 
-            const Octet h = Truncate(H(M_pad), L_red);
-            const Octet d = h || (Truncate(H(h),
-                                           Hints.L_max + 1 - L_red) ^ M_pad);
+                const Octet h = Truncate(H(M_pad), L_red);
+                const Octet d = h || (Truncate(H(h),
+                                               Hints.L_max + 1 - L_red) ^ M_pad);
 
-            return DSSDataInput(d, M_clr);
+                return DSSDataInput(d, M_clr);
+            }
+            else
+            {
+                /* Return M_rec via d */
+                const Octet h = Truncate(Message, L_red);
+                const Octet M_h = ByteSeq(Message.getData() + L_red,
+                                          Message.getDataSize() - L_red);
+                const Octet M_rec_pad = M_h ^ Truncate(H(h), Message.getDataSize() - L_red);
+
+                const long pad_size = Hints.L_max - L_red + 1 - L_rec;
+
+                const Octet M_rec = ByteSeq(M_rec_pad.getData() + pad_size,
+                                            M_rec_pad.getDataSize() - pad_size);
+
+                /* If message have proper padding, then return without padding,
+                 * else return as-is. Probably bad behaviour.  */
+
+                if (IsOne(OS2IP(Truncate(M_rec_pad, pad_size))))
+                    return DSSDataInput(M_rec, Octet());
+                else
+                {
+                    return DSSDataInput(M_rec_pad, Octet());
+                }
+            }
         }
 };
 
@@ -168,17 +222,25 @@ public:
     ECPV_Input(const DataInputPolicy & Policy)
         : _Policy(Policy)
         {}
-
+    
     DSSDataInput operator() (const ByteSeq & Message,
                              const ByteSeq & Randomizer
-                             __attribute__ ((unused))) const
+                             __attribute__ ((unused)),
+                             DataInput::LOGIC logic) const
         {
             const long L_msg = Message.getDataSize();
 
             const DataInputHints Hints = _Policy(L_msg);
 
-            const long L_rec = Hints.L_rec - 2 /* Size of DER Pad */;
-            const long L_red = Hints.L_red;
+            if (logic == DataInput::VERIFY_LOFIC)
+            {
+                return DSSDataInput(ByteSeq(Message.getData() + Hints.L_red,
+                                            Message.getDataSize() - Hints.L_red),
+                                    Octet());
+            }
+
+            const long L_rec = Hints.L_rec;
+            const long L_red = Hints.L_red - 2;
 
             const long L_clr = L_msg - L_rec;
 

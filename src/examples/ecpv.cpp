@@ -46,8 +46,7 @@ const EC_Defaults::Sizes ECSize = EC_Defaults::EC161;
 static const SymXor  Sym(18);
 static const ECPVKDF KDF(18);
 static const Hash    Hash(Hash::SHA1);
-static const MGF     MGF1(MGF::MGF1, Hash::SHA1);
-static const StaticDataInputPolicy InputPolicy(13, 5, Hash::SHA1);
+static const StaticDataInputPolicy InputPolicy(13 - 2 /* Padding */, 5 + 2 /* Padding */, Hash::SHA1);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -76,7 +75,7 @@ int main(int argc     __attribute__((unused)),
     cout << "Session key: " << I2OSP(k) << endl;
     cout << "Randomizer:  " << PP << endl;
 
-    const Octet SS = I2OSP(PP.getX());
+    const Octet SS = FE2OSP(PP.getX());
     const Octet P  = KDF(SS);
 
     cout << "Π : " << P << endl;
