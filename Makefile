@@ -13,7 +13,7 @@ EXAMPLES := dss_ecknr \
 						ecao 			\
 						ecpv 			\
 						ecknr			\
-					  compressgf2x basis signmeasure signecnrgfbench signgfbench 
+					  compressgf2x basis signmeasure signecnrgfbench signgfbench signkfix
 
 all: $(EXAMPLES)
 
