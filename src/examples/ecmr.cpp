@@ -50,7 +50,7 @@ int main(int argc     __attribute__((unused)),
 
     cout << "kG: " << R << endl;
 
-    const ByteSeq OPoint = EC2OSP(R, EC2OSP_UNCOMPRESSED);
+    const ByteSeq OPoint = EC2OSP(R, EC::EC2OSP_UNCOMPRESSED);
 
     cout << "Octet Point: " << OPoint << endl;
 

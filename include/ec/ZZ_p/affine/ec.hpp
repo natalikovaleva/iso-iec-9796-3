@@ -22,7 +22,6 @@ namespace ECZZ_p
 
         class EC_Point
         {
-    
             ZZ_p X;
             ZZ_p Y;
 
@@ -36,6 +35,8 @@ namespace ECZZ_p
                                    ZZ> __generic_multiplication;
             
         public:
+            typedef ZZ_p FE;
+            
             EC_Point(const ZZ_p &X, const ZZ_p &Y, const EC & __EC); // Generic
             EC_Point(const EC_Point & Point); // Same point in same field
             EC_Point(const EC & __EC); // Zero
@@ -109,6 +110,13 @@ namespace ECZZ_p
             {
                 FIELD_CONTEXT,
                 ORDER_CONTEXT
+            };
+
+            enum EC2OSP_COMPRESS_MODE
+            {
+                EC2OSP_UNCOMPRESSED,
+                EC2OSP_COMPRESSED,
+                EC2OSP_HYBRID
             };
             
             /* Getters */

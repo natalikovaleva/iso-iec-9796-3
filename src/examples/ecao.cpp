@@ -51,7 +51,7 @@ int main(int argc     __attribute__((unused)),
     cout << "Session key: " << I2OSP(k) << endl;
     cout << "Randomizer:  " << PP << endl;
 
-    const Octet P = EC2OSP(PP, EC2OSP_COMPRESSED);
+    const Octet P = EC2OSP(PP, EC::EC2OSP_COMPRESSED);
 
     cout << "Π : " << P << endl;
 
@@ -69,7 +69,7 @@ int main(int argc     __attribute__((unused)),
     const size_t K = Ln; // Security parameter
 
     const Octet r = SignData.d ^ P;
-    const Octet u = MGF1(r || SignData.M_clr.getDataSize(), Ln + K);
+    const Octet u = MGF1(r || SignData.M_clr, Ln + K);
     const ZZ_p  t = InMod(OS2IP(u));
     const ZZ_p  s = (InMod(k) - InMod(Xa)*t);
 

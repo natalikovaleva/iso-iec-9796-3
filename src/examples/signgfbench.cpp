@@ -61,7 +61,7 @@ int main(int argc     __attribute__((unused)),
         EC.generate_random(k);
     
         const EC_Point R = toAffine(G_pp * k);
-        const ByteSeq OPoint = EC2OSP(R, EC2OSP_UNCOMPRESSED);
+        const ByteSeq OPoint = EC2OSP(R, EC::EC2OSP_UNCOMPRESSED);
         const MGF MGF1(MGF::MGF1, Hash::SHA1);
         const ByteSeq Pi = MGF1(OPoint, Ln);
         const string Message("TestVector");

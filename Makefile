@@ -4,7 +4,16 @@ INCLUDE += -Intl-5.5.2/include
 
 INCLUDE += -Iinclude/
 
-EXAMPLES := signkfix compressgf2x basis signmeasure signecnrgfbench signgfbench ecnr ecmr ecao ecpv ecknr
+EXAMPLES := dss_ecknr \
+						dss_ecnr	\
+						dss_ecmr	\
+						dss_ecao	\
+						ecnr 			\
+						ecmr			\
+						ecao 			\
+						ecpv 			\
+						ecknr			\
+					  compressgf2x basis signmeasure signecnrgfbench signgfbench 
 
 all: $(EXAMPLES)
 
@@ -38,6 +47,31 @@ build/%.o : src/%.cpp
 build/%.o : src/%.c
 		@mkdir -p $(dir $@)
 		gcc --std=gnu99 $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
+
+dss_ecknr:	build/examples/dss_ecknr.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+dss_ecnr:	build/examples/dss_ecnr.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+dss_ecmr:	build/examples/dss_ecmr.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+dss_ecao:	build/examples/dss_ecao.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+dss_ecpv:	build/examples/dss_ecpv.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
 
 ecknr:	build/examples/ecknr.o  lib/lib9796-3.a
 		@mkdir -p $(dir $@)

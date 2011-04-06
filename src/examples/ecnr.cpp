@@ -79,7 +79,7 @@ int main(int argc     __attribute__((unused)),
     cout << "Session key: " << I2OSP(k) << endl;
     cout << "Session radical: " << kG << endl;
 
-    const ByteSeq Pi = EC2OSP(kG,EC2OSP_COMPRESSED);
+    const ByteSeq Pi = EC2OSP(kG,EC::EC2OSP_COMPRESSED);
 
     cout << "Π : " << Pi << endl;
 

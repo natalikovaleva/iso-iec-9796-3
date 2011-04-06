@@ -45,9 +45,13 @@ protected:
 public:
     virtual ~DataInputPolicy() {}
     virtual DataInputHints getHints(long L_msg) const = 0;
+    virtual DataInputHints getParseHints(const Octet & data) const = 0;
+
     inline DataInputHints operator() (long L_msg) const
         { return getHints(L_msg); };
 
+    inline DataInputHints operator() (const Octet & data) const
+        { return getParseHints(data); };
 };
 
 class StaticDataInputPolicy : public DataInputPolicy
@@ -64,11 +68,21 @@ public:
     inline DataInputHints getHints(long L_msg
                                    __attribute__((unused))) const
         { return _staticHints; }
+    
+    inline DataInputHints getParseHints(const Octet & data
+                                        __attribute__((unused))) const
+        { return _staticHints; }
 };
 
 class DataInput
 {
-protected:
+public:
+    enum LOGIC
+    {
+        SIGN_LOGIC,
+        VERIFY_LOFIC
+    };
+
     const DataInputPolicy & _Policy;
 
 public:
@@ -86,6 +100,16 @@ public:
 
     virtual DSSDataInput createInput (const char * Message,
                                       const ByteSeq & Randomizer) const = 0;
+
+    virtual DSSDataInput createOutput (const ByteSeq & Message,
+                                       const ByteSeq & Randomizer) const = 0;
+
+    virtual DSSDataInput createOutput (const std::string & Message,
+                                       const ByteSeq & Randomizer) const = 0;
+
+    virtual DSSDataInput createOutput (const char * Message,
+                                       const ByteSeq & Randomizer) const = 0;
+
 };
 
 template <class Logic>
@@ -113,5 +137,22 @@ public:
 
     inline DSSDataInput createInput (const ByteSeq & Message,
                                      const ByteSeq & Randomizer) const
-        { return logic(Message, Randomizer); }
+        { return logic(Message, Randomizer, SIGN_LOGIC); }
+
+    inline DSSDataInput createOutput (const std::string & Message,
+                                      const ByteSeq & Randomizer) const
+        { return createOutput(ByteSeq(Message.c_str(), Message.length()),
+                              Randomizer); }
+
+
+    inline DSSDataInput createOutput (const char * Message,
+                                      const ByteSeq & Randomizer) const
+        { return createOutput(ByteSeq(Message, strlen(Message)),
+                              Randomizer); }
+
+
+    inline DSSDataInput createOutput (const ByteSeq & Message,
+                                      const ByteSeq & Randomizer) const
+        { return logic(Message, Randomizer, VERIFY_LOFIC); }
+
 };
