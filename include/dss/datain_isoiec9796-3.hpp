@@ -23,17 +23,19 @@ public:
         {
             const long L_msg = Message.getDataSize();
 
-            const DataInputHints Hints = _Policy(L_msg);
-
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red;
-
             if (logic == DataInput::VERIFY_LOFIC)
             {
+                const long L_red = _Policy.getParseHints(Message).L_red;
+                
                 return DSSDataInput(ByteSeq(Message.getData() + L_red,
                                             Message.getDataSize() - L_red),
                                     Octet());
             }
+
+            const DataInputHints Hints = _Policy(L_msg);
+
+            const long L_rec = Hints.L_rec;
+            const long L_red = Hints.L_red;
 
             const Hash H = Hints.H;
 
@@ -73,18 +75,20 @@ public:
 
             const long L_msg = Message.getDataSize();
 
-            const DataInputHints Hints = _Policy(L_msg);
-
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red;
-
             if (logic == DataInput::VERIFY_LOFIC)
             {
+                const long L_red = _Policy.getParseHints(Message).L_red;
+                
                 return DSSDataInput(ByteSeq(Message.getData() + L_red,
                                             Message.getDataSize() - L_red),
                                     Octet());
             }
 
+            const DataInputHints Hints = _Policy(L_msg);
+            
+            const long L_rec = Hints.L_rec;
+            const long L_red = Hints.L_red;
+            
             const Hash H = Hints.H;
 
             const long L_clr = L_msg - L_rec;
@@ -121,18 +125,21 @@ public:
         {
             const long L_msg = Message.getDataSize();
 
-            const DataInputHints Hints = _Policy(L_msg);
-
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red;
-
             if (logic == DataInput::VERIFY_LOFIC)
             {
+                const long L_red = _Policy.getParseHints(Message).L_red;
+                
                 return DSSDataInput(ByteSeq(Message.getData() + L_red,
                                             Message.getDataSize() - L_red),
                                     Octet());
             }
 
+            const DataInputHints Hints = _Policy(L_msg);
+            
+            const long L_rec = Hints.L_rec;
+            const long L_red = Hints.L_red;
+
+            
             const Hash H = Hints.H;
 
             const long L_clr = L_msg - L_rec;
@@ -165,8 +172,10 @@ public:
         {
             const long L_msg = Message.getDataSize();
 
-            const DataInputHints Hints = _Policy(L_msg);
-
+            const DataInputHints Hints =
+                logic == DataInput::SIGN_LOGIC ?
+                _Policy(L_msg) : _Policy(Message);
+            
             const long L_rec = Hints.L_rec;
             const long L_red = Hints.L_red;
             const Hash H = Hints.H;
@@ -230,7 +239,9 @@ public:
         {
             const long L_msg = Message.getDataSize();
 
-            const DataInputHints Hints = _Policy(L_msg);
+            const DataInputHints Hints =
+                logic == DataInput::SIGN_LOGIC ?
+                _Policy(L_msg) : _Policy(Message);
 
             if (logic == DataInput::VERIFY_LOFIC)
             {

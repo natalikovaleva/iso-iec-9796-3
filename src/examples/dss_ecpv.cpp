@@ -1,6 +1,7 @@
 #include "dss/dss_isoiec9796-3.hpp"
-
 #include "generic/zz_utils.hpp"
+
+#include "algorithm/comb.hpp"
 
 using namespace NTL;
 using namespace std;
@@ -31,25 +32,33 @@ int main(int argc     __attribute__((unused)),
 
     /* ---------------------------------------------- */
 
+    const Algorithm::Precomputations_Method_Comb<Projective::EC_Point,
+                                                 ZZ,
+                                                 Affine::EC_Point> Precomputation (NumBits(Curve.getModulus()));
+
     const StaticDataInputPolicy DefaultInputPolicy(13 - 2,
                                                    5  + 2,
+                                                   13 + 5 + 10,
                                                    Hash::SHA1);
-    const long KSize = 18;
-    
+
+    const size_t KSize = 18; // Key size
     const SymXor Sym(KSize);
-    
-    ECPV<EC,
-         EC_Point> dss(Curve, tG,
-                       DefaultInputPolicy,
-                       Sym,
-                       KSize,
-                       Hash::SHA1);
-    
+
+    const DSSDomainParameters<DSS_ZZ_p> DomainParameters(Curve, DefaultInputPolicy, Precomputation);
+    const DSSECPVDomainParameters SchemeParameters(Hash(Hash::SHA1), Sym, KSize);
+
+    ECPV<DSS_ZZ_p> dss(DomainParameters,
+                       SchemeParameters,
+                       tG);
+
     dss.setPrivateKey(Xa);
     dss.generatePublicKey();
+    dss.buildPrecomputationTables();
 
-    cout << Curve << endl;
-    
+    cout << "L_rec: " << DefaultInputPolicy(M.length()).L_rec
+         << "; L_red: " << DefaultInputPolicy(M.length()).L_red
+         << "; L_max: " << DefaultInputPolicy(M.length()).L_max << endl;
+
     DigitalSignature sign =
         dss.sign(Message);
 
@@ -63,4 +72,3 @@ int main(int argc     __attribute__((unused)),
 
     return 0;
 }
-

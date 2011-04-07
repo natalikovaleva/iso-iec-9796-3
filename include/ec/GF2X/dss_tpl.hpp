@@ -6,12 +6,10 @@
 #include "ec/GF2X/affine/utils.hpp"
 #include "ec/GF2X/projective/ec.hpp"
 
-using namespace ECGF2X;
-
 struct DSS_GF2X
 {
-    typedef Affine::EC aEC;
-    typedef Affine::EC_Point aECP;
-    typedef Projective::EC pEC;
-    typedef Projective::EC_Point pECP;
+    typedef ECGF2X::Affine::EC aEC;
+    typedef ECGF2X::Affine::EC_Point aECP;
+    typedef ECGF2X::Projective::EC pEC;
+    typedef ECGF2X::Projective::EC_Point pECP;
 };

@@ -1,6 +1,7 @@
 #include "dss/dss_isoiec9796-3.hpp"
-
 #include "generic/zz_utils.hpp"
+
+#include "algorithm/comb.hpp"
 
 using namespace NTL;
 using namespace std;
@@ -11,8 +12,12 @@ int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
     GF2X::HexOutput = 1;
-    
+
     EC Curve = EC_Defaults::create(EC_Defaults::EC163);
+
+    long L_rec = 10;
+
+    cout << "Order bits: " << Lb(Curve.getOrder()) << endl;
 
     fixedGenerator
         tG(I2OSP(ZZ_str("397e49b664b13079fa8f2992e5bcdb38d6895a31b")));
@@ -21,20 +26,26 @@ int main(int argc     __attribute__((unused)),
 
     const string Message("TestVector");
 
-    const StaticDataInputPolicy DefaultInputPolicy(10,
-                                                   11, Hash::SHA1);
+    const Algorithm::Precomputations_Method_Comb<Projective::EC_Point,
+                                                 ZZ,
+                                                 Affine::EC_Point> Precomputation (NumBits(Curve.getModulus()));
 
-    ECMR<EC,
-         EC_Point> dss(Curve, tG,
-                       DefaultInputPolicy,
-                       Hash::SHA1,
-                       MGF::MGF1);
-    
+    const ECMRDataInputPolicy<DSS_GF2X> DefaultInputPolicy(L_rec, Curve, Hash::SHA1);
+    const DSSDomainParameters<DSS_GF2X> DomainParameters(Curve, DefaultInputPolicy, Precomputation);
+    const DSSECMRDomainParameters SchemeParameters(Hash(Hash::SHA1), MGF(MGF::MGF1, Hash::SHA1));
+
+    ECMR<DSS_GF2X> dss(DomainParameters,
+                       SchemeParameters,
+                       tG);
+
     dss.setPrivateKey(Xa);
     dss.generatePublicKey();
+    dss.buildPrecomputationTables();
 
-    cout << Curve << endl;
-    
+    cout << "L_rec: " << DefaultInputPolicy(Message.length()).L_rec
+         << "; L_red: " << DefaultInputPolicy(Message.length()).L_red
+         << "; L_max: " << DefaultInputPolicy(Message.length()).L_max << endl;
+
     DigitalSignature sign =
         dss.sign(ByteSeq(Message.c_str(), Message.length()));
 
@@ -48,4 +59,3 @@ int main(int argc     __attribute__((unused)),
 
     return 0;
 }
-

@@ -29,9 +29,9 @@ int main(int argc     __attribute__ ((unused)),
     seed += time(NULL);
     SetSeed(seed);
 
-    
+
     ZZ k;
-    
+
     EC.generate_random(k);
 
     cout << "Original: " << G << endl;
@@ -44,9 +44,9 @@ int main(int argc     __attribute__ ((unused)),
     Algorithm::Precomputations_Method_Comb<Projective::EC_Point,
                                            ZZ,
                                            Affine::EC_Point> Method (NumBits(EC_p.getModulus()));
-        
+
     G_pp.precompute(Method);
-    
+
     cout << "PP*k => O:" << toAffine(G_pp * k) << endl;
 
     return 0;
