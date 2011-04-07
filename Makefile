@@ -6,6 +6,7 @@ INCLUDE += -Iinclude/
 
 EXAMPLES := dss_ecknr \
 						dss_ecnr	\
+						dss_ecpv	\
 						dss_ecmr	\
 						dss_ecao	\
 						ecnr 			\
