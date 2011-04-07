@@ -76,4 +76,3 @@ public:
 
     virtual void buildPrecomputationTables() = 0;
 };
-

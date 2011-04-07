@@ -57,9 +57,9 @@ int main(int argc     __attribute__((unused)),
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
-    const size_t Lf = L(ZZ_p::modulus());
+    const size_t Lf = L(EC.getModulus());
 
-    const StaticDataInputPolicy InputPolicy(9, 12, Hash::SHA256, -1, Lf);
+    const StaticDataInputPolicy InputPolicy(9, 12, Lf, Hash::SHA256);
     const TDataInput<ECAO_Input> ECAO_Data(InputPolicy);
 
     string M("plaintext");

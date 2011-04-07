@@ -9,18 +9,15 @@ struct DataInputHints
     const long L_rec;
     const long L_red;
     const long L_max;
-    const long L_clr;
     const Hash::Hash_Type H;
 
     inline DataInputHints(const long L_rec,
                           const long L_red,
                           const long L_max,
-                          const long L_clr,
                           const Hash::Hash_Type H)
         : L_rec(L_rec),
           L_red(L_red),
           L_max(L_max),
-          L_clr(L_clr),
           H(H)
         {}
 };
@@ -56,22 +53,33 @@ public:
 
 class StaticDataInputPolicy : public DataInputPolicy
 {
+protected:
     const DataInputHints _staticHints;
 
 public:
-    StaticDataInputPolicy(long L_rec, long L_red,
-                           Hash::Hash_Type Hash_type,
-                           long L_clr = -1,
-                           long L_max = -1)
-        : _staticHints(DataInputHints(L_rec, L_red, L_max, L_clr, Hash_type))
+    StaticDataInputPolicy(long L_rec, long L_red, long L_max,
+                          Hash::Hash_Type Hash_type)
+        : _staticHints(DataInputHints(L_rec, L_red, L_max, Hash_type))
         {}
-    inline DataInputHints getHints(long L_msg
-                                   __attribute__((unused))) const
-        { return _staticHints; }
-    
-    inline DataInputHints getParseHints(const Octet & data
-                                        __attribute__((unused))) const
-        { return _staticHints; }
+    inline DataInputHints getHints(long L_msg) const
+        {
+            if (L_msg < _staticHints.L_rec)
+            {
+                throw;
+            }
+
+            return _staticHints;
+        }
+
+    inline DataInputHints getParseHints(const Octet & data) const
+        {
+            if (data.getDataSize() < (_staticHints.L_rec + _staticHints.L_red))
+            {
+                throw;
+            }
+
+            return _staticHints;
+        }
 };
 
 class DataInput

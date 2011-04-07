@@ -27,12 +27,12 @@ using namespace ECZZ_p::Affine;
 static const Hash    Hash(Hash::RIPEMD160);
 static const MGF     MGF(MGF::MGF2, Hash::RIPEMD160);
 
-static const StaticDataInputPolicy InputPolicy(10, 10, Hash::RIPEMD160);
-
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
     EC EC = EC_Defaults::create(EC_Defaults::EC160, EC_Defaults::V2);
+
+    const StaticDataInputPolicy InputPolicy(10, 10, L(EC.getOrder()) - 1, Hash::RIPEMD160);
 
     cout << EC << endl;
 
@@ -46,7 +46,7 @@ int main(int argc     __attribute__((unused)),
     const ZZ k  = ZZ_str("887ac5728a8390818b535fcbf04e827b0f8b543c");
 
     const ZZ e = InvMod(Xa, EC.getOrder());
-    
+
     const EC_Point Y  = EC.getBasePoint() * e;
     const EC_Point PP = Y * k;
 

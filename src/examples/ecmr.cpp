@@ -20,7 +20,6 @@ using namespace std;
 using namespace ECGF2X::Affine;
 
 static const Hash Hash(Hash::SHA1);
-static const StaticDataInputPolicy InputPolicy(10, 11, Hash::SHA1);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -28,6 +27,8 @@ int main(int argc     __attribute__((unused)),
     GF2X::HexOutput = 1;
 
     EC EC = EC_Defaults::create(EC_Defaults::EC163);
+
+    const StaticDataInputPolicy InputPolicy(10, 11, L(EC.getOrder()), Hash::SHA1);
 
     cout << EC << endl;
 

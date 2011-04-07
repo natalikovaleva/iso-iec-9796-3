@@ -23,13 +23,13 @@ using namespace ECZZ_p::Affine;
 
 #include <stdio.h>
 
-static const StaticDataInputPolicy InputPolicy(10, 9, Hash::RIPEMD160);
-
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
 
     EC EC = EC_Defaults::create(EC_Defaults::EC160);
+
+    const StaticDataInputPolicy InputPolicy(10, 9, L(EC.getOrder()) - 1, Hash::RIPEMD160);
 
     Projective::EC EC_p(EC);
     Projective::EC_Point G_p(EC_p.getBasePoint());

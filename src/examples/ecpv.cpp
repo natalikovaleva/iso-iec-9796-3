@@ -46,7 +46,8 @@ const EC_Defaults::Sizes ECSize = EC_Defaults::EC161;
 static const SymXor  Sym(18);
 static const ECPVKDF KDF(18);
 static const Hash    Hash(Hash::SHA1);
-static const StaticDataInputPolicy InputPolicy(13 - 2 /* Padding */, 5 + 2 /* Padding */, Hash::SHA1);
+static const StaticDataInputPolicy InputPolicy(13 - 2 /* Padding */, 5 + 2 /* Padding */,
+                                               13 + 5 /* Total */, Hash::SHA1);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
