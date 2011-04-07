@@ -43,7 +43,6 @@ public:
         { return _Message; }
 };
 
-
 class generateRandomValueCallback
 {
 protected:
@@ -77,3 +76,4 @@ public:
 
     virtual void buildPrecomputationTables() = 0;
 };
+
