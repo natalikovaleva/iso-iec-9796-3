@@ -77,11 +77,18 @@ public:
 
             if (logic == DataInput::VERIFY_LOFIC)
             {
-                const long L_red = _Policy.getParseHints(Message).L_red;
+                const DataInputHints Hints = _Policy.getParseHints(Message);
                 
-                return DSSDataInput(ByteSeq(Message.getData() + L_red,
-                                            Message.getDataSize() - L_red),
-                                    Octet());
+                return DSSDataInput(ByteSeq(Message.getData() +
+                                            (Hints.L_red - Hints.L_add),
+                                            Message.getDataSize() -
+                                            (Hints.L_red - Hints.L_add)),
+                                    Hints.L_add == 0 ?
+                                    Message :
+                                    ByteSeq(Message.getData(),
+                                            Message.getDataSize(),
+                                            Message.getDataSize() + Hints.L_add)
+                                     );
             }
 
             const DataInputHints Hints = _Policy(L_msg);

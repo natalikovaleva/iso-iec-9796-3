@@ -25,7 +25,7 @@ DSS := dss_ecknr \
 
 all: $(DSS)
 
-CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg
+CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg -march=native
 # CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
@@ -58,6 +58,11 @@ build/%.o : src/%.c
 
 # Examples builds to cwd
 %: build/examples/%.o  lib/lib9796-3.a
+		@mkdir -p $(dir $@)
+		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		find -name "*.gcda" -delete
+
+%: build/tests/%.o  lib/lib9796-3.a
 		@mkdir -p $(dir $@)
 		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete

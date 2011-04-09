@@ -76,6 +76,35 @@ public:
             return (memcmp(__data, y.__data, __data_size) == 0);
         }
 
+    inline bool isEmpty() const
+        { return (__data_size == 0); }
+
+    inline const ByteSeq & operator <<(unsigned long size)
+        {
+            if (__data_size > size)
+            {
+                memmove(__data, __data+size, size);
+                __data_size -= size;
+            }
+            else
+                throw;
+            return *this;
+        }
+
+    inline const ByteSeq & operator >>(unsigned long size)
+        {
+            if (__data_size + size < OCTET_MAX_SIZE)
+            {
+                memmove(__data+size, __data, size);
+                memset(__data, 0x0, size);
+                __data_size += size;
+                return *this;
+            }
+            else
+                throw;
+        }
+
+
     friend std::ostream& operator<<(std::ostream& s, const ByteSeq & octet);
     friend inline ByteSeq Truncate(const ByteSeq & input,
                                    const size_t octets);
