@@ -84,7 +84,6 @@ namespace ECZZ_p
 
         class EC
         {
-
             ZZ_pContext __mod;   // Field Modulus context
             ZZ_pContext __order; // Order Modulus context
             ZZ_pContext __global;

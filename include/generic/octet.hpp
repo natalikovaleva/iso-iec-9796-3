@@ -5,7 +5,7 @@
 
 #include <iostream> //debug
 
-#define OCTET_MAX_SIZE 8196 * 4
+#define OCTET_MAX_SIZE ( 512 * 4 ) / 8
 
 class ByteSeq;
 inline ByteSeq Truncate(const ByteSeq & input,

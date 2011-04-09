@@ -59,7 +59,7 @@ build/%.o : src/%.c
 # Examples builds to cwd
 %: build/examples/%.o  lib/lib9796-3.a
 		@mkdir -p $(dir $@)
-		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		g++ -static -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
 		find -name "*.gcda" -delete
 
 %: build/tests/%.o  lib/lib9796-3.a
