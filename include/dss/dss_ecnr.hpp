@@ -47,11 +47,22 @@ public:
 
             const ZZ k = OS2IP(_PRNG());
 
-            _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
-            _Curve.leave_mod_context();
+            Octet P;
+            
+            do
+            {
+                _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
+                const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
+                _Curve.leave_mod_context();
 
-            const Octet P  = EC2OSP(PP, EC_Dscr::aEC::EC2OSP_COMPRESSED);
+                if (PP.isZero())
+                    continue;
+                
+                P  = EC2OSP(PP, EC_Dscr::aEC::EC2OSP_COMPRESSED);
+                break;
+            }
+            while(1);
+            
 
             /* FIX IT */
             const DSSDataInput SignData =
@@ -64,11 +75,13 @@ public:
             const ZZ_p pi = InMod(OS2IP(P));
             const ZZ_p d  = InMod(OS2IP(SignData.d));
 
+            std::cout << "d: " << I2OSP(d) << std::endl;
+            
             const ZZ_p r = (d + pi);
             const ZZ_p s = (InMod(k) - InMod(_privateKey)*r);
-
+            
             _Curve.leave_mod_context();
-
+            
             const ByteSeq R = I2OSP(r,_Ln);
             const ByteSeq S = I2OSP(s,_Ln);
 
@@ -96,14 +109,10 @@ public:
 
         const Octet P  = EC2OSP(R, EC_Dscr::aEC::EC2OSP_COMPRESSED);
 
-        _Curve.enter_mod_context(EC_Dscr::aEC::ORDER_CONTEXT);
-        const ZZ_p d = InMod(t) - InMod(OS2IP(P));
-        _Curve.leave_mod_context();
+        const ZZ d = (t - OS2IP(P)) % _Curve.getOrder();
+        std::cout << "d: " << I2OSP(d) << std::endl;
 
         Octet vdata = I2OSP(d);
-
-        /* FIX IT ? */
-        DataInputHints Hints = _ECNR_Data._Policy(vdata);
 
         /* MAKE CHECKS */
         const  DSSDataInput vmsg =
@@ -113,17 +122,26 @@ public:
 
         Octet M = vmsg.d || data.M_clr;
 
+        std::cerr << "M: " << M << std::endl;
+        
         const  DSSDataInput vsign =
             dip == NULL ?
             _ECNR_Data.createInput(M, P) :
             TDataInput<ECNR_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vdata)
+        if (! vmsg.M_clr.isEmpty())
+        {
+            std::cerr << "Checking '" << vmsg.M_clr << "' instead of '" << vdata << "'" << std::endl;
+        }
+        
+        
+        if (vsign.d == vmsg.M_clr)
         {
             return VerificationVerdict(M);
         }
         else
         {
+            std::cerr << vsign.d << " != " << vmsg.M_clr << std::endl;
             return VerificationVerdict();
         }
     }

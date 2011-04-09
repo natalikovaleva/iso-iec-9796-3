@@ -9,6 +9,7 @@ struct DataInputHints
     const long L_rec;
     const long L_red;
     const long L_max;
+    const long L_add; /* Recovering size hint */
     const Hash::Hash_Type H;
 
     inline DataInputHints(const long L_rec,
@@ -18,8 +19,19 @@ struct DataInputHints
         : L_rec(L_rec),
           L_red(L_red),
           L_max(L_max),
+          L_add(0),
           H(H)
         {}
+    
+    inline DataInputHints(const DataInputHints & Hints,
+                          long L_add)
+        : L_rec(Hints.L_rec),
+          L_red(Hints.L_red),
+          L_max(Hints.L_max),
+          L_add(L_add),
+          H(Hints.H)
+        {}
+            
 };
 
 struct DSSDataInput
@@ -75,8 +87,21 @@ public:
         {
             if (data.getDataSize() < (_staticHints.L_rec + _staticHints.L_red))
             {
-                throw;
+                std::cerr << "getParseHints:  " << data.getDataSize() << " < " <<
+                    (_staticHints.L_rec + _staticHints.L_red) << std::endl;
+                // Fix Hints
+                return DataInputHints(_staticHints,
+                                      (_staticHints.L_rec + _staticHints.L_red) -
+                                      data.getDataSize());
+                
+                // throw;
             }
+            else
+            {
+                std::cerr << "getParseHints:  " << data.getDataSize() << " > " <<
+                    (_staticHints.L_rec + _staticHints.L_red) << std::endl;
+            }
+            
 
             return _staticHints;
         }
