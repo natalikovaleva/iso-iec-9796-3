@@ -146,7 +146,7 @@ public:
             _ECKNR_Data.createInput(M, P) :
             TDataInput<STD4_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vdata)
+        if (vsign.d == vmsg.M_clr)
         {
             return VerificationVerdict(M);
         }

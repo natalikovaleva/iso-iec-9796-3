@@ -145,7 +145,7 @@ public:
             _ECAO_Data.createInput(M, P) :
             TDataInput<ECAO_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vdata)
+        if (vsign.d == vmsg.M_clr)
         {
             return VerificationVerdict(vmsg.d);
         }

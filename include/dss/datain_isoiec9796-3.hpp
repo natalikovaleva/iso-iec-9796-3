@@ -25,11 +25,18 @@ public:
 
             if (logic == DataInput::VERIFY_LOFIC)
             {
-                const long L_red = _Policy.getParseHints(Message).L_red;
+                const DataInputHints Hints = _Policy.getParseHints(Message);
                 
-                return DSSDataInput(ByteSeq(Message.getData() + L_red,
-                                            Message.getDataSize() - L_red),
-                                    Octet());
+                return DSSDataInput(ByteSeq(Message.getData() +
+                                            (Hints.L_red - Hints.L_add),
+                                            Message.getDataSize() -
+                                            (Hints.L_red - Hints.L_add)),
+                                    Hints.L_add == 0 ?
+                                    Message :
+                                    ByteSeq(Message.getData(),
+                                            Message.getDataSize(),
+                                            Message.getDataSize() + Hints.L_add)
+                                     );
             }
 
             const DataInputHints Hints = _Policy(L_msg);
@@ -134,11 +141,18 @@ public:
 
             if (logic == DataInput::VERIFY_LOFIC)
             {
-                const long L_red = _Policy.getParseHints(Message).L_red;
+                const DataInputHints Hints = _Policy.getParseHints(Message);
                 
-                return DSSDataInput(ByteSeq(Message.getData() + L_red,
-                                            Message.getDataSize() - L_red),
-                                    Octet());
+                return DSSDataInput(ByteSeq(Message.getData() +
+                                            (Hints.L_red - Hints.L_add),
+                                            Message.getDataSize() -
+                                            (Hints.L_red - Hints.L_add)),
+                                    Hints.L_add == 0 ?
+                                    Message :
+                                    ByteSeq(Message.getData(),
+                                            Message.getDataSize(),
+                                            Message.getDataSize() + Hints.L_add)
+                                     );
             }
 
             const DataInputHints Hints = _Policy(L_msg);
@@ -207,10 +221,15 @@ public:
             else
             {
                 /* Return M_rec via d */
-                const Octet h = Truncate(Message, L_red);
-                const Octet M_h = ByteSeq(Message.getData() + L_red,
-                                          Message.getDataSize() - L_red);
-                const Octet M_rec_pad = M_h ^ Truncate(H(h), Message.getDataSize() - L_red);
+                const Octet PMessage =
+                    Hints.L_add == 0 ? Message : ByteSeq(Message.getData(),
+                                                         Message.getDataSize(),
+                                                         Message.getDataSize() + Hints.L_add);
+                
+                const Octet h = Truncate(PMessage, L_red);
+                const Octet M_h = ByteSeq(PMessage.getData() + L_red,
+                                          PMessage.getDataSize() - L_red);
+                const Octet M_rec_pad = M_h ^ Truncate(H(h), PMessage.getDataSize() - L_red);
 
                 const long pad_size = Hints.L_max - L_red + 1 - L_rec;
 
@@ -221,10 +240,12 @@ public:
                  * else return as-is. Probably bad behaviour.  */
 
                 if (IsOne(OS2IP(Truncate(M_rec_pad, pad_size))))
-                    return DSSDataInput(M_rec, Octet());
+                    return DSSDataInput(M_rec, ByteSeq(PMessage.getData(),
+                                                       PMessage.getDataSize()));
                 else
                 {
-                    return DSSDataInput(M_rec_pad, Octet());
+                    return DSSDataInput(M_rec_pad, ByteSeq(PMessage.getData(),
+                                                           PMessage.getDataSize()));
                 }
             }
         }
@@ -252,9 +273,16 @@ public:
 
             if (logic == DataInput::VERIFY_LOFIC)
             {
-                return DSSDataInput(ByteSeq(Message.getData() + Hints.L_red,
-                                            Message.getDataSize() - Hints.L_red),
-                                    Octet());
+                return DSSDataInput(ByteSeq(Message.getData() +
+                                            (Hints.L_red - Hints.L_add),
+                                            Message.getDataSize() -
+                                            (Hints.L_red - Hints.L_add)),
+                                    Hints.L_add == 0 ?
+                                    Message :
+                                    ByteSeq(Message.getData(),
+                                            Message.getDataSize(),
+                                            Message.getDataSize() + Hints.L_add)
+                                     );
             }
 
             const long L_rec = Hints.L_rec;

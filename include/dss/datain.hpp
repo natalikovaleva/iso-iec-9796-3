@@ -87,22 +87,10 @@ public:
         {
             if (data.getDataSize() < (_staticHints.L_rec + _staticHints.L_red))
             {
-                std::cerr << "getParseHints:  " << data.getDataSize() << " < " <<
-                    (_staticHints.L_rec + _staticHints.L_red) << std::endl;
-                // Fix Hints
                 return DataInputHints(_staticHints,
                                       (_staticHints.L_rec + _staticHints.L_red) -
                                       data.getDataSize());
-                
-                // throw;
             }
-            else
-            {
-                std::cerr << "getParseHints:  " << data.getDataSize() << " > " <<
-                    (_staticHints.L_rec + _staticHints.L_red) << std::endl;
-            }
-            
-
             return _staticHints;
         }
 };
