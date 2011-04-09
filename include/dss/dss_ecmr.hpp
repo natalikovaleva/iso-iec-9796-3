@@ -145,7 +145,7 @@ public:
             _ECMR_Data.createInput(M, P) :
             TDataInput<ECMR_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vdata)
+        if (vsign.d == vmsg.M_clr)
         {
             return VerificationVerdict(M);
         }

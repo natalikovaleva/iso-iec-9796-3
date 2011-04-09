@@ -75,8 +75,6 @@ public:
             const ZZ_p pi = InMod(OS2IP(P));
             const ZZ_p d  = InMod(OS2IP(SignData.d));
 
-            std::cout << "d: " << I2OSP(d) << std::endl;
-            
             const ZZ_p r = (d + pi);
             const ZZ_p s = (InMod(k) - InMod(_privateKey)*r);
             
@@ -110,7 +108,6 @@ public:
         const Octet P  = EC2OSP(R, EC_Dscr::aEC::EC2OSP_COMPRESSED);
 
         const ZZ d = (t - OS2IP(P)) % _Curve.getOrder();
-        std::cout << "d: " << I2OSP(d) << std::endl;
 
         Octet vdata = I2OSP(d);
 
@@ -121,27 +118,18 @@ public:
             TDataInput<ECNR_Input>(*dip).createOutput(vdata, P);
 
         Octet M = vmsg.d || data.M_clr;
-
-        std::cerr << "M: " << M << std::endl;
         
         const  DSSDataInput vsign =
             dip == NULL ?
             _ECNR_Data.createInput(M, P) :
             TDataInput<ECNR_Input>(*dip).createInput(M, P);
 
-        if (! vmsg.M_clr.isEmpty())
-        {
-            std::cerr << "Checking '" << vmsg.M_clr << "' instead of '" << vdata << "'" << std::endl;
-        }
-        
-        
         if (vsign.d == vmsg.M_clr)
         {
             return VerificationVerdict(M);
         }
         else
         {
-            std::cerr << vsign.d << " != " << vmsg.M_clr << std::endl;
             return VerificationVerdict();
         }
     }
