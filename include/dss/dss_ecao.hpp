@@ -17,14 +17,17 @@ template<class EC_Dscr>
 class ECAODataInputPolicy : public StaticDataInputPolicy
 {
 public:
-    ECAODataInputPolicy(long L_rec,
+    ECAODataInputPolicy(long L_rec, long L_pad,
                         const typename EC_Dscr::aEC & EC,
                         Hash::Hash_Type Hash_type)
         : StaticDataInputPolicy(L_rec,
-                                L(EC.getModulus()) - L_rec - 4 + 1,
+                                L(EC.getModulus()) - L_rec - L_pad + 1,
                                 L(EC.getModulus()),
                                 Hash_type)
-        {}
+        {
+            if (L_pad < 1)
+                throw;
+        }
 };
 
 struct DSSECAODomainParameters : public DSSSchemeParameters
@@ -79,7 +82,6 @@ public:
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
             _Curve.leave_mod_context();
-
             const Octet P = EC2OSP(PP, EC_Dscr::aEC::EC2OSP_COMPRESSED);
 
             /* FIX IT */
@@ -137,6 +139,12 @@ public:
             dip == NULL ?
             _ECAO_Data.createOutput(vdata, P) :
             TDataInput<ECAO_Input>(*dip).createOutput(vdata, P);
+
+        if (vmsg.invalid)
+        {
+            return VerificationVerdict();
+        }
+
 
         Octet M = vmsg.d || data.M_clr;
 
