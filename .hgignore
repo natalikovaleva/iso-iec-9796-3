@@ -1,14 +1,4 @@
-ntl-5.5.2/.*
-gf2x-1.0/.*
 .*~
 .*\.gcda
 .o
 .a
-ecmr
-ecnr
-ecao
-ecpv
-ecknr
-signgf
-signgfbench
-signkfix
