@@ -61,7 +61,7 @@ int main(int argc     __attribute__((unused)),
         EC.generate_random(k);
     
         const EC_Point R = toAffine(G_pp * k);
-        const ByteSeq OPoint = EC2OSP(R, EC2OSP_UNCOMPRESSED);
+        const ByteSeq OPoint = EC2OSP(R, EC::EC2OSP_UNCOMPRESSED);
         const MGF MGF1(MGF::MGF1, Hash::SHA1);
         const ByteSeq Pi = MGF1(OPoint, Ln);
         const string Message("TestVector");
@@ -72,7 +72,7 @@ int main(int argc     __attribute__((unused)),
         const Octet h = Truncate(Hash(Pi || M), L_red);
         const Octet d = h || M_rec;
         const Octet r = r_ = d ^ Pi;
-        EC.enter_mod_context();
+        EC.enter_mod_context(EC::ORDER_CONTEXT);
 
         const ZZ_p s = InMod(OS2IP(r) * k - OS2IP(r) - 1) / InMod(Xa + 1);
 

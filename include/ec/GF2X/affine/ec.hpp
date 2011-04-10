@@ -25,7 +25,6 @@ namespace ECGF2X
 
         class EC_Point
         {
-    
             GF2X X;
             GF2X Y;
 
@@ -39,6 +38,8 @@ namespace ECGF2X
                                    ZZ> __generic_multiplication;
 
         public:
+            typedef GF2X FE;
+            
             EC_Point(const GF2X &X, const GF2X &Y, const EC & __EC); // Generic
             EC_Point(const EC_Point & Point); // Same point in same field
             EC_Point(const EC & __EC); // Zero
@@ -108,10 +109,17 @@ namespace ECGF2X
         public:
             enum MOD_CONTEXT
             {
+                FIELD_CONTEXT,
                 ORDER_CONTEXT
             };
-    
-    
+            
+            enum EC2OSP_COMPRESS_MODE
+            {
+                EC2OSP_UNCOMPRESSED,
+                EC2OSP_COMPRESSED,
+                EC2OSP_HYBRID
+            };
+
             /* Getters */
         public:
             inline const GF2XModulus & getModulus() const 
@@ -158,9 +166,9 @@ namespace ECGF2X
             bool generate_random(ZZ & d) const;
             GF2X generate_random(void) const;
 
-            inline void enter_mod_context()
+            inline void enter_mod_context(enum MOD_CONTEXT context)
                 { if (! __is_global_setted) { __global.save(); __is_global_setted = true; }
-                    __order.restore(); }
+                    if (context == ORDER_CONTEXT) __order.restore(); }
     
             inline void leave_mod_context() const
                 {  if (__is_global_setted) __global.restore(); }

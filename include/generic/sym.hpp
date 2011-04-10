@@ -7,10 +7,30 @@ class Sym
 protected:
     inline Sym() {}
 public:
+    enum DIRECTION
+    {
+        ENCRYPT,
+        DECRYPT
+    };
+    
+public:
     virtual inline ~Sym() {}
-    virtual inline ByteSeq operator() (const ByteSeq & data,
-                                       const ByteSeq & key) const = 0;
-    virtual inline size_t getKeySize() = 0;
+    inline ByteSeq operator() (const ByteSeq & data,
+                               const ByteSeq & key,
+                               DIRECTION direction) const
+        {
+            if (direction == ENCRYPT)
+                return encrypt(data, key);
+            else
+                return decrypt(data, key);
+        }
+
+    virtual ByteSeq encrypt(const ByteSeq & data,
+                            const ByteSeq & key) const = 0;
+    virtual ByteSeq decrypt(const ByteSeq & data,
+                            const ByteSeq & key) const = 0;
+    virtual size_t getKeySize() const = 0;
+    
 };
 
 class SymXor : public Sym
@@ -21,9 +41,13 @@ public:
         : block_size(block_size)
         {}
     
-    inline ByteSeq operator() (const ByteSeq & data,
-                               const ByteSeq & key) const
+    inline ByteSeq encrypt (const ByteSeq & data,
+                            const ByteSeq & key) const
         { return data ^ key; }
     
-    inline size_t getKeySize(){ return block_size; }
+    inline ByteSeq decrypt (const ByteSeq & data,
+                            const ByteSeq & key) const
+        { return data ^ key; }
+    
+    inline size_t getKeySize() const { return block_size; }
 };

@@ -23,14 +23,7 @@ namespace ECGF2X
 
         /* Trivial faster compression */
 
-        enum EC2OSP_COMPRESS_MODE
-        {
-            EC2OSP_UNCOMPRESSED,
-            EC2OSP_COMPRESSED,
-            EC2OSP_HYBRID
-        };
-
-        ByteSeq EC2OSP(const EC_Point & Point, EC2OSP_COMPRESS_MODE mode);
+        ByteSeq EC2OSP(const EC_Point & Point, EC::EC2OSP_COMPRESS_MODE mode);
 
         inline ByteSeq FE2OSP(unsigned int I, size_t pad=0)
         { return GF2X2OSP(I, pad); }
@@ -42,4 +35,13 @@ namespace ECGF2X
         { return OS2GF2XP(seq); }
     }
 }
+
+#ifdef OS2FEP_TPL
+template <>
+struct tOS2FEP<ECGF2X::Affine::EC_Point>
+{
+    inline ECGF2X::Affine::EC_Point::FE operator()(const ByteSeq & From)
+        { return ECGF2X::Affine::OS2FEP(From); }
+};
+#endif
 
