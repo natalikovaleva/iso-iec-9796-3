@@ -1,6 +1,6 @@
 .PHONY : all clean
 
-INCLUDE += -Intl-5.5.2/include
+INCLUDE += -Ibuild-libmath/deps/include
 
 INCLUDE += -Iinclude/
 
@@ -23,7 +23,7 @@ DSS := dss_ecknr \
 			 dss_ecmr	 \
 			 dss_ecao
 
-all: $(DSS)
+all: build-libmath/libmath/libmath.a $(DSS)
 
 CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg -march=native
 # CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg
@@ -50,22 +50,26 @@ lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 
 build/%.o : src/%.cpp
 		@mkdir -p $(dir $@)
-		g++ $(CXXFLAGS) $(WARNINGS) $(INCLUDE) --no-rtti -c -o $@ $<
+		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) --no-rtti -c -o $@ $<
 
 build/%.o : src/%.c
 		@mkdir -p $(dir $@)
-		gcc --std=gnu99 $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
+		$(CC) --std=gnu99 $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
 
 # Examples builds to cwd
-%: build/examples/%.o  lib/lib9796-3.a
+%: build/examples/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a
 		@mkdir -p $(dir $@)
-		g++ -static -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		$(CXX) -static -Wall $(CXXFLAGS) -o $@ $^ build-libmath/libmath/libmath.a
 		find -name "*.gcda" -delete
 
-%: build/tests/%.o  lib/lib9796-3.a
+%: build/tests/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a
 		@mkdir -p $(dir $@)
-		g++ -Wall $(CXXFLAGS) -o $@ $^ libntl.a -lgmp
+		$(CXX) -Wall $(CXXFLAGS) -o $@ $^ build-libmath/libmath/libmath.a
 		find -name "*.gcda" -delete
+
+build-libmath/libmath/libmath.a:
+	  cd build-libmath/ && \
+	  CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)" GCC="$(CC)" GXX="$(CXX)" sh ./build.sh
 
 clean:
 		[ -d build ] && find build -name "*.o" -delete || true
