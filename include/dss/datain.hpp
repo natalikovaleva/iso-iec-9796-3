@@ -22,7 +22,7 @@ struct DataInputHints
           L_add(0),
           H(H)
         {}
-    
+
     inline DataInputHints(const DataInputHints & Hints,
                           long L_add)
         : L_rec(Hints.L_rec),
@@ -31,18 +31,27 @@ struct DataInputHints
           L_add(L_add),
           H(Hints.H)
         {}
-            
+
 };
 
 struct DSSDataInput
 {
     const Octet d;
     const Octet M_clr;
+    const bool  invalid;
 
     inline DSSDataInput(const Octet & d,
-                        const Octet & M_clr)
+                        const Octet & M_clr,
+                        bool invalid = false)
         : d(d),
-          M_clr(M_clr)
+          M_clr(M_clr),
+          invalid(invalid)
+        {}
+
+    inline DSSDataInput()
+        : d(Octet()),
+          M_clr(Octet()),
+          invalid(true)
         {}
 };
 

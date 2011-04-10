@@ -14,6 +14,7 @@ int main(int argc     __attribute__((unused)),
     EC Curve = EC_Defaults::create(EC_Defaults::EC192);
 
     long L_rec = 9;
+    long L_pad = 1;
 
     cout << "Order bits: " << Lb(Curve.getOrder()) << endl;
     cout << "Modulus bits: " << Lb(Curve.getModulus()) << endl;
@@ -29,7 +30,7 @@ int main(int argc     __attribute__((unused)),
     const Algorithm::Precomputations_Method_Comb<Projective::EC_Point,
                                                  ZZ,
                                                  Affine::EC_Point> Precomputation (NumBits(Curve.getModulus()));
-    const ECAODataInputPolicy<DSS_ZZ_p> DefaultInputPolicy(L_rec, Curve, Hash::SHA256);
+    const ECAODataInputPolicy<DSS_ZZ_p> DefaultInputPolicy(L_rec, L_pad, Curve, Hash::SHA256);
     const DSSDomainParameters<DSS_ZZ_p> DomainParameters(Curve, DefaultInputPolicy, Precomputation);
     const DSSECAODomainParameters SchemeParameters(Hash(Hash::SHA256), MGF(MGF::MGF1, Hash::SHA256));
 

@@ -244,8 +244,7 @@ public:
                                                        PMessage.getDataSize()));
                 else
                 {
-                    return DSSDataInput(M_rec_pad, ByteSeq(PMessage.getData(),
-                                                           PMessage.getDataSize()));
+                    return DSSDataInput();
                 }
             }
         }
