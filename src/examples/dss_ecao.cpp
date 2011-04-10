@@ -14,7 +14,7 @@ int main(int argc     __attribute__((unused)),
     EC Curve = EC_Defaults::create(EC_Defaults::EC192);
 
     long L_rec = 9;
-    long L_pad = 1;
+    long L_pad = 4;
 
     cout << "Order bits: " << Lb(Curve.getOrder()) << endl;
     cout << "Modulus bits: " << Lb(Curve.getModulus()) << endl;
