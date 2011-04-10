@@ -8,6 +8,8 @@
 #include "generic/kdf.hpp"
 #include "generic/sym.hpp"
 
+#include "dss/datain_isoiec9796-3.hpp"
+
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/ec_compress.hpp"
 #include "ec/ZZ_p/affine/ec_defaults.hpp"
@@ -44,7 +46,8 @@ const EC_Defaults::Sizes ECSize = EC_Defaults::EC161;
 static const SymXor  Sym(18);
 static const ECPVKDF KDF(18);
 static const Hash    Hash(Hash::SHA1);
-static const MGF     MGF1(MGF::MGF1, Hash::SHA1);
+static const StaticDataInputPolicy InputPolicy(13 - 2 /* Padding */, 5 + 2 /* Padding */,
+                                               13 + 5 /* Total */, Hash::SHA1);
 
 int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
@@ -73,47 +76,33 @@ int main(int argc     __attribute__((unused)),
     cout << "Session key: " << I2OSP(k) << endl;
     cout << "Randomizer:  " << PP << endl;
 
-    const Octet SS = I2OSP(PP.getX());
+    const Octet SS = FE2OSP(PP.getX());
     const Octet P  = KDF(SS);
 
     cout << "Π : " << P << endl;
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
+    const TDataInput<ECPV_Input> ECPV_Data(InputPolicy);
+
+    /* ----------------------------------------------------- */
+
     string M("Test User 1");
-
-    const Octet DERPrintableString = I2OSP(0x13);
-    const Octet DERSize = I2OSP(M.length());
-
-    const Octet M_rec =
-        DERPrintableString ||
-        DERSize ||
-        ByteSeq((const unsigned char *)
-                M.c_str(),
-                M.length());
-
-    const size_t L_red = 5;
 
     unsigned char M_clr_data[] = {0xfa, 0x2b, 0x0c, 0xbe, 0x77};
 
-    const Octet  M_clr = Octet((unsigned char *) M_clr_data,
-                               (size_t) sizeof(M_clr_data));
+    const Octet  M_clr_octet = Octet((unsigned char *) M_clr_data,
+                                     (size_t) sizeof(M_clr_data));
 
-    cout << "M_rec: "  << M_rec << endl;
-    cout << "M_clr: "  << M_clr << endl;
+    const Octet Message = Octet((unsigned char *) M.c_str(),
+                                M.length()) || M_clr_octet;
 
-    const Octet C_red_ = I2OSP(L_red);
-    Octet C_red;
+    /* ---------------------------------------------- */
 
-    for (unsigned int i = 0; i<L_red; i++)
-        C_red = C_red || C_red_ ;
+    DSSDataInput SignData = ECPV_Data.createInput(Message, P);
 
-    const Octet d = C_red || M_rec;
-
-    cout << "d: " << d << endl;
-
-    const Octet r = d ^ P;
-    const Octet u = Hash(r || M_clr);
+    const Octet r = SignData.d ^ P;
+    const Octet u = Hash(r || SignData.M_clr);
     const ZZ_p  t = InMod(OS2IP(u));
     const ZZ_p  s = (InMod(k) - InMod(Xa)*t);
 

@@ -41,7 +41,7 @@ int main(int argc     __attribute__((unused)),
     
     for (unsigned int i = 0; i<1000000; i++)
     {
-        OPoint = Hash(EC2OSP(* (randoms [i % 300]), EC2OSP_UNCOMPRESSED));
+        OPoint = Hash(EC2OSP(* (randoms [i % 300]), EC::EC2OSP_UNCOMPRESSED));
     }
     
     time2 = time(NULL);
@@ -53,7 +53,7 @@ int main(int argc     __attribute__((unused)),
 
     for (unsigned int i = 0; i<1000000; i++)
     {
-        OPoint = EC2OSP(* (randoms [i % 300]), EC2OSP_COMPRESSED);
+        OPoint = EC2OSP(* (randoms [i % 300]), EC::EC2OSP_COMPRESSED);
     }
     
     time2 = time(NULL);
@@ -65,7 +65,7 @@ int main(int argc     __attribute__((unused)),
     
     for (unsigned int i = 0; i<1000000; i++)
     {
-        OPoint = EC2OSP(*(randoms [i % 300]), EC2OSP_UNCOMPRESSED);
+        OPoint = EC2OSP(*(randoms [i % 300]), EC::EC2OSP_UNCOMPRESSED);
     }
     
     time2 = time(NULL);

@@ -7,7 +7,19 @@
 
 using namespace NTL;
 
-ByteSeq I2OSP(unsigned I, size_t pad=0);
+
+inline ByteSeq I2OSP(unsigned int I, size_t pad = 0)
+{
+    const size_t size = NumBytes(I);
+
+    if (I == 0)
+    {
+        char byte = 0;
+        return ByteSeq(&byte, 1, pad);
+    }
+
+    return ByteSeq((const char *)&I, size, pad, true);
+}
 
 inline ByteSeq I2OSP(const ZZ & I, size_t pad=0)
 {

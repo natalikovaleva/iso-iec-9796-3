@@ -5,6 +5,9 @@
 #include "generic/octet.hpp"
 #include "generic/hash.hpp"
 #include "generic/mgf.hpp"
+
+#include "dss/datain_isoiec9796-3.hpp"
+
 #include "ec/GF2X/affine/ec.hpp"
 #include "ec/GF2X/affine/ec_defaults.hpp"
 #include "ec/GF2X/affine/utils.hpp"
@@ -24,6 +27,8 @@ int main(int argc     __attribute__((unused)),
     GF2X::HexOutput = 1;
 
     EC EC = EC_Defaults::create(EC_Defaults::EC163);
+
+    const StaticDataInputPolicy InputPolicy(10, 11, L(EC.getOrder()), Hash::SHA1);
 
     cout << EC << endl;
 
@@ -46,7 +51,7 @@ int main(int argc     __attribute__((unused)),
 
     cout << "kG: " << R << endl;
 
-    const ByteSeq OPoint = EC2OSP(R, EC2OSP_UNCOMPRESSED);
+    const ByteSeq OPoint = EC2OSP(R, EC::EC2OSP_UNCOMPRESSED);
 
     cout << "Octet Point: " << OPoint << endl;
 
@@ -56,31 +61,17 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Π : " << Pi << endl;
 
+    const TDataInput<ECMR_Input> ECMR_Data(InputPolicy);
+
     const string Message("TestVector");
 
-    const long L_rec = Message.length();
-    const long L_red = Ln - L_rec;
-    const long L_clr = 0;
+    DSSDataInput SignData = ECMR_Data.createInput(Message, Pi);
 
-    cout << "Parameters: L_rec=" << L_rec << "; L_red=" << L_red
-         << "; L_clr=" << L_clr << endl;
-
-    const ByteSeq M(Message.c_str(), Message.length());
-    const ByteSeq & M_rec = M;
-
-    const Octet h = Truncate(Hash(Pi || M), L_red);
-
-    cout << "Hash token: " << h << endl;
-
-    const Octet d = h || M_rec;
-
-    cout << "Data input: " << d << endl;
-
-    const Octet r = d ^ Pi;
+    const Octet r = SignData.d ^ Pi;
 
     cout << "R: " << r << endl;
 
-    EC.enter_mod_context();
+    EC.enter_mod_context(EC::ORDER_CONTEXT);
 
     const ZZ_p s = InMod(OS2IP(r) * k - OS2IP(r) - 1) / InMod(Xa + 1);
 
