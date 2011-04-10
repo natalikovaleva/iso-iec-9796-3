@@ -77,5 +77,5 @@ rm -f *.o
 cd "${BUILDPWD}"
 echo DONE
 
-[ ! -f libmath/libmath.a  ] || exit 1
+[ -f libmath/libmath.a  ] || exit 1
 
