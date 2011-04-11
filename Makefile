@@ -25,7 +25,7 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-CXXFLAGS := -O2 -ftree-vectorize -fprofile-arcs -fwhole-program -combine -flto -pg -march=native
+CXXFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native
 # CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
@@ -64,7 +64,7 @@ build/%.o : src/%.c
 
 %: build/tests/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a
 		@mkdir -p $(dir $@)
-		$(CXX) -Wall $(CXXFLAGS) -o $@ $^ build-libmath/libmath/libmath.a
+		$(CXX) -static  -Wall $(CXXFLAGS) -o $@ $^ build-libmath/libmath/libmath.a
 		find -name "*.gcda" -delete
 
 build-libmath/libmath/libmath.a:
