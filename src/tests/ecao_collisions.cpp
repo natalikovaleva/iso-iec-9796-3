@@ -3,12 +3,21 @@
 
 #include "algorithm/comb.hpp"
 
-#include <omp.h>
+#include <signal.h>
 
 using namespace NTL;
 using namespace std;
 using namespace ECZZ_p;
 using namespace ECZZ_p::Affine;
+
+static int bench = 0;
+
+void alarm_SIGNAL(int sig __attribute__((unused)))
+{
+	cout << bench << " verifications / 10" << endl;
+	bench = 0;
+	alarm(10);
+}
 
 class NTLPRNG : public generateRandomValueCallback
 {
@@ -92,10 +101,17 @@ int main(int argc     __attribute__((unused)),
 
     unsigned long long i = 0;
 
+    struct sigaction act;
+    act.sa_handler = alarm_SIGNAL;
+    act.sa_flags=0x0;
+    sigaction(SIGALRM, &act, NULL);
+    alarm(10);
+
     do
     {
         fakeR += addR;
         i ++ ;
+        bench ++;
 
 
         DigitalSignature fakeSign(I2OSP(fakeR, sign.R.getDataSize()), sign.S, sign.M_clr);
