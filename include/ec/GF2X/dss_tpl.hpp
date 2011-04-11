@@ -14,3 +14,9 @@ struct DSS_GF2X
     typedef ECGF2X::Projective::EC pEC;
     typedef ECGF2X::Projective::EC_Point pECP;
 };
+
+namespace ECGF2X
+{
+    typedef DSS_GF2X DSSEC;
+}
+
