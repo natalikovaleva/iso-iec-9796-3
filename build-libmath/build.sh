@@ -8,6 +8,10 @@ export CXXFLAGS=${CXXFLAGS:-"-O2 -march=native -pipe -fomit-frame-pointer"}
 export CFLAGS="${CFLAGS} -flto -fwhole-program -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block"
 export CXXFLAGS="${CXXFLAGS} -flto -fwhole-program -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block --no-rtti"
 
+ABI_NATIVE=$( [ "$(uname -m)" = "x86_64" ] && echo 64 || echo 32)
+
+export ABI=${ABI:-${ABI_NATIVE}}
+
 VNTL=5.5.2
 VGF2X=1.0
 VGMP=5.0.1
@@ -20,44 +24,45 @@ BUILDPWD=$(pwd)
 
 cd "${BUILDPWD}/gmp-${VGMP}"
 ./configure \
-              CC=$CC \
-              CXX=$CXX \
-              CFLAGS="${CFLAGS}" \
-              CXXFLAGS="${CXXFLAGS}" \
-              --prefix="${BUILDPWD}/deps"
+    CC=$CC \
+    CXX=$CXX \
+    CFLAGS="${CFLAGS} -m32" \
+    CXXFLAGS="${CXXFLAGS}" \
+	  ABI="${ABI}" \
+    --prefix="${BUILDPWD}/deps"
 
-make install
+make install || exit 1
 
 cd "${BUILDPWD}/gf2x-${VGF2X}"
 ./configure \
-              CC=$CC \
-              CXX=$CXX \
-              CFLAGS="${CFLAGS}" \
-              CXXFLAGS="${CXXFLAGS}" \
-              --prefix="${BUILDPWD}/deps"
-make install
+    CC=$CC \
+    CXX=$CXX \
+    CFLAGS="${CFLAGS}" \
+    CXXFLAGS="${CXXFLAGS}" \
+    --prefix="${BUILDPWD}/deps"
+make install || exit 1
 
 cd "$BUILDPWD/ntl-${VNTL}/src"
 
 make clean
 
 ./configure \
-              CC=$CC \
-              CXX=$CXX \
-              CFLAGS="${CFLAGS}" \
-              CXXFLAGS="${CXXFLAGS}" \
-              GF2X_PREFIX="${BUILDPWD}/deps/" \
-              GMP_PREFIX="${BUILDPWD}/deps/" \
-              NTL_GMP_LIP=on \
-              NTL_GF2X_LIB=on \
-              NTL_AVOID_BRANCHING=on \
-              PREFIX="${BUILDPWD}/deps" \
-              WIZARD=off
+    CC=$CC \
+    CXX=$CXX \
+    CFLAGS="${CFLAGS}" \
+    CXXFLAGS="${CXXFLAGS}" \
+    GF2X_PREFIX="${BUILDPWD}/deps/" \
+    GMP_PREFIX="${BUILDPWD}/deps/" \
+    NTL_GMP_LIP=on \
+    NTL_GF2X_LIB=on \
+    NTL_AVOID_BRANCHING=on \
+    PREFIX="${BUILDPWD}/deps" \
+    WIZARD=off
 
 rm -f ntl.a
 make
 make ntl.a  || exit 1
-make install
+make install || exit 1
 
 
 mkdir -p "$BUILDPWD/libmath"
