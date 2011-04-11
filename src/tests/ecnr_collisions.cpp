@@ -58,7 +58,7 @@ int main(int argc     __attribute__((unused)),
     dss.buildPrecomputationTables();
 
     Octet BaseMessage = ByteSeq(M.c_str(), M.length());
-    
+
     DigitalSignature baseSign = dss.sign(BaseMessage);
     if (! dss.verify(baseSign).isValid())
         abort();
@@ -69,16 +69,16 @@ int main(int argc     __attribute__((unused)),
     ZZ addR = (ZZ() + 1) << ((L_rec/2)*8);
 
     unsigned long long i = 0;
-    
+
     do
     {
         fakeR += addR;
         i ++ ;
-        
-        
+
+
         DigitalSignature fakeSign(I2OSP(fakeR, baseSign.R.getDataSize()), baseSign.S, baseSign.M_clr);
         VerificationVerdict verdict = dss.verify(fakeSign);
-        
+
         if (verdict.isValid())
         {
             cout << "FAKE SIGN AT " << i << " PROBES" << endl;
@@ -86,27 +86,15 @@ int main(int argc     __attribute__((unused)),
             cout << "S: " << fakeSign.S << endl;
             cout << "M_clr: " << fakeSign.M_clr << endl;
             cout << "M: " << verdict.getMessage() << endl;
-            
+
             cout << "BASE SIGN: " << endl;
             cout << "R: " << baseSign.R << endl;
             cout << "S: " << baseSign.S << endl;
             cout << "M_clr: " << baseSign.M_clr << endl;
             cout << "M: " << BaseMessage << endl;
-            
-            return 1;
         }
-        else
-        {
-            cout << "INVALID SIGN: " << i <<endl;
-            cout << "R: " << fakeSign.R << endl;
-            cout << "S: " << fakeSign.S << endl;
-            cout << "M_clr: " << fakeSign.M_clr << endl;
-
-        }
-        
-        
     } while (1);
-    
-        
+
+
     return 0;
 }
