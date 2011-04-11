@@ -14,3 +14,8 @@ struct DSS_ZZ_p
     typedef ECZZ_p::Projective::EC pEC;
     typedef ECZZ_p::Projective::EC_Point pECP;
 };
+
+namespace ECZZ_p
+{
+    typedef DSS_ZZ_p DSSEC;
+}
