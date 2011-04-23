@@ -45,7 +45,7 @@ public:
             if (! _isPrivateKeyLoaded)
                 throw;
 
-            const ZZ k = OS2IP(_PRNG()) % Curve.getOrder();
+            const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             Octet P;
             

@@ -72,7 +72,7 @@ public:
             if (! _isPrivateKeyLoaded)
                 throw;
 
-            const ZZ k = OS2IP(_PRNG()) % Curve.getOrder();
+            const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
