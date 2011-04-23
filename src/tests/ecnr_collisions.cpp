@@ -60,7 +60,7 @@ int main(int argc     __attribute__((unused)),
     Octet BaseMessage = ByteSeq(M.c_str(), M.length());
 
     DigitalSignature baseSign = dss.sign(BaseMessage);
-    if (! dss.verify(baseSign).isValid())
+    if (! dss.verify(baseSign).isValid)
         abort();
 
     cout << "Searching new signature, changing first byte" << endl;
@@ -79,13 +79,13 @@ int main(int argc     __attribute__((unused)),
         DigitalSignature fakeSign(I2OSP(fakeR, baseSign.R.getDataSize()), baseSign.S, baseSign.M_clr);
         VerificationVerdict verdict = dss.verify(fakeSign);
 
-        if (verdict.isValid())
+        if (verdict.isValid)
         {
             cout << "FAKE SIGN AT " << i << " PROBES" << endl;
             cout << "R: " << fakeSign.R << endl;
             cout << "S: " << fakeSign.S << endl;
             cout << "M_clr: " << fakeSign.M_clr << endl;
-            cout << "M: " << verdict.getMessage() << endl;
+            cout << "M: " << verdictMessage << endl;
 
             cout << "BASE SIGN: " << endl;
             cout << "R: " << baseSign.R << endl;
