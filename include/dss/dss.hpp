@@ -51,6 +51,17 @@ public:
         { return getRandomValue(); }
 };
 
+class fixedGenerator : public generateRandomValueCallback
+{
+    const Octet _FixedValue;
+public:
+    fixedGenerator(const Octet & FixedValue)
+        : _FixedValue(FixedValue)
+        {}
+    Octet getRandomValue()
+        { return _FixedValue; }
+};
+
 class DigitalSignatureWithRecovery
 {
 protected:
