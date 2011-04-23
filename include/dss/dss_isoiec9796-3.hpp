@@ -15,17 +15,6 @@ struct tOS2FEP
 #include "ec/ZZ_p/dss_tpl.hpp"
 #include "ec/GF2X/dss_tpl.hpp"
 
-class fixedGenerator : public generateRandomValueCallback
-{
-    const Octet _FixedValue;
-public:
-    fixedGenerator(const Octet & FixedValue)
-        : _FixedValue(FixedValue)
-        {}
-    Octet getRandomValue()
-        { return _FixedValue; }
-};
-
 template<class EC_Dscr>
 class ECDataInputPolicy : public StaticDataInputPolicy
 {
