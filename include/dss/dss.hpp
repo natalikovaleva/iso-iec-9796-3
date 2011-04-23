@@ -71,3 +71,22 @@ public:
 
     virtual void buildPrecomputationTables() = 0;
 };
+
+class DigitalSignatureWithAddition
+{
+protected:
+    DigitalSignatureWithAddition() {}
+
+public:
+    virtual ~DigitalSignatureWithAddition() {}
+
+    virtual DigitalSignature sign(const ByteSeq & data) = 0;
+    virtual VerificationVerdict verify(const DigitalSignature & data) = 0;
+
+    virtual void setPrivateKey(const Octet & PrivateKey) = 0;
+    virtual void setPublicKey(const Octet & PublicKey) = 0;
+
+    virtual Octet generatePublicKey() = 0;
+
+    virtual void buildPrecomputationTables() = 0;
+};
