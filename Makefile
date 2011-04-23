@@ -25,7 +25,7 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-CXXFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native
+CXXFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native -fPIC -fvisibility=hidden
 # CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
@@ -69,7 +69,7 @@ build/%.o : src/%.c
 
 build-libmath/libmath/libmath.a:
 	  cd build-libmath/ && \
-	  CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)" GCC="$(CC)" GXX="$(CXX)" sh ./build.sh
+	  CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CXXFLAGS)" GCC="$(CC)" GXX="$(CXX)" sh ./build.sh
 
 clean:
 		[ -d build ] && find build -name "*.o" -delete || true
