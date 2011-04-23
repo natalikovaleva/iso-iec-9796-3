@@ -61,7 +61,7 @@ public:
             const ZZ e = InvMod(_privateKey, _Curve.getOrder());
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            _publicKey = _BasePoint() * e;
+            _publicKey = _BasePoint * e;
             _Curve.leave_mod_context();
 
             _isPublicKeyLoaded = true;
@@ -69,11 +69,11 @@ public:
             setPublicKeyHook();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            typename EC_Dscr::aECP _AffinePublicKey = toAffine(_publicKey);
+            typename EC_Dscr::aECP AffinePublicKey = toAffine(_publicKey);
             _Curve.leave_mod_context();
 
-            return FE2OSP(_AffinePublicKey.getX(), _Lcm) ||
-                FE2OSP(_AffinePublicKey.getY(), _Lcm);
+            return FE2OSP(AffinePublicKey.getX(), _Lcm) ||
+                FE2OSP(AffinePublicKey.getY(), _Lcm);
         }
 
     DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
@@ -81,7 +81,7 @@ public:
             if (! (_isPublicKeyLoaded && _isPrivateKeyLoaded))
                 throw;
 
-            const ZZ k = OS2IP(_PRNG()) % Curve.getOrder();
+            const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             const typename EC_Dscr::aECP PP = toAffine(_publicKey * k);
