@@ -21,26 +21,21 @@ public:
         {}
 };
 
-class VerificationVerdict
+struct VerificationVerdict
 {
-    const Octet _Message;
-    const bool  _isValid;
+    const Octet Message;
+    const bool  isValid;
 
 public:
     VerificationVerdict(const Octet & Message)
-        : _Message(Message),
-          _isValid(true)
+        : Message(Message),
+          isValid(true)
         {}
 
     VerificationVerdict()
-        : _Message(Octet()),
-          _isValid(false)
+        : Message(Octet()),
+          isValid(false)
         {}
-
-    inline bool isValid()
-        { return _isValid; }
-    inline Octet getMessage()
-        { return _Message; }
 };
 
 class generateRandomValueCallback

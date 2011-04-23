@@ -49,8 +49,8 @@ int main(int argc     __attribute__((unused)),
 
     VerificationVerdict v = dss.verify(sign);
 
-    cout << "M: " << v.getMessage() << endl;
-    cout << "V: " << v.isValid() << endl;
+    cout << "M: " << v.Message << endl;
+    cout << "V: " << v.isValid << endl;
 
     return 0;
 }
