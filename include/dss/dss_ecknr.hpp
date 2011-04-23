@@ -81,7 +81,7 @@ public:
             if (! (_isPublicKeyLoaded && _isPrivateKeyLoaded))
                 throw;
 
-            const ZZ k = OS2IP(_PRNG());
+            const ZZ k = OS2IP(_PRNG()) % Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             const typename EC_Dscr::aECP PP = toAffine(_publicKey * k);
@@ -104,11 +104,11 @@ public:
             const Octet r = SignData.d ^ P ^ m;
             const ZZ_p  t = InMod(OS2IP(r));
             const ZZ_p  s = (InMod(k) - InMod(_privateKey)*t);
-            
+
             const Octet S = I2OSP(s);
 
             _Curve.leave_mod_context();
-            
+
             return DigitalSignature(r, S, SignData.M_clr);
         }
 

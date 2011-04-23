@@ -76,7 +76,7 @@ public:
             if (! _isPrivateKeyLoaded)
                 throw;
 
-            const ZZ k = OS2IP(_PRNG());
+            const ZZ k = (OS2IP(_PRNG()) % _Curve.getOrder());
             const size_t K = _Ln; // Security parameter
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);

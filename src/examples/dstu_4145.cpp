@@ -31,7 +31,7 @@ int main()
     dss.setPrivateKey(Xa);
     dss.generatePublicKey();
 
-    // dss.buildPrecomputationTables();
+    dss.buildPrecomputationTables();
 
     DigitalSignature sign =
         dss.sign(ByteSeq(M.c_str(), M.length()));
