@@ -61,14 +61,16 @@ public:
             const ZZ e = InvMod(_privateKey, _Curve.getOrder());
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            _publicKey = _PCurve.getBasePoint() * e;
+            _publicKey = _BasePoint() * e;
             _Curve.leave_mod_context();
 
             _isPublicKeyLoaded = true;
 
             setPublicKeyHook();
 
+            _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             typename EC_Dscr::aECP _AffinePublicKey = toAffine(_publicKey);
+            _Curve.leave_mod_context();
 
             return FE2OSP(_AffinePublicKey.getX(), _Lcm) ||
                 FE2OSP(_AffinePublicKey.getY(), _Lcm);
@@ -102,9 +104,11 @@ public:
             const Octet r = SignData.d ^ P ^ m;
             const ZZ_p  t = InMod(OS2IP(r));
             const ZZ_p  s = (InMod(k) - InMod(_privateKey)*t);
-
+            
             const Octet S = I2OSP(s);
 
+            _Curve.leave_mod_context();
+            
             return DigitalSignature(r, S, SignData.M_clr);
         }
 
@@ -124,7 +128,7 @@ public:
         t %= _Curve.getOrder();
 
         _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-        typename EC_Dscr::aECP R = toAffine(_publicKey * s + _Curve.getBasePoint() * t);
+        typename EC_Dscr::aECP R = toAffine(_publicKey * s + _BasePoint * t);
         _Curve.leave_mod_context();
 
         const Octet P  = _MGF(EC2OSP(R, EC_Dscr::aEC::EC2OSP_COMPRESSED), _Ln);
