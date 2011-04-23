@@ -5,8 +5,8 @@ export CXX=${CXX:-g++}
 export CFLAGS=${CFLAGS:-"-O2 -march=native -pipe -fomit-frame-pointer"}
 export CXXFLAGS=${CXXFLAGS:-"-O2 -march=native -pipe -fomit-frame-pointer"}
 
-export CFLAGS="${CFLAGS} -flto -fwhole-program -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block"
-export CXXFLAGS="${CXXFLAGS} -flto -fwhole-program -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block --no-rtti"
+export CFLAGS="${CFLAGS} -fPIC -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block"
+export CXXFLAGS="${CXXFLAGS} -fPIC -flto -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block --no-rtti"
 
 ABI_NATIVE=$( [ "$(uname -m)" = "x86_64" ] && echo 64 || echo 32)
 
@@ -26,9 +26,9 @@ cd "${BUILDPWD}/gmp-${VGMP}"
 ./configure \
     CC=$CC \
     CXX=$CXX \
-    CFLAGS="${CFLAGS} -m32" \
+    CFLAGS="${CFLAGS}" \
     CXXFLAGS="${CXXFLAGS}" \
-	  ABI="${ABI}" \
+    ABI="${ABI}" \
     --prefix="${BUILDPWD}/deps"
 
 make install || exit 1
@@ -81,6 +81,31 @@ rm -f *.o
 
 cd "${BUILDPWD}"
 echo DONE
+
+patch -p0 << __EOF__
+--- deps/include/NTL/tools.h.orig	2011-04-23 22:10:01.124612099 +0300
++++ deps/include/NTL/tools.h	2011-04-23 22:09:43.102649844 +0300
+@@ -267,7 +267,7 @@
+ 
+ #else
+ 
+-inline void ForceToMem(double *p) { }
++inline void ForceToMem(double *p __attribute__((unused))) { }
+ 
+ #endif
+ 
+--- deps/include/NTL/ZZ.h.orig	2011-04-23 22:09:15.100708556 +0300
++++ deps/include/NTL/ZZ.h	2011-04-23 22:10:58.907491310 +0300
+@@ -1994,7 +1994,7 @@
+ 
+ #define NTL_SPMM_VEC_T vec_double
+ 
+-static inline double PrepMulModPrecon(long b, long n, double ninv)
++static inline double PrepMulModPrecon(long b, long n __attribute__((unused)), double ninv)
+ {
+    return ((double) b) * ninv;
+ }
+__EOF__
 
 [ -f libmath/libmath.a  ] || exit 1
 
