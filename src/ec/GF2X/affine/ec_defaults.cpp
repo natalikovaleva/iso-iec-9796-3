@@ -6,6 +6,8 @@
 #include "ec/GF2X/affine/utils.hpp"
 #include "ec/ZZ_p/affine/utils.hpp"
 
+#include <exception>
+
 using namespace std;
 using namespace NTL;
 using namespace ECGF2X::Affine;
@@ -69,7 +71,7 @@ EC EC_Defaults::create(Sizes size, Version ver)
 
                     break;
                 default:
-                    throw;
+                    throw std::exception();
             }
             break;
 
@@ -100,7 +102,7 @@ EC EC_Defaults::create(Sizes size, Version ver)
                     SEED=GF2X_str("0x0");
                     break;
                 default:
-                    throw;
+                    throw std::exception();
             }
             break;
 
@@ -131,12 +133,12 @@ EC EC_Defaults::create(Sizes size, Version ver)
 
                     break;
                 default:
-                    throw;
+                    throw std::exception();
             }
             break;
 
         default:
-            throw;
+            throw std::exception();
     }
 
     return EC(A, B, C,

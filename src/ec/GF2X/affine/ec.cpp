@@ -1,6 +1,8 @@
 #include "ec/GF2X/affine/ec.hpp"
 #include "ec/GF2X/affine/utils.hpp"
 
+#include <exception>
+
 using namespace ECGF2X::Affine;
 
 /* ---------------------- Points ------------------------ */
@@ -20,7 +22,7 @@ EC_Point::EC_Point(const GF2X &X, const GF2X &Y, const EC & __EC)
       __generic_multiplication()
 {
     if (! _IsOnCurve())
-        throw;
+        throw std::exception();
 }
 
 EC_Point::EC_Point(const EC & __EC)
@@ -47,7 +49,7 @@ bool EC_Point::_IsOnCurve() const
     const GF2X X2 = SqrMod(X, __EC.P);
     const GF2X X3 = PowerMod(X, 3, __EC.P);
 
-    
+
     const GF2X L_Part = Y2 + MulMod(X, Y, __EC.P);
     const GF2X R_Part = X3 + MulMod(__EC.A, X2, __EC.P) + __EC.B;
 
@@ -63,7 +65,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
 {
     // __EC field must be the same
     if (! isSameEC(__EC))
-        throw; // assert
+        throw std::exception(); // assert
 
     if (Y.isZeroPoint)
     {
@@ -77,7 +79,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         this->isZeroPoint = false;
         this->__precomputations = Y.__precomputations;
     }
-    
+
     return *this;
 }
 
@@ -86,7 +88,7 @@ EC_Point EC_Point::operator+  (const EC_Point & _Y) const
     EC_Point __retval(*this);
 
     __retval+= _Y;
-    
+
     return __retval;
 }
 
@@ -101,13 +103,13 @@ void EC_Point::operator+= (const EC_Point & _Y)
     {
         return;
     }
-    
+
     if (isZero())
     {
         *this = _Y;
         return;
     }
-    
+
     if ((this == &_Y) || (Y==YY))
     {
         const GF2X r = X + MulMod(Y, InvMod(X, __EC.P_mod),
@@ -129,13 +131,13 @@ void EC_Point::operator+= (const EC_Point & _Y)
 
         const GF2X X3 = r2 + r + X + YX + __EC.A;
         const GF2X Y3 = MulMod( X + X3, r, __EC.P_mod) + X3 + Y;
-        
+
         X = X3;
         Y = Y3;
     }
 
     __precomputations.drop();
-    
+
     return;
 }
 
@@ -234,14 +236,14 @@ bool EC::generate_random(GF2X & d) const
 
     /* FIXME: Check, that d < N-1 */
     return true;
-    
+
 }
 
 bool EC::generate_random(ZZ & d) const
 {
     RandomBnd(d, N);
 
-    if (d < (N - 1))    
+    if (d < (N - 1))
         return true;
 
     return false;
