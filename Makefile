@@ -27,7 +27,7 @@ all: build-libmath/libmath/libmath.a $(DSS)
 
 CFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native -fPIC -fvisibility=hidden
 # CFLAGS := -O0 -fPIC -ggdb -flto -fvisibility=hidden
-CXXFLAGS := $(CFLAGS) -fvisibility-inlines-hidden
+CXXFLAGS := $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
@@ -51,7 +51,7 @@ lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 
 build/%.o : src/%.cpp
 		@mkdir -p $(dir $@)
-		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) --no-rtti -c -o $@ $<
+		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -fvisibility-inlines-hidden --no-rtti -c -o $@ $<
 
 build/%.o : src/%.c
 		@mkdir -p $(dir $@)
