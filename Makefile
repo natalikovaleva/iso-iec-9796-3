@@ -30,9 +30,9 @@ LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
 
 FEATURES ?= lto loops nortti
 
-CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden
+CFLAGS ?= -O2 -march=native -fPIC -fvisibility=hidden
 # CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden
-CXXFLAGS := $(CFLAGS)
+CXXFLAGS ?= $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 ifeq ($(findstring lto,$(FEATURES)),lto)
