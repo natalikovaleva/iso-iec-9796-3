@@ -77,9 +77,9 @@ int main(int argc     __attribute__((unused)),
 
     string M("This is a test message!");
 
-    const long L_rec = 10;
-    const long L_red = 9;
-    const long L_clr = M.length() - L_rec;
+    const unsigned long L_rec = 10;
+    const unsigned long L_red = 9;
+    const unsigned long L_clr = M.length() - L_rec;
 
     cout << "Message: '" << M << "'" << endl;
     cout << "[ L_rec: " << L_rec << "; L_clr: "
