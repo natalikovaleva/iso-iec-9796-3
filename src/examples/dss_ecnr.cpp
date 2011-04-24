@@ -13,7 +13,7 @@ int main(int argc     __attribute__((unused)),
 {
     EC Curve = EC_Defaults::create(EC_Defaults::EC160);
 
-    const long L_rec = 10;
+    const unsigned long L_rec = 10;
 
     cout << "Order bits: " << Lb(Curve.getOrder()) << endl;
 

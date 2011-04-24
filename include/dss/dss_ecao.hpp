@@ -17,7 +17,7 @@ template<class EC_Dscr>
 class ECAODataInputPolicy : public StaticDataInputPolicy
 {
 public:
-    ECAODataInputPolicy(long L_rec, long L_pad,
+    ECAODataInputPolicy(unsigned long L_rec, unsigned long L_pad,
                         const typename EC_Dscr::aEC & EC,
                         Hash::Hash_Type Hash_type)
         : StaticDataInputPolicy(L_rec,
