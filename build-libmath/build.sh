@@ -2,8 +2,8 @@
 
 export CC=${CC:-gcc}
 export CXX=${CXX:-g++}
-export CFLAGS=${CFLAGS:-"-O2 -march=native -pipe -fomit-frame-pointer"}
-export CXXFLAGS=${CXXFLAGS:-"-O2 -march=native -pipe -fomit-frame-pointer"}
+export CFLAGS="${CFLAGS:-\"-O2 -march=native -pipe -fomit-frame-pointer\"}"
+export CXXFLAGS="${CXXFLAGS:-\"-O2 -march=native -pipe -fomit-frame-pointer\"}"
 
 export CFLAGS="${CFLAGS} -fPIC"
 export CXXFLAGS="${CXXFLAGS} -fPIC --no-rtti"
