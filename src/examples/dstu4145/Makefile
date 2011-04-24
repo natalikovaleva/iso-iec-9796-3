@@ -3,8 +3,8 @@
 LIB=dstu4145
 SONAME=lib$(LIB).so
 
-CXXFLAGS ?= -O0 -ggdb -march=native -flto -combine -ftree-vectorize -fomit-frame-pointer -pipe
-INCLUDE  ?= -I . -I ../../../include
+CXXFLAGS ?= -O2 -ggdb -march=native -pipe
+INCLUDE  ?= -I . -I ../../../build-libmath/deps/include/ -I ../../../include
 LIBS ?=  ../../../build-libmath/libmath/libmath.a ../../../lib/lib9796-3.a
 
 all: $(SONAME) example
