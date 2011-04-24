@@ -25,8 +25,9 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-CXXFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native -fPIC -fvisibility=hidden
-# CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg
+CFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native -fPIC -fvisibility=hidden
+# CFLAGS := -O0 -fPIC -ggdb -flto -fvisibility=hidden
+CXXFLAGS := $(CFLAGS) -fvisibility-inlines-hidden
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
@@ -54,7 +55,7 @@ build/%.o : src/%.cpp
 
 build/%.o : src/%.c
 		@mkdir -p $(dir $@)
-		$(CC) --std=gnu99 $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
+		$(CC) --std=gnu99 $(CFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
 
 # Examples builds to cwd
 %: build/examples/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a
@@ -69,7 +70,7 @@ build/%.o : src/%.c
 
 build-libmath/libmath/libmath.a:
 	  cd build-libmath/ && \
-	  CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CXXFLAGS)" GCC="$(CC)" GXX="$(CXX)" sh ./build.sh
+	  CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)" GCC="$(CC)" GXX="$(CXX)" sh ./build.sh
 
 clean:
 		[ -d build ] && find build -name "*.o" -delete || true
