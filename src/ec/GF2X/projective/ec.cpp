@@ -15,7 +15,7 @@ namespace ECGF2X
 {
     namespace Projective
     {
-        inline void 
+        inline void
         Lopez_Dahab_Double(GF2X & X,
                            GF2X & Y,
                            GF2X & Z,
@@ -31,7 +31,7 @@ namespace ECGF2X
 
             MulMod(Z, X2, Z2, P); // Z now == Z_3
             add(X, X4, bZ4);      // X now == X_3
-    
+
             const GF2X aZ_3 = MulMod(A, Z, P);
             const GF2X Braces = aZ_3 + Y2 + bZ4;
 
@@ -42,7 +42,7 @@ namespace ECGF2X
         /* Generic addition in Lopez-Dahab Projective coordinates
          * p.94 (115) */
 
-        inline void 
+        inline void
         Lopez_Dahab_Mixed_Addition(EC_Point & P1,
                                    const Affine::EC_Point & P2)
         {
@@ -55,13 +55,13 @@ namespace ECGF2X
             const GF2X aZ2 = IsOne(a) ? Z2 : MulMod(a, Z2, P);
 
             /* ------------------------------------- */
-            
+
             const GF2X & X_2 = P2.getX();
             const GF2X & Y_2 = P2.getY();
             const GF2X & Z_1 = P1.getZ();
             const GF2X & X_1 = P1.getX();
             const GF2X & Y_1 = P1.getY();
-            
+
             /* ------------------------------------- */
 
             const GF2X A = MulMod(Y_2, Z2, P) + Y_1;
@@ -72,7 +72,7 @@ namespace ECGF2X
                 P1.X = X_2;
                 P1.Y = Y_2;
                 P1.Z = GF2X(0, 1);
-                
+
                 Lopez_Dahab_Double(P1.X,
                                    P1.Y,
                                    P1.Z,
@@ -82,7 +82,7 @@ namespace ECGF2X
 
                 return;
             }
-            
+
             const GF2X C = MulMod(Z_1, B, P);
             const GF2X D = MulMod(SqrMod(B, P),
                                   (C + aZ2),
@@ -103,7 +103,7 @@ namespace ECGF2X
 
 
         /* LNCS. 2000 / 1977, 10.1.1.75.402 */
-        inline void 
+        inline void
         Lopez_Dahab_Addition(EC_Point & P1,
                              const EC_Point & P2)
         {
@@ -139,13 +139,17 @@ namespace ECGF2X
             return EC.create(Point.getX(), Point.getY(),
                              GF2X(0, 1));
     }
-    
 
 
-    Affine::EC_Point 
+
+    Affine::EC_Point
     toAffine(const Projective::EC_Point & Point)
     {
         const Affine::EC & EC = Point.getEC().getAffineBasePoint().getEC();
+
+        if (Point.isZero())
+            return EC.create();
+
         const GF2X & P = EC.getModulus();
         const GF2X iZ = InvMod(Point.getZ(), P);
         return EC.create(MulMod(Point.getX(), iZ, P),
@@ -210,7 +214,7 @@ bool EC_Point::_IsOnCurve() const
     const GF2X Y2 = SqrMod(Y,     P);
     const GF2X Z2 = SqrMod(Z,     P);
     const GF2X Z4 = SqrMod(Z2,    P);
-        
+
     const GF2X L_Part = Y2 + MulMod(MulMod(X, Y, P), Z, P);
     const GF2X R_Part =
         MulMod(X3, Z, P)
@@ -236,7 +240,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         this->__isZeroPoint = true;
         this->__precomputations.drop();
     }
-    
+
     else
     {
         this->X = Y.getX();
@@ -245,7 +249,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
         this->__isZeroPoint = false;
         this->__precomputations = Y.__precomputations;
     }
-    
+
     return *this;
 }
 
@@ -254,7 +258,7 @@ EC_Point EC_Point::operator+  (const EC_Point & _Y) const
     EC_Point __retval(*this);
 
     __retval+= _Y;
-    
+
     return __retval;
 }
 
@@ -264,18 +268,18 @@ void EC_Point::operator+= (const EC_Point & _Y)
     {
         return;
     }
-    
+
     if (isZero())
     {
         *this = _Y;
         return;
     }
-    
+
     if ((this == &_Y) ||
         ((Y == _Y.getY()) &&
          (X == _Y.getX()) &&
          (Z == _Y.getZ())))
-            
+
     {
         Lopez_Dahab_Double(X, Y, Z,
                            __EC.getA(),
@@ -286,7 +290,7 @@ void EC_Point::operator+= (const EC_Point & _Y)
     {
         Lopez_Dahab_Addition(*this, _Y);
     }
-    
+
     return;
 }
 
@@ -295,7 +299,7 @@ EC_Point EC_Point::operator+  (const Affine::EC_Point & _Y) const
     EC_Point __retval(*this);
 
     __retval+= _Y;
-    
+
     return __retval;
 }
 
@@ -305,7 +309,7 @@ void EC_Point::operator+= (const Affine::EC_Point & _Y)
     {
         return;
     }
-    
+
     if (isZero())
     {
         *this = toProjective(_Y, __EC);
@@ -320,9 +324,9 @@ void EC_Point::operator+= (const Affine::EC_Point & _Y)
         /* FIXME ADD GENERIC ADDITIONS */
         abort();
     }
-    
+
     __precomputations.drop();
-    
+
     return;
 }
 
@@ -333,7 +337,7 @@ void EC_Point::operator*= (const ZZ & Y)
         __isZeroPoint = true;
         return;
     }
-    
+
     if (isPrecomputed())
     {
         __precomputations.Multiply(*this, Y);
@@ -344,7 +348,7 @@ void EC_Point::operator*= (const ZZ & Y)
     }
 
     __precomputations.drop();
-    
+
     return;
 }
 
@@ -364,7 +368,7 @@ void EC_Point::operator*= (const long Y)
 EC_Point EC_Point::operator* (const ZZ & Y) const
 {
     EC_Point __retval(*this);
-    
+
     __retval*= Y;
 
     return __retval;
@@ -373,7 +377,7 @@ EC_Point EC_Point::operator* (const ZZ & Y) const
 EC_Point EC_Point::operator* (const long Y) const
 {
     EC_Point __retval(*this);
-    
+
     __retval*= Y;
 
     return __retval;

@@ -50,7 +50,7 @@ namespace ECZZ_p
 
             const ZZ_p E2 = sqr(E);
             const ZZ_p E3 = power(E, 3);
-            
+
             _X.X = - E3 - 2*A*E2 + sqr(F);
             _X.Y = - C*E3 + F*(A*E2 - _X.X);
             _X.Z *= _Y.getZ() * E;
@@ -70,9 +70,13 @@ namespace ECZZ_p
     Affine::EC_Point
     toAffine(const Projective::EC_Point & Point)
     {
-        return Point.getEC().getAffineBasePoint()
-            .getEC().create(Point.getX() / sqr(Point.getZ()),
-                            Point.getY() / power(Point.getZ(), 3));
+        if (Point.isZero())
+            return Point.getEC().getAffineBasePoint()
+            .getEC().create();
+        else
+            return Point.getEC().getAffineBasePoint()
+                .getEC().create(Point.getX() / sqr(Point.getZ()),
+                                Point.getY() / power(Point.getZ(), 3));
     }
 }
 
