@@ -65,8 +65,8 @@ int main(int argc     __attribute__((unused)),
         const MGF MGF1(MGF::MGF1, Hash::SHA1);
         const ByteSeq Pi = MGF1(OPoint, Ln);
         const string Message("TestVector");
-        const long L_rec = Message.length();
-        const long L_red = Ln - L_rec;
+        const unsigned long L_rec = Message.length();
+        const unsigned long L_red = Ln - L_rec;
         const ByteSeq M(Message.c_str(), Message.length());
         const ByteSeq & M_rec = M;
         const Octet h = Truncate(Hash(Pi || M), L_red);
