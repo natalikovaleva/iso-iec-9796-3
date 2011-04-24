@@ -21,7 +21,7 @@ public:
                              const ByteSeq & Randomizer,
                              DataInput::LOGIC logic) const
         {
-            const long L_msg = Message.getDataSize();
+            const unsigned long L_msg = Message.getDataSize();
 
             if (logic == DataInput::VERIFY_LOFIC)
             {
@@ -41,12 +41,12 @@ public:
 
             const DataInputHints Hints = _Policy(L_msg);
 
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red;
+            const unsigned long L_rec = Hints.L_rec;
+            const unsigned long L_red = Hints.L_red;
 
             const Hash H = Hints.H;
 
-            const long L_clr = L_msg - L_rec;
+            const unsigned long L_clr = L_msg - L_rec;
 
             const Octet C_rec = I2OSP(L_rec, 8);
             const Octet C_clr = I2OSP(L_clr, 8);
@@ -80,7 +80,7 @@ public:
         {
             const ByteSeq C = I2OSP(1, 4);
 
-            const long L_msg = Message.getDataSize();
+            const unsigned long L_msg = Message.getDataSize();
 
             if (logic == DataInput::VERIFY_LOFIC)
             {
@@ -100,12 +100,12 @@ public:
 
             const DataInputHints Hints = _Policy(L_msg);
             
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red;
+            const unsigned long L_rec = Hints.L_rec;
+            const unsigned long L_red = Hints.L_red;
             
             const Hash H = Hints.H;
 
-            const long L_clr = L_msg - L_rec;
+            const unsigned long L_clr = L_msg - L_rec;
 
             const Octet C_rec = I2OSP(L_rec, 4);
             const Octet C_clr = I2OSP(L_clr, 4);
@@ -137,7 +137,7 @@ public:
                              const ByteSeq & Randomizer,
                              DataInput::LOGIC logic) const
         {
-            const long L_msg = Message.getDataSize();
+            const unsigned long L_msg = Message.getDataSize();
 
             if (logic == DataInput::VERIFY_LOFIC)
             {
@@ -157,13 +157,13 @@ public:
 
             const DataInputHints Hints = _Policy(L_msg);
             
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red;
+            const unsigned long L_rec = Hints.L_rec;
+            const unsigned long L_red = Hints.L_red;
 
             
             const Hash H = Hints.H;
 
-            const long L_clr = L_msg - L_rec;
+            const unsigned long L_clr = L_msg - L_rec;
 
             const ByteSeq M_rec = ByteSeq(Message.getData(), L_rec);
             const ByteSeq M_clr = ByteSeq(Message.getData() + L_rec,
@@ -191,17 +191,17 @@ public:
                              __attribute__ ((unused)),
                              DataInput::LOGIC logic) const
         {
-            const long L_msg = Message.getDataSize();
+            const unsigned long L_msg = Message.getDataSize();
 
             const DataInputHints Hints =
                 logic == DataInput::SIGN_LOGIC ?
                 _Policy(L_msg) : _Policy(Message);
             
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red;
+            const unsigned long L_rec = Hints.L_rec;
+            const unsigned long L_red = Hints.L_red;
             const Hash H = Hints.H;
 
-            const long L_clr = L_msg - L_rec;
+            const unsigned long L_clr = L_msg - L_rec;
 
             if (logic == DataInput::SIGN_LOGIC)
             {
@@ -231,7 +231,7 @@ public:
                                           PMessage.getDataSize() - L_red);
                 const Octet M_rec_pad = M_h ^ Truncate(H(h), PMessage.getDataSize() - L_red);
 
-                const long pad_size = Hints.L_max - L_red + 1 - L_rec;
+                const unsigned long pad_size = Hints.L_max - L_red + 1 - L_rec;
 
                 const Octet M_rec = ByteSeq(M_rec_pad.getData() + pad_size,
                                             M_rec_pad.getDataSize() - pad_size);
@@ -264,7 +264,7 @@ public:
                              __attribute__ ((unused)),
                              DataInput::LOGIC logic) const
         {
-            const long L_msg = Message.getDataSize();
+            const unsigned long L_msg = Message.getDataSize();
 
             const DataInputHints Hints =
                 logic == DataInput::SIGN_LOGIC ?
@@ -284,10 +284,10 @@ public:
                                      );
             }
 
-            const long L_rec = Hints.L_rec;
-            const long L_red = Hints.L_red - 2;
+            const unsigned long L_rec = Hints.L_rec;
+            const unsigned long L_red = Hints.L_red - 2;
 
-            const long L_clr = L_msg - L_rec;
+            const unsigned long L_clr = L_msg - L_rec;
 
             const Octet DERPrintableString = I2OSP(0x13);
             const Octet DERSize = I2OSP(L_rec);
@@ -303,7 +303,7 @@ public:
             const Octet C_red_ = I2OSP(L_red);
             Octet C_red;
 
-            for (int i = 0; i<L_red; i++)
+            for (unsigned int i = 0; i<L_red; i++)
                 C_red = C_red || C_red_ ;
 
             const Octet d = C_red || M_rec;
