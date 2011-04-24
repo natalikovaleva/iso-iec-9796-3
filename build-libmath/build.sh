@@ -17,7 +17,7 @@ VGF2X=1.0
 VGMP=5.0.1
 
 [ ! -d ntl-${VNTL} ] && ( ( wget -c http://www.shoup.net/ntl/ntl-${VNTL}.tar.gz && tar zxf ntl-${VNTL}.tar.gz ) || exit 1 )
-[ ! -d gf2x-${VGF2X} ] && ( ( wget -c https://gforge.inria.fr/frs/download.php/27999/gf2x-${VGF2X}.tar.gz && tar zxf gf2x-${VGF2X}.tar.gz ) || exit 1 )
+[ ! -d gf2x-${VGF2X} ] && ( ( wget -c http://gforge.inria.fr/frs/download.php/27999/gf2x-${VGF2X}.tar.gz && tar zxf gf2x-${VGF2X}.tar.gz ) || exit 1 )
 [ ! -d gmp-${VGMP} ] && ( ( wget -c ftp://ftp.gmplib.org/pub/gmp-${VGMP}/gmp-${VGMP}.tar.bz2 && tar jxf gmp-${VGMP}.tar.bz2 ) || exit 1 )
 
 BUILDPWD=$(pwd)
