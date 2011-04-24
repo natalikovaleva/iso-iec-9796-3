@@ -5,8 +5,8 @@ export CXX=${CXX:-g++}
 export CFLAGS=${CFLAGS:-"-O2 -march=native -pipe -fomit-frame-pointer"}
 export CXXFLAGS=${CXXFLAGS:-"-O2 -march=native -pipe -fomit-frame-pointer"}
 
-export CFLAGS="${CFLAGS} -fPIC -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block"
-export CXXFLAGS="${CXXFLAGS} -fPIC -flto -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block --no-rtti"
+export CFLAGS="${CFLAGS} -fPIC"
+export CXXFLAGS="${CXXFLAGS} -fPIC --no-rtti"
 
 ABI_NATIVE=$( [ "$(uname -m)" = "x86_64" ] && echo 64 || echo 32)
 
@@ -53,6 +53,8 @@ make clean
     CXXFLAGS="${CXXFLAGS}" \
     GF2X_PREFIX="${BUILDPWD}/deps/" \
     GMP_PREFIX="${BUILDPWD}/deps/" \
+    LDFLAGS="-Wl,-rpath,\"${BUILDPWD}/deps/lib\""\
+    LDLIBS="${BUILDPWD}/deps/lib/libgmp.a ${BUILDPWD}/deps/lib/libgf2x.a"\
     NTL_GMP_LIP=on \
     NTL_GF2X_LIB=on \
     NTL_AVOID_BRANCHING=on \
