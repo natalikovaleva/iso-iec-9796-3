@@ -76,8 +76,13 @@ public:
 
         const ZZ & N = this->_Curve.getOrder();
 
-        const ZZ r = OS2IP(data.R) % N;
-        const ZZ s = OS2IP(data.S) % N;
+        const ZZ r = OS2IP(data.R);
+        const ZZ s = OS2IP(data.S);
+
+        if (IsZero(r) || IsZero(s) ||
+            r > N || s > N)
+            return VerificationVerdict();
+
 
         this->_Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
         typename EC_Dscr::aECP R

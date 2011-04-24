@@ -112,17 +112,25 @@ public:
 
     virtual ~ISOIEC_DSS() {}
 
-    virtual void setPrivateKey(const Octet & PrivateKey)
+    virtual bool setPrivateKey(const Octet & PrivateKey)
         {
             _privateKey = OS2IP(PrivateKey);
+
+            if (IsZero(_privateKey) ||
+                _privateKey > _Curve.getOrder())
+                return false;
+
             _isPrivateKeyLoaded = true;
 
             setPrivateKeyHook();
+
+            return _isPrivateKeyLoaded;
         }
-    virtual void setPublicKey(const Octet & PublicKey)
+
+    virtual bool setPublicKey(const Octet & PublicKey)
         {
             if (PublicKey.getDataSize() != ( _Lcm * 2 ))
-                throw;
+                return false;
 
             tOS2FEP<typename EC_Dscr::aECP> OS2FEP;
 
@@ -139,6 +147,8 @@ public:
             _isPublicKeyLoaded = true;
 
             setPublicKeyHook();
+
+            return _isPublicKeyLoaded;
         }
 
     virtual Octet generatePublicKey()
