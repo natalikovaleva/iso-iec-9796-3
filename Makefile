@@ -25,10 +25,25 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-CFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native -fPIC -fvisibility=hidden
-# CFLAGS := -O0 -fPIC -ggdb -flto -fvisibility=hidden
+LTO   := -fwhole-program -combine -flto
+LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
+
+FEATURES ?= lto loops
+
+CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden
+# CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden
 CXXFLAGS := $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
+
+ifeq ($(findstring lto,$(FEATURES)),lto)
+ CFLAGS   += $(LTO)
+ CXXFLAGS += $(LTO)
+endif
+
+ifeq ($(findstring loops,$(FEATURES)),loops)
+ CFLAGS   += $(LOOPS)
+ CXXFLAGS += $(LOOPS)
+endif
 
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
 AFFINE_GF2X := utils.o ec.o ec_defaults.o ec_compress.o
