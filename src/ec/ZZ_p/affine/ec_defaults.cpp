@@ -5,6 +5,8 @@
 #include "ec/ZZ_p/affine/ec_defaults.hpp"
 #include "ec/ZZ_p/affine/utils.hpp"
 
+#include <exception>
+
 using namespace std;
 using namespace NTL;
 using namespace ECZZ_p::Affine;
@@ -61,7 +63,7 @@ EC EC_Defaults::create(Sizes size, Version ver)
                     break;
 
                 default:
-                    throw;
+                    throw std::exception();
             }
             break;
 
@@ -77,7 +79,7 @@ EC EC_Defaults::create(Sizes size, Version ver)
                     N = ZZ_str("0100000000000000000001B8FA16DFAB9ACA16B6B3");
                     break;
                 default:
-                    throw;
+                    throw std::exception();
             }
             break;
 
@@ -93,12 +95,12 @@ EC EC_Defaults::create(Sizes size, Version ver)
                     N = ZZ_str("FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831");
                     break;
                 default:
-                    throw;
+                    throw std::exception();
             }
             break;
 
         default:
-            throw;
+            throw std::exception();
     }
 
     return EC(A, B, C,

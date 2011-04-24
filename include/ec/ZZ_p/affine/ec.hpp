@@ -192,7 +192,7 @@ namespace ECZZ_p
                     {
                         case FIELD_CONTEXT: __mod.restore();   break;
                         case ORDER_CONTEXT: __order.restore(); break;
-                        default: throw;
+                        default: throw std::exception();
                     }
                 }
 

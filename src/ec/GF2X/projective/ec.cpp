@@ -3,6 +3,8 @@
 #include "ec/GF2X/affine/ec.hpp"
 #include "ec/GF2X/affine/utils.hpp"
 
+#include <exception>
+
 using namespace ECGF2X;
 using namespace ECGF2X::Projective;
 
@@ -180,7 +182,7 @@ EC_Point::EC_Point(const GF2X &X,
 {
     if (! _IsOnCurve())
     {
-        throw;
+        throw std::exception();
     }
 }
 
@@ -233,7 +235,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
 {
     // __EC field must be the same
     if (! isSameEC(__EC))
-        throw; // assert
+        throw std::exception(); // assert
 
     if (Y.__isZeroPoint)
     {

@@ -1,5 +1,7 @@
 #include "generic/gf2x_utils.hpp"
 
+#include <exception>
+
 using namespace NTL;
 
 ByteSeq GF2X2OSP(unsigned int I, size_t pad)
@@ -79,7 +81,7 @@ GF2X Z2ZB_Solve(const GF2X & b, const GF2XModulus & m)
             // FIXME: Remove this check? Remove throw?
             if ( SqrMod(z,m) + z != b)
             {
-                throw;
+                throw std::exception();
             }
 
             return z;

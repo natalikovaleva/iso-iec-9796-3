@@ -3,6 +3,8 @@
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/utils.hpp"
 
+#include <exception>
+
 namespace ECZZ_p
 {
     namespace Projective
@@ -103,7 +105,7 @@ EC_Point::EC_Point(const ZZ_p &X,
 {
     if (! _IsOnCurve())
     {
-        throw;
+        throw std::exception();
     }
 }
 
@@ -146,7 +148,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
 {
     // __EC field must be the same
     if (! isSameEC(__EC))
-        throw; // assert
+        throw std::exception(); // assert
 
     if (Y.__isZeroPoint)
     {
