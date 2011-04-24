@@ -28,7 +28,7 @@ all: build-libmath/libmath/libmath.a $(DSS)
 LTO   := -fwhole-program -combine -flto
 LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
 
-FEATURES ?= lto loops
+FEATURES ?= lto loops nortti
 
 CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden
 # CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden
@@ -44,6 +44,11 @@ ifeq ($(findstring loops,$(FEATURES)),loops)
  CFLAGS   += $(LOOPS)
  CXXFLAGS += $(LOOPS)
 endif
+
+ifeq ($(findstring nortti,$(FEATURES)),nortti)
+ CXXFLAGS += --no-rtti
+endif
+
 
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
 AFFINE_GF2X := utils.o ec.o ec_defaults.o ec_compress.o
@@ -66,7 +71,7 @@ lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 
 build/%.o : src/%.cpp
 		@mkdir -p $(dir $@)
-		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -fvisibility-inlines-hidden --no-rtti -c -o $@ $<
+		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -fvisibility-inlines-hidden -c -o $@ $<
 
 build/%.o : src/%.c
 		@mkdir -p $(dir $@)
