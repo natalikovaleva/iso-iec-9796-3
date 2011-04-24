@@ -17,10 +17,8 @@ extern "C"
     {
         char * R;
         char * S;
-        char * M;
 
-        int R_size;
-        int S_size;
+        char * M;
         int M_size;
     };
 
@@ -32,10 +30,16 @@ extern "C"
                                   const char * N);
 
     void dstu4145_freeEC_ZZ_p(void * _vEC);
-    void * dstu4145_create_context(void * EC_ZZ_p, DSTU4145_HASHES id, fPRNG callback);
+    void * dstu4145_create_context(void * EC_ZZ_p, enum DSTU4145_HASHES id, fPRNG callback);
     void dstu4145_free_context(void * context);
     struct SIGN * dstu4145_create_sign(const char * message, int message_size, void * context);
     const char * dstu4145_verify_sign(const struct SIGN * sign, void * context);
+
+    int dstu4145_set_private_key(const char * key, void * context);
+    int dstu4145_set_public_key(const char * key, void * context);
+    char * dstu4145_create_public_key(char ** output, void * context);
+    int dstu4145_make_precoputations(void * context);
+
     void dstu4145_free_sign(struct SIGN * sign);
 
 
