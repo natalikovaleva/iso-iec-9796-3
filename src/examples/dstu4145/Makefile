@@ -2,7 +2,7 @@
 
 SONAME=libdstu4145.so
 
-CXXFLAGS ?= -O2 -march=native -flto -combine -ftree-vectorize -fomit-frame-pointer -pipe
+CXXFLAGS ?= -O2 -march=native  -fomit-frame-pointer -pipe
 INCLUDE  ?= -I . -I ../../../include
 LIBS ?=  ../../../build-libmath/libmath/libmath.a ../../../lib/lib9796-3.a
 
