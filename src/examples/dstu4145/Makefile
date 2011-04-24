@@ -3,7 +3,7 @@
 SONAME=libdstu4145.so
 
 CXXFLAGS ?= -O2 -march=native -fomit-frame-pointer -pipe
-INCLUDE  ?= -I . -I ../../../include  -i ../../../build-libmath/deps/include/ -I ../../../include
+INCLUDE  ?= -I . -I ../../../include  -I ../../../build-libmath/deps/include/ -I ../../../include
 LIBS ?=  ../../../build-libmath/libmath/libmath.a ../../../lib/lib9796-3.a
 
 all: $(SONAME)
