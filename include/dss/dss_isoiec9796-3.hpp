@@ -156,7 +156,7 @@ public:
     virtual Octet generatePublicKey()
         {
             if (! _isPrivateKeyLoaded)
-                throw; // Operation unaviable
+                throw std::exception(); // Operation unaviable
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             _publicKey = _BasePoint * _privateKey;
