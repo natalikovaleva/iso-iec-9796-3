@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 #include "dss/dss_isoiec9796-3.hpp"
 #include "dss/datain_isoiec9796-3.hpp"
 
@@ -56,7 +58,7 @@ public:
     Octet generatePublicKey()
         {
             if (! _isPrivateKeyLoaded)
-                throw; // Operation unaviable
+                throw std::exception(); // Operation unaviable
 
             const ZZ e = InvMod(_privateKey, _Curve.getOrder());
 
@@ -79,7 +81,7 @@ public:
     DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
         {
             if (! (_isPublicKeyLoaded && _isPrivateKeyLoaded))
-                throw;
+                throw std::exception();
 
             const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
@@ -115,7 +117,7 @@ public:
     VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL)
     {
         if ( ! _isPublicKeyLoaded)
-            throw;
+            throw std::exception();
 
         ZZ t = OS2IP(data.R);
         ZZ s  = OS2IP(data.S);
