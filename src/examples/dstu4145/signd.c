@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <malloc.h>
+#include <alloca.h>
 #include <signal.h>
 
 #include <libconfig.h>
@@ -23,11 +24,46 @@ struct EC_Config
     enum DSTU4145_HASHES Hash;
 };
 
+struct SIGND_Context
+{
+    void * EC;
+    void * dstu4145;
+};
 
 void prng (unsigned char * buffer, int count)
 {
     fread(buffer, count, 1, prng_source);
 }
+
+const char * pkey (unsigned char * buffer, int count)
+{
+    memset(buffer, 0x0, count);
+
+    FILE * devkey = fopen("/dev/keysrv", "r");
+    if (devkey == NULL)
+        return NULL;
+
+    unsigned char * rawbuf = alloca(count/2);
+
+    if (fread(rawbuf, count/2, 1, devkey) != 1)
+    {
+        memset(buffer, 0x0, count);
+        fprintf(stderr, "Couldn't load private key\n");
+        fclose(devkey);
+
+        return NULL;
+    }
+
+    fclose(devkey);
+
+    int i;
+
+    for (i = 0; i<count/2; i++)
+        sprintf(buffer + (i*2), "%02x", *(rawbuf + i));
+
+    return buffer;
+}
+
 
 struct  EC_Config * read_config(const char * path)
 {
@@ -55,6 +91,7 @@ struct  EC_Config * read_config(const char * path)
     rval &= config_lookup_string(&newConf->cnf, "EC.N", &newConf->N);
     rval &= config_lookup_string(&newConf->cnf, "EC.G.X", &newConf->GX);
     rval &= config_lookup_string(&newConf->cnf, "EC.G.Y", &newConf->GY);
+    rval &= config_lookup_int(&newConf->cnf, "Hash", (int *) &newConf->Hash);
 
     if (rval != CONFIG_TRUE)
     {
@@ -62,26 +99,37 @@ struct  EC_Config * read_config(const char * path)
         return NULL;
     }
 
+    rval &= config_lookup_string(&newConf->cnf, "PublicKey", &newConf->Q);
+
     return newConf;
 }
 
 void close_config(struct EC_Config * config)
 {
     config_destroy(&config->cnf);
+    free(config);
 }
 
 
 
-int main(int argc, char *argv[])
+struct SIGND_Context * init_crypto(const char * KeyData)
 {
-    prng_source = popen("dd if=/dev/urandom bs=4","r");
 
-    struct EC_Config * config = read_config("./ec.conf");
+    struct SIGND_Context * ctx =
+        (struct SIGND_Context *) malloc(sizeof(*ctx));
+
+    if (ctx == NULL)
+        return NULL;
+
+    bzero(ctx, sizeof(*ctx));
+
+    struct EC_Config * config = read_config(KeyData);
 
     if (config == NULL)
     {
         fprintf(stderr, "Couldn't read EC from config\n");
-        return 1;
+        free(ctx);
+        return NULL;
     }
 
 
@@ -94,46 +142,125 @@ int main(int argc, char *argv[])
 
     if (EC == NULL)
     {
-        printf("Couldn't create EC\n");
-        return 1;
+        fprintf(stderr, "Couldn't create EC\n");
+        free(ctx);
+        close_config(config);
+        return NULL;
     }
 
-    void * dstu4145 = dstu4145_create_context(EC, SHA512, prng);
+
+    char * key = alloca(strlen(config->N) + 1);
+
+    if (pkey(key, strlen(config->N)) == NULL)
+    {
+        fprintf(stderr, "Couldn't load private key\n");
+        dstu4145_freeEC_ZZ_p(EC);
+        free(ctx);
+        close_config(config);
+        return NULL;
+    }
+
+    void * dstu4145 = dstu4145_create_context(EC, config->Hash, prng);
 
     if (dstu4145 == NULL)
     {
-        printf("Couldn't create context\n");
-        return 1;
+        fprintf(stderr, "Couldn't create DSTU 4145 context\n");
+        dstu4145_freeEC_ZZ_p(EC);
+        free(ctx);
+        close_config(config);
+        return NULL;
     }
 
     int rval = 0;
 
-    rval |= dstu4145_set_private_key("648bcb2e4d5d151656c84774ed016ba292a5a38", dstu4145);
-    rval |= dstu4145_set_public_key("9fae226e565e907619a48b598adf534dd63310dd3cf1f2454060f6799bf4e79847276a8f81e964e6",dstu4145);
-    rval |= dstu4145_make_precoputations(dstu4145);
+    rval |= dstu4145_set_private_key(key, dstu4145);
+
+    if (config->Q != NULL)
+    {
+        rval |= dstu4145_set_public_key(config->Q, dstu4145);
+    }
+    else
+    {
+        char * public_key = NULL;
+        public_key = dstu4145_create_public_key(&public_key, dstu4145);
+        if (public_key == NULL)
+            rval = 1;
+        else
+        {
+            fprintf(stderr, "Generate public key: %s\n", public_key);
+            free(public_key);
+        }
+    }
+
+    fprintf(stderr, "X: %s\n", key);
+    fprintf(stderr, "N: %s\n", config->N);
+
 
     if (rval)
     {
-        printf ("Couldn't set Public/private key: probably incorrect format\n");
-        goto lbExit;
+        fprintf (stderr, "Couldn't set Public/private key: probably incorrect format\n");
+        dstu4145_freeEC_ZZ_p(EC);
+        free(ctx);
+        close_config(config);
+        return NULL;
     }
 
-    const char Message[] = "Hello, world!";
+    dstu4145_make_precoputations(dstu4145);
 
-    struct SIGN * sign;
+    ctx->EC = EC;
+    ctx->dstu4145 = dstu4145;
 
-    do
+    return ctx;
+}
+
+void destroy_crypto(struct SIGND_Context * ctx)
+{
+    dstu4145_free_context(ctx->dstu4145);
+    dstu4145_freeEC_ZZ_p(ctx->EC);
+    free(ctx);
+}
+
+struct SIGN * sign(const char * Message, int message_size,
+                   struct SIGND_Context * ctx)
+{
+    return dstu4145_create_sign(Message, message_size, ctx->dstu4145);
+}
+
+void free_sign(struct SIGN * s)
+{
+    dstu4145_free_sign(s);
+}
+
+
+const char * verify(struct SIGN * s,
+                    struct SIGND_Context * ctx)
+{
+    return dstu4145_verify_sign(s, ctx->dstu4145);
+}
+
+
+int main(int argc, char *argv[])
+{
+    prng_source = popen("dd if=/dev/urandom bs=4","r");
+
+    struct SIGND_Context * crypto = init_crypto("./ec.conf");
+
+    if (crypto == NULL)
     {
-        sign = dstu4145_create_sign(Message, sizeof(Message), dstu4145);
-        printf("R: %s\nS: %s\nM: %s/%d\n", sign->R, sign->S, sign->M, sign->M_size);
-        printf("V: %s\n", dstu4145_verify_sign(sign, dstu4145));
-        dstu4145_free_sign(sign);
-    } while (1);
+        fprintf(stderr, "Couldn't create crypto context\n");
+        return 1;
+    }
 
+    const char Message[] = "Hello, world!\n";
 
-  lbExit:
+    struct SIGN * s = sign(Message, sizeof(Message), crypto);
+    printf("R: %s\n", s->R);
+    printf("S: %s\n", s->S);
+    printf("M: %s\n", s->M);
 
-    dstu4145_free_context(dstu4145);
-    dstu4145_freeEC_ZZ_p(EC);
+    printf("V: %s\n", verify(s, crypto));
+
+    free_sign(s);
+    destroy_crypto(crypto);
     return 0;
 }
