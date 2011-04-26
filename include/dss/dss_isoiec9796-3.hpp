@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 /* Field convertor helper */
 
 #include "dss/dss.hpp"
