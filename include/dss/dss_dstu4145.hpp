@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 #include "dss/dss_generic_additions.hpp"
 
 /* -------------------------- */
@@ -24,7 +26,7 @@ public:
     Octet generatePublicKey()
         {
             if (! this->_isPrivateKeyLoaded)
-                throw; // Operation unaviable
+                throw std::exception(); // Operation unaviable
 
             const ZZ e = this->_Curve.getOrder() - this->_privateKey;
 
@@ -49,7 +51,7 @@ public:
     DigitalSignature sign(const ByteSeq & data)
         {
             if (! this->_isPrivateKeyLoaded)
-                throw;
+                throw std::exception();
 
             const ZZ & N = this->_Curve.getOrder();
 
@@ -72,7 +74,7 @@ public:
     VerificationVerdict verify(const DigitalSignature & data)
     {
         if ( ! this->_isPublicKeyLoaded)
-            throw;
+            throw std::exception();
 
         const ZZ & N = this->_Curve.getOrder();
 
