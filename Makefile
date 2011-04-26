@@ -30,7 +30,7 @@ LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
 
 FEATURES ?= lto loops nortti
 
-CFLAGS ?= -O2 -march=native -fPIC -fvisibility=hidden
+CFLAGS ?= -O2 -march=native -fPIC -fvisibility=hidden -m32
 # CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden
 CXXFLAGS ?= $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
