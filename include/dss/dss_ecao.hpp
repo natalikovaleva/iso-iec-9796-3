@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 #include "dss/dss_isoiec9796-3.hpp"
 #include "dss/datain_isoiec9796-3.hpp"
 
@@ -26,7 +28,7 @@ public:
                                 Hash_type)
         {
             if (L_pad < 1)
-                throw;
+                throw std::exception();
         }
 };
 
@@ -74,7 +76,7 @@ public:
     DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
         {
             if (! _isPrivateKeyLoaded)
-                throw;
+                throw std::exception();
 
             const ZZ k = (OS2IP(_PRNG()) % _Curve.getOrder());
             const size_t K = _Ln; // Security parameter
@@ -107,7 +109,7 @@ public:
     VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL)
     {
         if (! _isPublicKeyLoaded)
-            throw;
+            throw std::exception();
 
         const ZZ t = OS2IP(data.R);
         const ZZ s = OS2IP(data.S);
