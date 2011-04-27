@@ -34,7 +34,7 @@ int main(int argc     __attribute__((unused)),
 {
     EC Curve = EC_Defaults::create(EC_Defaults::EC160);
 
-    const long L_rec = 17;
+    const long L_rec = 18;
 
     cout << "Order bits: " << Lb(Curve.getOrder()) << endl;
 
@@ -62,6 +62,10 @@ int main(int argc     __attribute__((unused)),
     DigitalSignature baseSign = dss.sign(BaseMessage);
     if (! dss.verify(baseSign).isValid())
         abort();
+
+    cout << "L_rec: " << DefaultInputPolicy(M.length()).L_rec
+         << "; L_red: " << DefaultInputPolicy(M.length()).L_red
+         << "; L_max: " << DefaultInputPolicy(M.length()).L_max << endl;
 
     cout << "Searching new signature, changing first byte" << endl;
 
