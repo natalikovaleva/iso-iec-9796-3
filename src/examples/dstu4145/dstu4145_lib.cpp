@@ -285,6 +285,8 @@ struct SIGN * dstu4145_create_sign(const char * message, int message_size, void 
     }
     catch(...)
     {
+        free(_rv->M);
+        free(_rv);
         return NULL;
     }
 

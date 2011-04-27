@@ -15,7 +15,7 @@ $(SONAME): dstu4145_lib.cpp
 		$(CXX) $(CXXFLAGS) $(INCLUDE) -fPIC -shared -o $@ $^ $(LIBS) \
 				-Wl,--no-undefined,-soname,$(SONAME),--export-dynamic,--dynamic-list=dstu4145_syms.txt
 
-signd: signd.c $(SONAME)
+signd: signd.c signd-crypto.c $(SONAME)
 	 $(CC) -o  $@  $^ -lconfig -Wl,-rpath,$$ORIGIN $(CXXFLAGS)
 
 example : example.c $(SONAME) 
