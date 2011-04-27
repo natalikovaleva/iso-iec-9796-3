@@ -73,10 +73,10 @@ int main(int argc     __attribute__((unused)),
 
     VerificationVerdict v = dss.verify(baseSign);
 
-    cout << "M: " << v.getMessage() << endl;
-    cout << "V: " << v.isValid() << endl;
+    cout << "M: " << v.Message << endl;
+    cout << "V: " << v.isValid << endl;
 
-    if (! dss.verify(baseSign).isValid())
+    if (! dss.verify(baseSign).isValid)
         abort();
 
     cout << "Searching new signature:" << endl;
@@ -95,13 +95,13 @@ int main(int argc     __attribute__((unused)),
         DigitalSignature fakeSign(I2OSP(fakeR, baseSign.R.getDataSize()), baseSign.S, baseSign.M_clr);
         VerificationVerdict verdict = dss.verify(fakeSign);
 
-        if (verdict.isValid())
+        if (verdict.isValid)
         {
             cout << "FAKE SIGN AT " << i << " PROBES" << endl;
             cout << "R: " << fakeSign.R << endl;
             cout << "S: " << fakeSign.S << endl;
             cout << "M_clr: " << fakeSign.M_clr << endl;
-            cout << "M: " << verdict.getMessage() << endl;
+            cout << "M: " << verdict.Message << endl;
 
             cout << "BASE SIGN: " << endl;
             cout << "R: " << baseSign.R << endl;
