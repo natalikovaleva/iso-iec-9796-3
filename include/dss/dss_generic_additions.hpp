@@ -2,11 +2,11 @@
 
 #include <exception>
 
-/* Field convertor helper */
-
 #include "dss/dss.hpp"
 #include "generic/octet.hpp"
+#include "generic/hash.hpp"
 
+/* TODO: Merge+move it to dss_ec.hpp */
 #define OS2FEP_TPL
 template <class ECP>
 struct tOS2FEP
@@ -17,59 +17,32 @@ struct tOS2FEP
 #include "ec/ZZ_p/dss_tpl.hpp"
 #include "ec/GF2X/dss_tpl.hpp"
 
-template<class EC_Dscr>
-class ECDataInputPolicy : public StaticDataInputPolicy
-{
-public:
-    ECDataInputPolicy(unsigned long L_rec,
-                      const typename EC_Dscr::aEC & EC,
-                      Hash::Hash_Type Hash_type)
-        : StaticDataInputPolicy(L_rec,
-                                (Lb(EC.getOrder()) / 8) - L_rec,
-                                Lb(EC.getOrder()) / 8,
-                                Hash_type)
-        {}
-};
-
-struct DSSSchemeParameters
-{
-    enum DSS_TYPE
-    {
-        ECNR,
-        ECMR,
-        ECAO,
-        ECPV,
-        ECKNR
-    };
-
-    DSS_TYPE SchemeID;
-};
-
+/* TODO: Merge it with DSSDomainParameters, or make it parent class for it */
 template <class EC_Dscr>
-struct DSSDomainParameters
+struct ECDSSDomainParameters
 {
     typename EC_Dscr::aEC & EC;
-    const DataInputPolicy & DefaultInputPolicy;
-    const Algorithm::Precomputations_Method<typename EC_Dscr::pECP, ZZ> & PrecomputationMethod;
+    const Algorithm::Precomputations_Method
+    <typename EC_Dscr::pECP, ZZ> & PrecomputationMethod;
 
-    DSSDomainParameters(
+    ECDSSDomainParameters(
         typename EC_Dscr::aEC & EC,
-        const DataInputPolicy & DefaultInputPolicy,
-        const Algorithm::Precomputations_Method<typename EC_Dscr::pECP, ZZ> & PrecomputationMethod)
+        const Algorithm::Precomputations_Method
+        <typename EC_Dscr::pECP, ZZ> & PrecomputationMethod)
         : EC(EC),
-          DefaultInputPolicy(DefaultInputPolicy),
           PrecomputationMethod(PrecomputationMethod)
         {}
 };
 
-/* ----------------  GENERIC DSS ------------------ */
 
+/* TODO: Merge it with ISOIEC_DSS */
 template <class EC_Dscr>
-class ISOIEC_DSS : public DigitalSignatureWithRecovery
+class GENERIC_DSS : public DigitalSignatureWithAddition
 {
 protected:
 
-    DSSDomainParameters<EC_Dscr> _DomainParameters;
+    ECDSSDomainParameters<EC_Dscr> _DomainParameters;
+    const Hash _Hash;
 
     typename EC_Dscr::aEC  & _Curve;
     typename EC_Dscr::pEC  _PCurve;
@@ -88,16 +61,14 @@ protected:
 
     generateRandomValueCallback & _PRNG;
 
-public:
-    virtual bool isReadyToSign()
-        { return _isPrivateKeyLoaded; }
-    virtual bool isReadyToVerify()
-        { return _isPublicKeyLoaded; }
+protected:
+    GENERIC_DSS(const GENERIC_DSS & Other);
 
-public:
-    ISOIEC_DSS(const DSSDomainParameters<EC_Dscr> & DomainParameters,
-               generateRandomValueCallback & PRNG)
-        : _DomainParameters(DomainParameters),
+    GENERIC_DSS(const ECDSSDomainParameters<EC_Dscr> Parameters,
+                const Hash H,
+                generateRandomValueCallback & PRNG)
+        : _DomainParameters(Parameters),
+          _Hash(H),
           _Curve(_DomainParameters.EC),
           _PCurve(_DomainParameters.EC),
           _privateKey(ZZ()),
@@ -108,18 +79,15 @@ public:
           _Lcm(L(_DomainParameters.EC.getModulus())),
           _BasePoint(_PCurve.getBasePoint()),
           _PRNG(PRNG)
-        {
-            /* TODO: Input policy sanity checks */
-        }
+        {}
 
-    virtual ~ISOIEC_DSS() {}
-
+public:
     virtual bool setPrivateKey(const Octet & PrivateKey)
         {
             _privateKey = OS2IP(PrivateKey);
 
             if (IsZero(_privateKey) ||
-                _privateKey > _Curve.getOrder())
+                _privateKey > this->_Curve.getOrder())
                 return false;
 
             _isPrivateKeyLoaded = true;
@@ -128,7 +96,6 @@ public:
 
             return _isPrivateKeyLoaded;
         }
-
     virtual bool setPublicKey(const Octet & PublicKey)
         {
             if (PublicKey.getDataSize() != ( _Lcm * 2 ))
@@ -185,17 +152,19 @@ public:
             _Curve.leave_mod_context();
         }
 
+public:
+    virtual bool isReadyToSign()
+        { return _isPrivateKeyLoaded; }
+    virtual bool isReadyToVerify()
+        { return _isPublicKeyLoaded; }
 
-    virtual DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL) = 0;
-    virtual VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL) = 0;
+public:
+    virtual ~GENERIC_DSS(){}
 
-private:
+    virtual DigitalSignature sign(const ByteSeq & data) = 0;
+    virtual VerificationVerdict verify(const DigitalSignature & data) = 0;
+
+protected:
     virtual void setPrivateKeyHook() {}
     virtual void setPublicKeyHook(){}
 };
-
-#include "dss/dss_ecknr.hpp"
-#include "dss/dss_ecnr.hpp"
-#include "dss/dss_ecmr.hpp"
-#include "dss/dss_ecao.hpp"
-#include "dss/dss_ecpv.hpp"

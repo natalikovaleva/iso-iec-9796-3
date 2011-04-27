@@ -41,34 +41,45 @@ int main(int argc     __attribute__((unused)),
 
     cout << "Current modulus: " << ZZ_p::modulus() << endl;
 
-    const ZZ Xa = ZZ_str("24a3a993ab59b12ce7379a123487647e5ec9e0ce");
+    ZZ seed = ZZ() + time(NULL);
+    SetSeed(seed);
+
+
+
+    const ZZ Xa = RandomBnd(EC.getOrder());
 
     const EC_Point Y = EC.getBasePoint() * Xa;
 
     cout << "Private key: " << I2OSP(Xa) << endl;
     cout << "Public key: " << Y << endl;
 
-    const ZZ k =  ZZ_str("08a8bea9g2b40ce7400672261d5c05e5fd8ab326");
-    const ZZ k1 = ZZ_str("09a8bea9f2b40ce7400672261d5c05e5fd8ab326");
+    const ZZ k =  RandomBnd(EC.getOrder());
+    const ZZ k1 = k + RandomBnd(EC.getOrder() / 2);
 
     const ZZ E  = k1-k;
 
     const EC_Point kG = EC.getBasePoint() * k;
     const EC_Point k1G = EC.getBasePoint() * k1;
 
+    cout << "E: " << E << endl;
+
     cout << "Session key: " << I2OSP(k) << endl;
-    cout << "Session radical: " << kG << endl;
+    cout << "Session key1: " << I2OSP(k1) << endl;
+
+    cout << "kG: " << kG << endl;
+    cout << "k1G"  << k1G << endl;
 
     const ByteSeq Pi = EC2OSP(kG,EC::EC2OSP_COMPRESSED);
     const ByteSeq Pi1 = EC2OSP(k1G,EC::EC2OSP_COMPRESSED);
 
     cout << "Π : " << Pi << endl;
+    cout << "Π1 : " << Pi1 << endl;
 
     string M("This is a test message!");
 
-    const long L_rec = 10;
-    const long L_red = 9;
-    const long L_clr = M.length() - L_rec;
+    const unsigned long L_rec = 10;
+    const unsigned long L_red = 9;
+    const unsigned long L_clr = M.length() - L_rec;
 
     cout << "Message: '" << M << "'" << endl;
     cout << "[ L_rec: " << L_rec << "; L_clr: "
@@ -93,17 +104,17 @@ int main(int argc     __attribute__((unused)),
     Octet Hash_Input = C_rec || C_clr || M_rec || M_clr || Pi || C;
     Octet Hash_Input1 = C_rec || C_clr || M_rec || M_clr || Pi1 || C;
 
-    cout << "Hash Input: " << Hash_Input << endl;
-
     ByteSeq Hash_Token = Truncate(Hash(Hash_Input), L_red);
     ByteSeq Hash_Token1 = Truncate(Hash(Hash_Input1), L_red);
 
     cout << "Hash_Token: " << Hash_Token << endl;
+    cout << "Hash_Token1: " << Hash_Token << endl;
 
     ByteSeq D = Hash_Token || M_rec;
     ByteSeq D1 = Hash_Token1 || M_rec;
 
     cout << "D: " << D << endl;
+    cout << "D1: " << D1 << endl;
 
     EC.enter_mod_context(EC::ORDER_CONTEXT);
 
@@ -115,6 +126,8 @@ int main(int argc     __attribute__((unused)),
 
     cout << "d: " << d << endl;
     cout << "π: " << pi << endl;
+    cout << "d1: " << d1 << endl;
+    cout << "π1: " << pi1 << endl;
 
     const ZZ_p r = (d + pi);
     const ZZ_p s = (InMod(k) - InMod(Xa)*r);
@@ -122,21 +135,17 @@ int main(int argc     __attribute__((unused)),
     const ZZ_p r1 = (d1 + pi1);
     const ZZ_p s1 = (InMod(k1) - InMod(Xa)*r1);
 
+    cout << "r1: " << r1 << endl;
+    cout << "s1: " << s1 << endl;
     cout << "r: " << r << endl;
     cout << "s: " << s << endl;
 
     const ByteSeq R = I2OSP(r,Ln);
     const ByteSeq S = I2OSP(s,Ln);
 
-    cout << "R: " << R << endl;
-    cout << "S: " << S << endl;
-
-    cout << "Current modulus: " << ZZ_p::modulus() << endl;
-
 
     cout << "EPSILON: " << E << endl;
     cout << "r1 - r: " << (r1 - r) << endl;
-
 
     ZZ_p Xx = (s1 - s - InMod(E)) / (r - r1);
 

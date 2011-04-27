@@ -15,12 +15,15 @@ namespace ECZZ_p
     namespace Affine
     {
         /* Trivial faster compression */
-        
+
         ByteSeq EC2OSP(const EC_Point & Point,
                        EC::EC2OSP_COMPRESS_MODE mode = EC::EC2OSP_COMPRESSED);
-        
+
         inline ByteSeq FE2OSP(const ZZ_p & I, size_t pad=0)
         { return I2OSP(I, pad); }
+
+        inline ZZ FE2IP(const ZZ_p & I)
+        { return rep(I); }
 
         inline ZZ_p OS2FEP(const ByteSeq & seq)
         { return InMod(OS2IP(seq)); }

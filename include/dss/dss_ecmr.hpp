@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 #include "dss/dss_isoiec9796-3.hpp"
 #include "dss/datain_isoiec9796-3.hpp"
 
@@ -17,7 +19,7 @@ template<class EC_Dscr>
 class ECMRDataInputPolicy : public StaticDataInputPolicy
 {
 public:
-    ECMRDataInputPolicy(long L_rec,
+    ECMRDataInputPolicy(unsigned long L_rec,
                         const typename EC_Dscr::aEC & EC,
                         Hash::Hash_Type Hash_type)
         : StaticDataInputPolicy(L_rec,
@@ -70,9 +72,9 @@ public:
     DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
         {
             if (! _isPrivateKeyLoaded)
-                throw;
+                throw std::exception();
 
-            const ZZ k = OS2IP(_PRNG());
+            const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
@@ -101,7 +103,7 @@ public:
     VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL)
     {
         if (! _isPublicKeyLoaded)
-            throw;
+            throw std::exception();
 
         ZZ t = OS2IP(data.R);
         ZZ s = OS2IP(data.S);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 #include "dss/dss_isoiec9796-3.hpp"
 #include "dss/datain_isoiec9796-3.hpp"
 
@@ -78,9 +80,9 @@ public:
     DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
         {
             if (! _isPrivateKeyLoaded)
-                throw;
+                throw std::exception();
 
-            const ZZ k = OS2IP(_PRNG());
+            const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
@@ -111,7 +113,7 @@ public:
     VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL)
     {
         if (! _isPrivateKeyLoaded )
-            throw;
+            throw std::exception();
 
         const ZZ s  = OS2IP(data.S);
 

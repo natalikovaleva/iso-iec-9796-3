@@ -25,9 +25,30 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-CXXFLAGS := -O2 -ftree-vectorize -fwhole-program -combine -flto -march=native
-# CXXFLAGS := -O0 -ggdb -fprofile-arcs -pg
+LTO   := -fwhole-program -combine -flto
+LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
+
+FEATURES ?= lto loops nortti
+
+CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden
+# CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden
+CXXFLAGS := $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
+
+ifeq ($(findstring lto,$(FEATURES)),lto)
+ CFLAGS   += $(LTO)
+ CXXFLAGS += $(LTO)
+endif
+
+ifeq ($(findstring loops,$(FEATURES)),loops)
+ CFLAGS   += $(LOOPS)
+ CXXFLAGS += $(LOOPS)
+endif
+
+ifeq ($(findstring nortti,$(FEATURES)),nortti)
+ CXXFLAGS += --no-rtti
+endif
+
 
 AFFINE_ZZ_P := utils.o ec.o ec_defaults.o ec_compress.o
 AFFINE_GF2X := utils.o ec.o ec_defaults.o ec_compress.o
@@ -50,11 +71,11 @@ lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 
 build/%.o : src/%.cpp
 		@mkdir -p $(dir $@)
-		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) --no-rtti -c -o $@ $<
+		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -fvisibility-inlines-hidden -c -o $@ $<
 
 build/%.o : src/%.c
 		@mkdir -p $(dir $@)
-		$(CC) --std=gnu99 $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
+		$(CC) --std=gnu99 $(CFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
 
 # Examples builds to cwd
 %: build/examples/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a

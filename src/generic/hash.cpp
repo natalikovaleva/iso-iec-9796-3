@@ -1,6 +1,8 @@
 #include <string.h>
 #include "generic/hash.hpp"
 
+#include <exception>
+
 Hash_Generic::Hash_Generic(Hash_Type type)
 {
     setupHasher(type);
@@ -55,7 +57,7 @@ void Hash_Generic::setupHasher(Hash_Type type)
             break;
 
         default:
-            throw;
+            throw std::exception();
     }
 }
 

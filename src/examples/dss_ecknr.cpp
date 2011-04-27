@@ -13,7 +13,7 @@ int main(int argc     __attribute__((unused)),
 {
     EC Curve = EC_Defaults::create(EC_Defaults::EC160, EC_Defaults::V2);
 
-    long L_rec = 10;
+    unsigned long L_rec = 10;
 
     cout << "Order bits: " << Lb(Curve.getOrder()) << endl;
 
@@ -54,8 +54,8 @@ int main(int argc     __attribute__((unused)),
 
     VerificationVerdict v = dss.verify(sign);
 
-    cout << "M: " << v.getMessage() << endl;
-    cout << "V: " << v.isValid() << endl;
+    cout << "M: " << v.Message << endl;
+    cout << "V: " << v.isValid << endl;
 
     return 0;
 }

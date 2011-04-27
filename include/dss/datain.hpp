@@ -6,15 +6,15 @@
 
 struct DataInputHints
 {
-    const long L_rec;
-    const long L_red;
-    const long L_max;
-    const long L_add; /* Recovering size hint */
+    const unsigned long L_rec;
+    const unsigned long L_red;
+    const unsigned long L_max;
+    const unsigned long L_add; /* Recovering size hint */
     const Hash::Hash_Type H;
 
-    inline DataInputHints(const long L_rec,
-                          const long L_red,
-                          const long L_max,
+    inline DataInputHints(const unsigned long L_rec,
+                          const unsigned long L_red,
+                          const unsigned long L_max,
                           const Hash::Hash_Type H)
         : L_rec(L_rec),
           L_red(L_red),
@@ -24,7 +24,7 @@ struct DataInputHints
         {}
 
     inline DataInputHints(const DataInputHints & Hints,
-                          long L_add)
+                          unsigned long L_add)
         : L_rec(Hints.L_rec),
           L_red(Hints.L_red),
           L_max(Hints.L_max),
@@ -62,10 +62,10 @@ protected:
 
 public:
     virtual ~DataInputPolicy() {}
-    virtual DataInputHints getHints(long L_msg) const = 0;
+    virtual DataInputHints getHints(unsigned long L_msg) const = 0;
     virtual DataInputHints getParseHints(const Octet & data) const = 0;
 
-    inline DataInputHints operator() (long L_msg) const
+    inline DataInputHints operator() (unsigned long L_msg) const
         { return getHints(L_msg); };
 
     inline DataInputHints operator() (const Octet & data) const
@@ -78,11 +78,11 @@ protected:
     const DataInputHints _staticHints;
 
 public:
-    StaticDataInputPolicy(long L_rec, long L_red, long L_max,
+    StaticDataInputPolicy(unsigned long L_rec, unsigned long L_red, unsigned long L_max,
                           Hash::Hash_Type Hash_type)
         : _staticHints(DataInputHints(L_rec, L_red, L_max, Hash_type))
         {}
-    inline DataInputHints getHints(long L_msg) const
+    inline DataInputHints getHints(unsigned long L_msg) const
         {
             if (L_msg < _staticHints.L_rec)
             {

@@ -3,6 +3,8 @@
 #include "ec/ZZ_p/affine/ec.hpp"
 #include "ec/ZZ_p/affine/utils.hpp"
 
+#include <exception>
+
 namespace ECZZ_p
 {
     namespace Projective
@@ -50,7 +52,7 @@ namespace ECZZ_p
 
             const ZZ_p E2 = sqr(E);
             const ZZ_p E3 = power(E, 3);
-            
+
             _X.X = - E3 - 2*A*E2 + sqr(F);
             _X.Y = - C*E3 + F*(A*E2 - _X.X);
             _X.Z *= _Y.getZ() * E;
@@ -70,9 +72,13 @@ namespace ECZZ_p
     Affine::EC_Point
     toAffine(const Projective::EC_Point & Point)
     {
-        return Point.getEC().getAffineBasePoint()
-            .getEC().create(Point.getX() / sqr(Point.getZ()),
-                            Point.getY() / power(Point.getZ(), 3));
+        if (Point.isZero())
+            return Point.getEC().getAffineBasePoint()
+            .getEC().create();
+        else
+            return Point.getEC().getAffineBasePoint()
+                .getEC().create(Point.getX() / sqr(Point.getZ()),
+                                Point.getY() / power(Point.getZ(), 3));
     }
 }
 
@@ -99,7 +105,7 @@ EC_Point::EC_Point(const ZZ_p &X,
 {
     if (! _IsOnCurve())
     {
-        throw;
+        throw std::exception();
     }
 }
 
@@ -142,7 +148,7 @@ EC_Point & EC_Point::operator= (const EC_Point & Y)
 {
     // __EC field must be the same
     if (! isSameEC(__EC))
-        throw; // assert
+        throw std::exception(); // assert
 
     if (Y.__isZeroPoint)
     {

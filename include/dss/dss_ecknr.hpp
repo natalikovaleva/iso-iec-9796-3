@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 #include "dss/dss_isoiec9796-3.hpp"
 #include "dss/datain_isoiec9796-3.hpp"
 
@@ -56,30 +58,32 @@ public:
     Octet generatePublicKey()
         {
             if (! _isPrivateKeyLoaded)
-                throw; // Operation unaviable
+                throw std::exception(); // Operation unaviable
 
             const ZZ e = InvMod(_privateKey, _Curve.getOrder());
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            _publicKey = _PCurve.getBasePoint() * e;
+            _publicKey = _BasePoint * e;
             _Curve.leave_mod_context();
 
             _isPublicKeyLoaded = true;
 
             setPublicKeyHook();
 
-            typename EC_Dscr::aECP _AffinePublicKey = toAffine(_publicKey);
+            _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
+            typename EC_Dscr::aECP AffinePublicKey = toAffine(_publicKey);
+            _Curve.leave_mod_context();
 
-            return FE2OSP(_AffinePublicKey.getX(), _Lcm) ||
-                FE2OSP(_AffinePublicKey.getY(), _Lcm);
+            return FE2OSP(AffinePublicKey.getX(), _Lcm) ||
+                FE2OSP(AffinePublicKey.getY(), _Lcm);
         }
 
     DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
         {
             if (! (_isPublicKeyLoaded && _isPrivateKeyLoaded))
-                throw;
+                throw std::exception();
 
-            const ZZ k = OS2IP(_PRNG());
+            const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             const typename EC_Dscr::aECP PP = toAffine(_publicKey * k);
@@ -105,13 +109,15 @@ public:
 
             const Octet S = I2OSP(s);
 
+            _Curve.leave_mod_context();
+
             return DigitalSignature(r, S, SignData.M_clr);
         }
 
     VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL)
     {
         if ( ! _isPublicKeyLoaded)
-            throw;
+            throw std::exception();
 
         ZZ t = OS2IP(data.R);
         ZZ s  = OS2IP(data.S);
@@ -124,7 +130,7 @@ public:
         t %= _Curve.getOrder();
 
         _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-        typename EC_Dscr::aECP R = toAffine(_publicKey * s + _Curve.getBasePoint() * t);
+        typename EC_Dscr::aECP R = toAffine(_publicKey * s + _BasePoint * t);
         _Curve.leave_mod_context();
 
         const Octet P  = _MGF(EC2OSP(R, EC_Dscr::aEC::EC2OSP_COMPRESSED), _Ln);
