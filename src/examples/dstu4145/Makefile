@@ -3,7 +3,9 @@
 LIB=dstu4145
 SONAME=lib$(LIB).so
 
-CXXFLAGS ?= -O2 -ggdb -march=native -pipe -m32
+MABI  ?= $(shell [ "$(uname -m)" = "x86_64" ] && echo -m64 || echo -m32)
+
+CXXFLAGS ?= -O2 -ggdb -march=native -pipe $(MABI)
 INCLUDE  ?= -I . -I ../../../build-libmath/deps/include/ -I ../../../include
 LIBS ?=  ../../../build-libmath/libmath/libmath.a ../../../lib/lib9796-3.a
 
