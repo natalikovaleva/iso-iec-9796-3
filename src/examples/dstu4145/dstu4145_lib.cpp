@@ -246,12 +246,16 @@ int dstu4145_make_precoputations(void * context)
     return 0;
 }
 
+#include <stdio.h>
 
 struct SIGN * dstu4145_create_sign(const char * message, int message_size, void * context)
 {
     DSTUContext * _context = (DSTUContext *) context;
 
     struct SIGN * _rv = (struct SIGN *) malloc(sizeof(struct SIGN));
+
+    printf("\nHello at: dstu4145_create_sign(%p,%d,%p)\n", message, message_size, context);
+    printf("DSTU4145 at: %p\n", _context->_DSTU4145);
 
     if ( _rv == NULL)
         return NULL;
@@ -266,7 +270,11 @@ struct SIGN * dstu4145_create_sign(const char * message, int message_size, void 
 
     try
     {
+        printf("Message at: %p\n", message);
+        printf("Message size: %p\n", message_size);
+        printf("DSTU4145 at: %p\n", _context->_DSTU4145);
         const ByteSeq msg(message, message_size);
+        printf("DSTU4145 at: %p\n", _context->_DSTU4145);
         DigitalSignature sign = _context->_DSTU4145->sign(msg);
 
         char * buf;

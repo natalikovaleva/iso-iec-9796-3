@@ -26,18 +26,18 @@ struct EC_Config
 
 static FILE * prng_source = NULL;
 
-static void prng (unsigned char * buffer, int count)
+void prng (unsigned char * buffer, int count)
 {
     fread(buffer, count, 1, prng_source);
 }
 
 int start_prng()
 {
-    prng_source = popen("dd if=/dev/urandom bs=4","r");
-    if (prng_source == NULL)
-    {
-        return 1;
-    }
+    /* prng_source = popen("dd if=/dev/urandom bs=4","r"); */
+    /* if (prng_source == NULL) */
+    /* { */
+    /*     return 1; */
+    /* } */
 
     return 0;
 }
@@ -129,11 +129,11 @@ static void close_config(struct EC_Config * config)
 
 
 
-struct SIGND_Context * init_crypto(const char * KeyData)
+struct signd_crypto * init_crypto(const char * KeyData)
 {
 
-    struct SIGND_Context * ctx =
-        (struct SIGND_Context *) malloc(sizeof(*ctx));
+    struct signd_crypto * ctx =
+        (struct signd_crypto *) malloc(sizeof(*ctx));
 
     if (ctx == NULL)
         return NULL;
@@ -235,7 +235,7 @@ struct SIGND_Context * init_crypto(const char * KeyData)
     return ctx;
 }
 
-void destroy_crypto(struct SIGND_Context * ctx)
+void destroy_crypto(struct signd_crypto * ctx)
 {
     dstu4145_free_context(ctx->dstu4145);
     dstu4145_freeEC_ZZ_p(ctx->EC);
@@ -243,7 +243,7 @@ void destroy_crypto(struct SIGND_Context * ctx)
 }
 
 struct SIGN * sign(const char * Message, int message_size,
-                   struct SIGND_Context * ctx)
+                   struct signd_crypto * ctx)
 {
     return dstu4145_create_sign(Message, message_size, ctx->dstu4145);
 }
@@ -255,7 +255,7 @@ void free_sign(struct SIGN * s)
 
 
 const char * verify(struct SIGN * s,
-                    struct SIGND_Context * ctx)
+                    struct signd_crypto * ctx)
 {
     return dstu4145_verify_sign(s, ctx->dstu4145);
 }
