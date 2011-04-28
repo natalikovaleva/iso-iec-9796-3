@@ -2,23 +2,22 @@
 
 #include "dstu4145.hpp"
 
-struct SIGND_Context
+struct signd_crypto
 {
     void * EC;
     void * dstu4145;
 };
 
-struct SIGND_Context * init_crypto(const char * KeyData);
-void destroy_crypto(struct SIGND_Context * ctx);
+extern struct signd_crypto * init_crypto(const char * KeyData);
+extern void destroy_crypto(struct signd_crypto * ctx);
 
-struct SIGN * sign(const char * Message, int message_size,
-                   struct SIGND_Context * ctx);
-void free_sign(struct SIGN * s);
+extern struct SIGN * sign(const char * Message, int message_size,
+                          struct signd_crypto * ctx);
+extern void free_sign(struct SIGN * s);
 
-const char * verify(struct SIGN * s,
-                    struct SIGND_Context * ctx);
+extern const char * verify(struct SIGN * s,
+                           struct signd_crypto * ctx);
 
-
-
-int start_prng();
-int stop_prng();
+extern int start_prng();
+extern int stop_prng();
+extern void prng (unsigned char * buffer, int count);

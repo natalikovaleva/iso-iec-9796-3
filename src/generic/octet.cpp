@@ -1,11 +1,19 @@
 #include <iomanip>
+#include <iostream>
+#include <exception>
 
 #include "generic/octet.hpp"
-
+#include "generic/blob.hpp"
 
 void ByteSeq::setData(const unsigned char * data, size_t data_size, bool rotate)
 {
-    __data_size = data_size < OCTET_MAX_SIZE ? data_size : OCTET_MAX_SIZE;
+    if (data_size > OCTET_MAX_SIZE)
+    {
+        /* ByteSeq is for internal crypto use only. */
+        throw std::exception();
+    }
+
+    __data_size = data_size;
 
     const long pad_need = __pad ? __data_size%__pad : 0;
     const long pad_size = pad_need ? __pad-pad_need : 0;
@@ -21,7 +29,7 @@ void ByteSeq::setData(const unsigned char * data, size_t data_size, bool rotate)
         for (unsigned int i=0; i<copy_size; i++)
             __data[i + pad_size] = data[copy_size - i - 1];
     else
-        memcpy(__data + pad_size, data, data_size);
+        memmove(__data + pad_size, data, data_size);
 
     __data_size += pad_size;
 }
@@ -64,7 +72,11 @@ ByteSeq ByteSeq::operator^ (const ByteSeq & y) const
     return result;
 }
 
-
+ManagedBlob ByteSeq::operator|| (const ManagedBlob & y) const
+{
+    return ManagedBlob((char *) __data,     __data_size,
+                       (char *) y.getData(), y.getDataSize());
+}
 
 ByteSeq ByteSeq::operator|| (const ByteSeq & y) const
 {
