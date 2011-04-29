@@ -78,7 +78,7 @@ public:
                 FE2OSP(AffinePublicKey.getY(), _Lcm);
         }
 
-    DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
+    DigitalSignature sign(const ManagedBlob & data, const DataInputPolicy * dip = NULL)
         {
             if (! (_isPublicKeyLoaded && _isPrivateKeyLoaded))
                 throw std::exception();
@@ -140,19 +140,19 @@ public:
         Octet vdata = data.R ^ P ^ m;
 
         /* MAKE CHECKS */
-        const  DSSDataInput vmsg =
+        const  DSSDataOutput vmsg =
             dip == NULL ?
-            _ECKNR_Data.createOutput(vdata, P) :
-            TDataInput<STD4_Input>(*dip).createOutput(vdata, P);
+            _ECKNR_Data.createOutput(vdata) :
+            TDataInput<STD4_Input>(*dip).createOutput(vdata);
 
-        Octet M = vmsg.d || data.M_clr;
+        ManagedBlob M = vmsg.M_rec || data.M_clr;
 
         const  DSSDataInput vsign =
             dip == NULL ?
             _ECKNR_Data.createInput(M, P) :
             TDataInput<STD4_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vmsg.M_clr)
+        if (vsign.d == vmsg.d_pad)
         {
             return VerificationVerdict(M);
         }

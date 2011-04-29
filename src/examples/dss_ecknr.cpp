@@ -46,8 +46,11 @@ int main(int argc     __attribute__((unused)),
          << "; L_red: " << DefaultInputPolicy(M.length()).L_red
          << "; L_max: " << DefaultInputPolicy(M.length()).L_max << endl;
 
-    DigitalSignature sign =
-        dss.sign(ByteSeq(M.c_str(), M.length()));
+    ManagedBlob M_in(M.c_str(), M.length());
+
+    cout << "M size: " << M_in.getDataSize() << endl;
+
+    DigitalSignature sign = dss.sign(M_in);
 
     cout << "R: " << sign.R << endl;
     cout << "S: " << sign.S << endl;

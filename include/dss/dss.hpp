@@ -1,6 +1,7 @@
 #pragma once
 
 #include "generic/octet.hpp"
+#include "generic/blob.hpp"
 #include "dss/datain.hpp"
 
 struct DigitalSignature
@@ -9,11 +10,11 @@ public:
 
     const Octet R;
     const Octet S;
-    const Octet M_clr;
+    const ManagedBlob M_clr;
 
     DigitalSignature(const Octet & R,
                      const Octet & S,
-                     const Octet & M_clr)
+                     const ManagedBlob & M_clr)
         : R(R),
           S(S),
           M_clr(M_clr)
@@ -22,12 +23,12 @@ public:
 
 struct VerificationVerdict
 {
-    const Octet Message;
+    const ManagedBlob Message;
     const bool  isValid;
 
 public:
 
-    VerificationVerdict(const Octet & Message)
+    VerificationVerdict(const ManagedBlob & Message)
         : Message(Message),
           isValid(true)
         {}
@@ -70,7 +71,7 @@ protected:
 public:
     virtual ~DigitalSignatureWithRecovery() {}
 
-    virtual DigitalSignature sign(const ByteSeq & data,
+    virtual DigitalSignature sign(const ManagedBlob & data,
                                   const DataInputPolicy * dip = NULL) = 0;
     virtual VerificationVerdict verify(const DigitalSignature & data,
                                        const DataInputPolicy * dip = NULL) = 0;
@@ -91,7 +92,7 @@ protected:
 public:
     virtual ~DigitalSignatureWithAddition() {}
 
-    virtual DigitalSignature sign(const ByteSeq & data) = 0;
+    virtual DigitalSignature sign(const ManagedBlob & data) = 0;
     virtual VerificationVerdict verify(const DigitalSignature & data) = 0;
 
     virtual bool setPrivateKey(const Octet & PrivateKey) = 0;

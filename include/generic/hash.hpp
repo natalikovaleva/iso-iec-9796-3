@@ -2,7 +2,8 @@
 
 #include <sys/types.h>
 
-#include "octet.hpp"
+#include "generic/octet.hpp"
+#include "generic/blob.hpp"
 
 extern "C"
 {
@@ -53,6 +54,7 @@ public:
     Hash(Hash::Hash_Type type);
 
     ByteSeq operator() (const ByteSeq & source) const;
+    ByteSeq operator() (const ManagedBlob & source) const;
 };
 
 

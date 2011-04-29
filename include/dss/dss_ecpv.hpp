@@ -77,7 +77,7 @@ public:
     ~ECPV()
         {}
 
-    DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
+    DigitalSignature sign(const ManagedBlob & data, const DataInputPolicy * dip = NULL)
         {
             if (! _isPrivateKeyLoaded)
                 throw std::exception();
@@ -135,19 +135,19 @@ public:
         const Octet vdata = _Sym(data.R, P, Sym::DECRYPT);
 
         /* MAKE CHECKS */
-        const  DSSDataInput vmsg =
+        const  DSSDataOutput vmsg =
             dip == NULL ?
-            _ECPV_Data.createOutput(vdata, P) :
-            TDataInput<ECPV_Input>(*dip).createOutput(vdata, P);
+            _ECPV_Data.createOutput(vdata) :
+            TDataInput<ECPV_Input>(*dip).createOutput(vdata);
 
-        const Octet M = vmsg.d || data.M_clr;
+        const ManagedBlob M = vmsg.M_rec || data.M_clr;
 
         const  DSSDataInput vsign =
             dip == NULL ?
             _ECPV_Data.createInput(M, P) :
             TDataInput<ECPV_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vmsg.M_clr)
+        if (vsign.d == vmsg.d_pad)
         {
             return VerificationVerdict(M);
         }
