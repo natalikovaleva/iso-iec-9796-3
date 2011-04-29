@@ -73,7 +73,7 @@ public:
     ~ECAO()
         {}
 
-    DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
+    DigitalSignature sign(const ManagedBlob & data, const DataInputPolicy * dip = NULL)
         {
             if (! _isPrivateKeyLoaded)
                 throw std::exception();
@@ -137,27 +137,26 @@ public:
         const Octet vdata =  data.R ^ P;
 
         /* FIX IT ? */
-        const  DSSDataInput vmsg =
+        const  DSSDataOutput vmsg =
             dip == NULL ?
-            _ECAO_Data.createOutput(vdata, P) :
-            TDataInput<ECAO_Input>(*dip).createOutput(vdata, P);
+            _ECAO_Data.createOutput(vdata) :
+            TDataInput<ECAO_Input>(*dip).createOutput(vdata);
 
         if (vmsg.invalid)
         {
             return VerificationVerdict();
         }
 
-
-        Octet M = vmsg.d || data.M_clr;
+        ManagedBlob M = vmsg.M_rec || data.M_clr;
 
         const  DSSDataInput vsign =
             dip == NULL ?
             _ECAO_Data.createInput(M, P) :
             TDataInput<ECAO_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vmsg.M_clr)
+        if (vsign.d == vmsg.d_pad)
         {
-            return VerificationVerdict(vmsg.d);
+            return VerificationVerdict(M);
         }
         else
         {
