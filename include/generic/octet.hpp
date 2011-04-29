@@ -5,7 +5,11 @@
 
 #include <iostream> //debug
 
-#define OCTET_MAX_SIZE ( 512 * 4 ) / 8
+#ifndef OCTET_MAX_SIZE
+#define OCTET_MAX_SIZE 512*4/8
+#endif
+
+class ManagedBlob;
 
 class ByteSeq;
 inline ByteSeq Truncate(const ByteSeq & input,
@@ -13,7 +17,7 @@ inline ByteSeq Truncate(const ByteSeq & input,
 
 class ByteSeq
 {
-    const long __pad;
+    const long    __pad;
     unsigned char __data[OCTET_MAX_SIZE];
     size_t __data_size;
 
@@ -57,6 +61,7 @@ public:
         { return __data_size; }
 
     ByteSeq operator|| (const ByteSeq & y) const;
+
     ByteSeq operator^ (const ByteSeq & y) const;
 
     inline
@@ -104,6 +109,8 @@ public:
                 throw;
         }
 
+    ManagedBlob operator|| (const ManagedBlob & y) const;
+
 
     friend std::ostream& operator<<(std::ostream& s, const ByteSeq & octet);
     friend inline ByteSeq Truncate(const ByteSeq & input,
@@ -147,7 +154,6 @@ public:
     QuOctet(const ByteSeq & source)
         : ByteSeq(source, 4) {}
 };
-
 
 inline size_t Lb(const ByteSeq & x)
 { return x.getDataSize()*8; }

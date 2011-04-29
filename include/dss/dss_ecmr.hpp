@@ -69,7 +69,7 @@ public:
     ~ECMR()
         {}
 
-    DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
+    DigitalSignature sign(const ManagedBlob & data, const DataInputPolicy * dip = NULL)
         {
             if (! _isPrivateKeyLoaded)
                 throw std::exception();
@@ -135,19 +135,19 @@ public:
         const Octet vdata =  data.R ^ P;
 
         /* FIX IT ? */
-        const  DSSDataInput vmsg =
+        const  DSSDataOutput vmsg =
             dip == NULL ?
-            _ECMR_Data.createOutput(vdata, P) :
-            TDataInput<ECMR_Input>(*dip).createOutput(vdata, P);
+            _ECMR_Data.createOutput(vdata) :
+            TDataInput<ECMR_Input>(*dip).createOutput(vdata);
 
-        Octet M = vmsg.d || data.M_clr;
+        ManagedBlob M = vmsg.M_rec || data.M_clr;
 
         const  DSSDataInput vsign =
             dip == NULL ?
             _ECMR_Data.createInput(M, P) :
             TDataInput<ECMR_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vmsg.M_clr)
+        if (vsign.d == vmsg.d_pad)
         {
             return VerificationVerdict(M);
         }

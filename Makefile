@@ -32,7 +32,7 @@ FEATURES ?= lto loops nortti
 MABI  ?= $(shell [ "$(uname -m)" = "x86_64" ] && echo -m64 || echo -m32)
 
 CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden $(MABI)
-# CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden
+#CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden $(MABI)
 CXXFLAGS ?= $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
@@ -58,7 +58,7 @@ PROJ_GF2X   := ec.o
 PROJ_ZZ_P		:= ec.o
 
 HASHES := rmd160.o sha512.o sha1.o
-GENERIC := octet.o hash.o mgf.o convhex.o zz_utils.o gf2x_utils.o
+GENERIC := octet.o blob.o hash.o mgf.o convhex.o zz_utils.o gf2x_utils.o
 
 lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 									$(addprefix build/ec/GF2X/affine/,    $(AFFINE_GF2X)) \

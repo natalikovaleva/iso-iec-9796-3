@@ -42,7 +42,7 @@ public:
     ~ECNR()
         {}
 
-    DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL)
+    DigitalSignature sign(const ManagedBlob & data, const DataInputPolicy * dip = NULL)
         {
             if (! _isPrivateKeyLoaded)
                 throw std::exception();
@@ -50,7 +50,7 @@ public:
             const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             Octet P;
-            
+
             do
             {
                 _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
@@ -59,12 +59,12 @@ public:
 
                 if (PP.isZero())
                     continue;
-                
+
                 P  = EC2OSP(PP, EC_Dscr::aEC::EC2OSP_COMPRESSED);
                 break;
             }
             while(1);
-            
+
 
             /* FIX IT */
             const DSSDataInput SignData =
@@ -79,9 +79,9 @@ public:
 
             const ZZ_p r = (d + pi);
             const ZZ_p s = (InMod(k) - InMod(_privateKey)*r);
-            
+
             _Curve.leave_mod_context();
-            
+
             const ByteSeq R = I2OSP(r,_Ln);
             const ByteSeq S = I2OSP(s,_Ln);
 
@@ -114,19 +114,19 @@ public:
         Octet vdata = I2OSP(d);
 
         /* MAKE CHECKS */
-        const  DSSDataInput vmsg =
+        const  DSSDataOutput vmsg =
             dip == NULL ?
-            _ECNR_Data.createOutput(vdata, P) :
-            TDataInput<ECNR_Input>(*dip).createOutput(vdata, P);
+            _ECNR_Data.createOutput(vdata) :
+            TDataInput<ECNR_Input>(*dip).createOutput(vdata);
 
-        Octet M = vmsg.d || data.M_clr;
-        
+        ManagedBlob M = vmsg.M_rec || data.M_clr;
+
         const  DSSDataInput vsign =
             dip == NULL ?
             _ECNR_Data.createInput(M, P) :
             TDataInput<ECNR_Input>(*dip).createInput(M, P);
 
-        if (vsign.d == vmsg.M_clr)
+        if (vsign.d == vmsg.d_pad)
         {
             return VerificationVerdict(M);
         }

@@ -27,8 +27,8 @@ int main(int argc     __attribute__((unused)),
     const Octet  M_clr_octet = Octet((unsigned char *) M_clr_data,
                                      (size_t) sizeof(M_clr_data));
 
-    const Octet Message = Octet((unsigned char *) M.c_str(),
-                                M.length()) || M_clr_octet;
+    const ManagedBlob Message = Octet((unsigned char *) M.c_str(),
+                                      M.length()) || M_clr_octet;
 
     /* ---------------------------------------------- */
 
