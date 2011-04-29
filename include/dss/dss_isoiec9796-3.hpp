@@ -186,7 +186,7 @@ public:
         }
 
 
-    virtual DigitalSignature sign(const ByteSeq & data, const DataInputPolicy * dip = NULL) = 0;
+    virtual DigitalSignature sign(const ManagedBlob & data, const DataInputPolicy * dip = NULL) = 0;
     virtual VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL) = 0;
 
 private:

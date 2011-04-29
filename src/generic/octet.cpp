@@ -64,7 +64,11 @@ ByteSeq ByteSeq::operator^ (const ByteSeq & y) const
     return result;
 }
 
-
+ManagedBlob ByteSeq::operator|| (const ManagedBlob & y) const
+{
+    return ManagedBlob(__data,     __data_size,
+                       y.getData(), y.getDataSize());
+}
 
 ByteSeq ByteSeq::operator|| (const ByteSeq & y) const
 {

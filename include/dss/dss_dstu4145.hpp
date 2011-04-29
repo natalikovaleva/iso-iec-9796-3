@@ -48,7 +48,7 @@ public:
                 FE2OSP(AffinePublicKey.getY(), this->_Lcm);
         }
 
-    DigitalSignature sign(const ByteSeq & data)
+    DigitalSignature sign(const ManagedBlob & data)
         {
             if (! this->_isPrivateKeyLoaded)
                 throw std::exception();
