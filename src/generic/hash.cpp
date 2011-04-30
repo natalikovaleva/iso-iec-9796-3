@@ -100,4 +100,12 @@ ByteSeq Hash::operator() (const ByteSeq & source) const
     return ByteSeq(buffer, getHashSize());
 }
 
+ByteSeq Hash::operator() (const ManagedBlob & source) const
+{
+    unsigned char buffer[128]; // const payment
 
+    getHash(source.getData(), source.getDataSize(),
+            buffer, sizeof(buffer));
+
+    return ByteSeq(buffer, getHashSize());
+}
