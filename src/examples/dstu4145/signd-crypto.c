@@ -33,11 +33,11 @@ void prng (unsigned char * buffer, int count)
 
 int start_prng()
 {
-    /* prng_source = popen("dd if=/dev/urandom bs=4","r"); */
-    /* if (prng_source == NULL) */
-    /* { */
-    /*     return 1; */
-    /* } */
+    prng_source = popen("dd if=/dev/urandom bs=4","r");
+    if (prng_source == NULL)
+    {
+        return 1;
+    }
 
     return 0;
 }

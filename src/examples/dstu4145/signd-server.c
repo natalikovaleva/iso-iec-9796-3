@@ -16,7 +16,8 @@ static int server_loop = 1;
 
 static void SIGALRM_handler(int signum __attribute__((unused)))
 {
-    /* exit(1); */
+    fprintf(stderr,"SIGALRM to %d\n", getpid());
+    exit(1);
 }
 
 static void SIGCHLD_handler(int signum __attribute__((unused)))
@@ -33,7 +34,6 @@ static void SIGINT_handler(int signum __attribute__((unused)))
     fprintf(stderr, "Get SIGINTR signal. Shutting down\n");
     server_loop = 0;
 }
-
 
 int  signd_server_loop(struct signd_config * signd_config,
                        struct signd_crypto * signd_crypto)
@@ -91,17 +91,17 @@ int  signd_server_loop(struct signd_config * signd_config,
             else
                 return -1;
 
-        /* pid_t sign_process_pid = fork(); */
+        pid_t sign_process_pid = fork();
 
-        /* if (sign_process_pid == 0) */
-        /* { */
-        /*     close(server_sock); */
+        if (sign_process_pid == 0)
+        {
+            close(server_sock);
 
-            /* /\* Set alarm *\/ */
+            /* Set alarm */
 
-            /* handler.sa_handler = SIGALRM_handler; */
-            /* sigaction(SIGALRM, &handler, NULL); */
-            /* alarm(signd_config->thread_timeout); */
+            handler.sa_handler = SIGALRM_handler;
+            sigaction(SIGALRM, &handler, NULL);
+            alarm(signd_config->thread_timeout);
 
             /* Ok. Wait for data to sign. */
 
@@ -122,8 +122,6 @@ int  signd_server_loop(struct signd_config * signd_config,
                 close(client_sock);
                 return 2;
             }
-
-            fprintf(stderr, "Size=%d; fsign: %p", message_size, sign);
 
             struct SIGN * s = sign(message, message_size, signd_crypto);
 
@@ -154,15 +152,19 @@ int  signd_server_loop(struct signd_config * signd_config,
             close(client_sock);
 
             return rval == 0 ? 0 : 4;
-        /* } */
-        /* else */
-        /* { */
-        /*     fprintf(stderr, "Create process %d for %s:%d\n", */
-        /*             sign_process_pid, */
-        /*             inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port)); */
-        /* } */
+        }
+        else
+        {
+            close(client_sock);
+
+            fprintf(stderr, "Create process %d for %s:%d\n",
+                    sign_process_pid,
+                    inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+        }
 
     }
 
+    shutdown(server_sock, SHUT_RDWR);
+    close(server_sock);
     return 0;
 }

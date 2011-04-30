@@ -83,9 +83,12 @@ int main(int argc, char *argv[])
     }
 
     struct SIGN * sign = NULL;
+    int rval;
 
-    if ( recv_sign(sock, &sign) != 0)
+    if ( (rval = recv_sign(sock, &sign)) != 0)
     {
+        printf("errcode: %d\n", rval);
+
         perror("Couldn't recv sign: ");
         return 1;
     }
@@ -97,6 +100,8 @@ int main(int argc, char *argv[])
         printf("Couldn't create crypto context\n");
         return 1;
     }
+
+    printf("Signature:\nR: %s\nS: %s\n", sign->R, sign->S);
 
     const char * msg = verify(sign, ctx);
 

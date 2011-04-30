@@ -81,5 +81,7 @@ int main(int argc, char *argv[])
     close_config(config);
     stop_prng();
 
+    printf("Stopped with %d\n", rval);
+
     return rval;
 }
