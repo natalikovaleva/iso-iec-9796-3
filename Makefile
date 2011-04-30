@@ -29,11 +29,11 @@ LTO   := -fwhole-program -combine -flto
 LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
 FEATURES ?= lto loops nortti
 
-MABI  ?= $(shell [ "$$(uname -m)" = "x86_64" ] && echo -m64 || echo -m32)
+ABI  ?= $(shell [ "$$(uname -m)" = "x86_64" ] && echo 64 || echo 32)
 
-CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden $(MABI)
-#CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden $(MABI)
-CXXFLAGS := $(CFLAGS)
+CFLAGS ?= -O2 -march=native -fPIC -fvisibility=hidden -m$(ABI)
+#CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden -m$(ABI)
+CXXFLAGS ?= $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 ifeq ($(findstring lto,$(FEATURES)),lto)
@@ -95,7 +95,7 @@ build-libmath/libmath/libmath.a:
 			CFLAGS="$(CFLAGS)" 			\
 			GCC="$(CC)" 						\
 			GXX="$(CXX)" 						\
-			ABI=$(MABI)							\
+			ABI=$(ABI)							\
 				sh ./build.sh
 
 clean:
