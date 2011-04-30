@@ -157,7 +157,7 @@ public:
     ~ManagedBlob()
         {
             if ((__data - __lpad) != __data_buffer)
-                delete (__data - __lpad);
+                free (__data - __lpad);
         }
 
     inline ManagedBlob operator|| (const ByteSeq & y) const
