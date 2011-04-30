@@ -90,8 +90,13 @@ build/%.o : src/%.c
 		find -name "*.gcda" -delete
 
 build-libmath/libmath/libmath.a:
-	  cd build-libmath/ && \
-	  CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)" GCC="$(CC)" GXX="$(CXX)" sh ./build.sh
+	  cd build-libmath/ && 			\
+		  CXXFLAGS="$(CXXFLAGS)" 	\
+			CFLAGS="$(CFLAGS)" 			\
+			GCC="$(CC)" 						\
+			GXX="$(CXX)" 						\
+			ABI=$(MABI)							\
+				sh ./build.sh
 
 clean:
 		[ -d build ] && find build -name "*.o" -delete || true
