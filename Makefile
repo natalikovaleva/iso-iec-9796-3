@@ -29,7 +29,7 @@ LTO   := -fwhole-program -combine -flto
 LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
 FEATURES ?= lto loops nortti
 
-MABI  ?= $(shell [ "$(uname -m)" = "x86_64" ] && echo -m64 || echo -m32)
+MABI  ?= $(shell [ "$$(uname -m)" = "x86_64" ] && echo -m64 || echo -m32)
 
 CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden $(MABI)
 #CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden $(MABI)
