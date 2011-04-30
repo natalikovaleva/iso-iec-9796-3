@@ -31,9 +31,9 @@ FEATURES ?= lto loops nortti
 
 MABI  ?= $(shell [ "$(uname -m)" = "x86_64" ] && echo -m64 || echo -m32)
 
-CFLAGS := -O2 -march=native -fPIC -fvisibility=hidden $(MABI)
+CFLAGS ?= -O2 -march=native -fPIC -fvisibility=hidden $(MABI)
 #CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden $(MABI)
-CXXFLAGS := $(CFLAGS)
+CXXFLAGS ?= $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 ifeq ($(findstring lto,$(FEATURES)),lto)

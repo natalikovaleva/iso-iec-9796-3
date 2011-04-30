@@ -29,7 +29,7 @@ int main()
     DSTU4145<DSS_ZZ_p> dss(DomainParameters, Sha512, tG);
 
     dss.setPrivateKey(Xa);
-    dss.generatePublicKey();
+    std::cout << dss.generatePublicKey() << std::endl;
 
     dss.buildPrecomputationTables();
 
