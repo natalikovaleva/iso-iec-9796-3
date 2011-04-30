@@ -1,5 +1,6 @@
 #include <string.h>
 #include <malloc.h>
+#include <errno.h>
 
 #include "signd-packets.h"
 
@@ -26,6 +27,50 @@ enum PACKAGE_TYPE
     PACKAGE_SIGN,
 };
 
+int send_large_message(int fd, const void * message, size_t message_size)
+{
+    int send_pos  = 0;
+    int send_size = message_size;
+
+    do {
+
+        int sended = send(fd, message + send_pos, message_size, 0);
+        if (sended == -1)
+        {
+            if ((sended == EAGAIN) ||
+                (sended == EWOULDBLOCK))
+                continue;
+
+            return -1;
+        }
+        send_pos  += sended;
+        send_size -= sended;
+    } while(send_size);
+
+    return message_size;
+}
+
+int recv_large_message(int fd, void * message, size_t message_size)
+{
+    int recv_pos  = 0;
+    int recv_size = message_size;
+
+    do {
+        int recved = recv(fd, message + recv_pos, recv_size, 0);
+        if (recved == -1)
+        {
+            if ((recved == EAGAIN) ||
+                (recved == EWOULDBLOCK))
+                continue;
+            return -1;
+        }
+        recv_pos  += recved;
+        recv_size -= recved;
+    } while(recv_size);
+
+    return message_size;
+}
+
 int send_message(int fd, const char * message, size_t message_size)
 {
     if (message_size != ((size_t)((short) message_size)))
@@ -34,24 +79,12 @@ int send_message(int fd, const char * message, size_t message_size)
     const char type = PACKAGE_MESSAGE;
     const short size = htons((short) message_size);
 
-    if ((send(fd, &type, sizeof(type), 0) != sizeof(type)) ||
-        (send(fd, &size, sizeof(size), 0) != sizeof(size)))
+    if ((send_large_message(fd, &type, sizeof(type)) != sizeof(type)) ||
+        (send_large_message(fd, &size, sizeof(size)) != sizeof(size)))
         return -1;
 
-    int send_pos  = 0;
-    int send_size = message_size;
-
-    do {
-        int sended = send(fd, message + send_pos, message_size, 0);
-        if (sended == -1)
-        {
-            return -1;
-        }
-        send_pos  += sended;
-        send_size -= sended;
-    } while(send_size);
-
-    return 0;
+    return send_large_message(fd, message, message_size)
+        == message_size ? 0 : -1;
 }
 
 int recv_message(int fd, char * message, size_t * message_size)
@@ -59,19 +92,16 @@ int recv_message(int fd, char * message, size_t * message_size)
     char  type = 0;
     short size = 0;
 
-    if (recv(fd, &type, sizeof(type), 0) != sizeof(type))
+    if (recv_large_message(fd, &type, sizeof(type)) != sizeof(type))
     {
-        fprintf(stderr, "DBG: recv type\n");
         return -1;
     }
-
 
     if (type != PACKAGE_MESSAGE)
         return 1;
 
-    if (recv(fd, &size, sizeof(size), 0) != sizeof(size))
+    if (recv_large_message(fd, &size, sizeof(size)) != sizeof(size))
     {
-        fprintf(stderr, "DBG: recv size\n");
         return -1;
     }
 
@@ -80,24 +110,15 @@ int recv_message(int fd, char * message, size_t * message_size)
     if (size > *message_size)
         return 1;
 
-    int recv_pos  = 0;
-    int recv_size = size;
+    int rval = recv_large_message(fd, message, size);
 
-    do {
-        int recved = recv(fd, message + recv_pos, recv_size, 0);
-        if (recved == -1)
-        {
-            fprintf(stderr, "DBG: recv message: %d\n", size);
-            *message_size = 0;
-            return -1;
-        }
-        recv_pos  += recved;
-        recv_size -= recved;
-    } while(recv_size);
+    if (rval == size)
+    {
+        *message_size = size;
+        return 0;
+    }
 
-    *message_size = size;
-
-    return 0;
+    return 1;
 }
 
 
@@ -119,13 +140,14 @@ int send_sign(int fd, const struct SIGN * s)
     const char  S_size = (char)S_size_;
     const short M_size = htons((short) s-> M_size);
 
-    if ((send(fd, &type,   sizeof(type),  0) != sizeof(type))   ||
-        (send(fd, &R_size, sizeof(R_size),0) != sizeof(R_size)) ||
-        (send(fd, &S_size, sizeof(S_size),0) != sizeof(S_size)) ||
-        (send(fd, &M_size, sizeof(M_size),0) != sizeof(M_size)) ||
-        (send(fd, s->R,    R_size,        0) != R_size)         ||
-        (send(fd, s->S,    S_size,        0) != S_size)         ||
-        (send(fd, s->M,    s->M_size,     0) != s->M_size))
+    if ((send_large_message(fd, &type,   sizeof(type))   != sizeof(type))   ||
+        (send_large_message(fd, &R_size, sizeof(R_size)) != sizeof(R_size)) ||
+        (send_large_message(fd, &S_size, sizeof(S_size)) != sizeof(S_size)) ||
+        (send_large_message(fd, &M_size, sizeof(M_size)) != sizeof(M_size)) ||
+
+        (send_large_message(fd, s->R,    R_size)    != R_size)  ||
+        (send_large_message(fd, s->S,    S_size)    != S_size)  ||
+        (send_large_message(fd, s->M,    s->M_size) != s->M_size))
         return -1;
 
     return 0;
@@ -138,20 +160,29 @@ int recv_sign(int fd, struct SIGN ** new_sign)
 
     char type;
 
-    if (recv(fd, &type, sizeof(type)) != sizeof(type))
+    if (recv_large_message(fd, &type, sizeof(type)) != sizeof(type))
+    {
         return -1;
+    }
+
 
     if (type != PACKAGE_SIGN)
+    {
         return 1;
+    }
+
 
     char  R_size;
     char  S_size;
     short M_size;
 
-    if ((recv(fd, &R_size, sizeof(R_size),0) != sizeof(R_size)) ||
-        (recv(fd, &M_size, sizeof(S_size),0) != sizeof(S_size)) ||
-        (recv(fd, &M_size, sizeof(M_size),0) != sizeof(M_size)))
+    if ((recv_large_message(fd, &R_size, sizeof(R_size)) != sizeof(R_size)) ||
+        (recv_large_message(fd, &S_size, sizeof(S_size)) != sizeof(S_size)) ||
+        (recv_large_message(fd, &M_size, sizeof(M_size)) != sizeof(M_size)))
+    {
         return -1;
+    }
+
 
     M_size = ntohs(M_size);
 
@@ -167,9 +198,9 @@ int recv_sign(int fd, struct SIGN ** new_sign)
          ((*new_sign)->S == NULL) ||
          ((*new_sign)->M == NULL))
         ||
-        ((recv(fd, (*new_sign)->R, R_size, 0) != R_size) ||
-         (recv(fd, (*new_sign)->S, S_size, 0) != S_size) ||
-         (recv(fd, (*new_sign)->M, M_size, 0) != M_size)))
+        ((recv_large_message(fd, (*new_sign)->R, R_size) != R_size) ||
+         (recv_large_message(fd, (*new_sign)->S, S_size) != S_size) ||
+         (recv_large_message(fd, (*new_sign)->M, M_size) != M_size)))
     {
         free((*new_sign)->R);
         free((*new_sign)->S);
