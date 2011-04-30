@@ -161,7 +161,7 @@ public:
 public:
     virtual ~GENERIC_DSS(){}
 
-    virtual DigitalSignature sign(const ByteSeq & data) = 0;
+    virtual DigitalSignature sign(const ManagedBlob & data) = 0;
     virtual VerificationVerdict verify(const DigitalSignature & data) = 0;
 
 protected:
