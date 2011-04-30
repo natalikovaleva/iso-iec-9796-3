@@ -53,12 +53,27 @@ static void close_config(struct signd_config * config)
 }
 
 
-int main(int argc, char *argv[])
+int main(int argc, char * const argv[])
 {
+    int opt;
+
+    char * config_path = "./signd.conf";
+
+    while ((opt = getopt(argc, argv, "c:")) != -1) {
+        switch (opt) {
+            case 'c':
+                config_path = optarg;
+                break;
+            default:
+                fprintf(stderr, "Usage: %s [-c /config]\n",
+                        argv[0]);
+                return 1;
+        }
+    }
 
     start_prng();
 
-    struct signd_config * config = read_config("./signd.conf");
+    struct signd_config * config = read_config(config_path);
 
     if (config == NULL)
     {
