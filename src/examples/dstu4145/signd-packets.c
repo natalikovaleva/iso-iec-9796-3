@@ -37,8 +37,8 @@ int send_large_message(int fd, const void * message, size_t message_size)
         int sended = send(fd, message + send_pos, message_size, 0);
         if (sended == -1)
         {
-            if ((sended == EAGAIN) ||
-                (sended == EWOULDBLOCK))
+            if ((errno == EAGAIN) ||
+                (errno == EWOULDBLOCK))
                 continue;
 
             return -1;
@@ -59,8 +59,8 @@ int recv_large_message(int fd, void * message, size_t message_size)
         int recved = recv(fd, message + recv_pos, recv_size, 0);
         if (recved == -1)
         {
-            if ((recved == EAGAIN) ||
-                (recved == EWOULDBLOCK))
+            if ((errno == EAGAIN) ||
+                (errno == EWOULDBLOCK))
                 continue;
             return -1;
         }
@@ -73,11 +73,11 @@ int recv_large_message(int fd, void * message, size_t message_size)
 
 int send_message(int fd, const char * message, size_t message_size)
 {
-    if (message_size != ((size_t)((short) message_size)))
+    if (message_size != ((size_t)((unsigned short) message_size)))
         return 1;
 
     const char type = PACKAGE_MESSAGE;
-    const short size = htons((short) message_size);
+    const unsigned short size = htons((unsigned short) message_size);
 
     if ((send_large_message(fd, &type, sizeof(type)) != sizeof(type)) ||
         (send_large_message(fd, &size, sizeof(size)) != sizeof(size)))
@@ -90,7 +90,7 @@ int send_message(int fd, const char * message, size_t message_size)
 int recv_message(int fd, char * message, size_t * message_size)
 {
     char  type = 0;
-    short size = 0;
+    unsigned short size = 0;
 
     if (recv_large_message(fd, &type, sizeof(type)) != sizeof(type))
     {
@@ -138,7 +138,7 @@ int send_sign(int fd, const struct SIGN * s)
     const char  type = PACKAGE_SIGN;
     const char  R_size = (char)R_size_;
     const char  S_size = (char)S_size_;
-    const short M_size = htons((short) s-> M_size);
+    const unsigned short M_size = htons((unsigned short) s-> M_size);
 
     if ((send_large_message(fd, &type,   sizeof(type))   != sizeof(type))   ||
         (send_large_message(fd, &R_size, sizeof(R_size)) != sizeof(R_size)) ||
@@ -174,7 +174,7 @@ int recv_sign(int fd, struct SIGN ** new_sign)
 
     char  R_size;
     char  S_size;
-    short M_size;
+    unsigned short M_size;
 
     if ((recv_large_message(fd, &R_size, sizeof(R_size)) != sizeof(R_size)) ||
         (recv_large_message(fd, &S_size, sizeof(S_size)) != sizeof(S_size)) ||
