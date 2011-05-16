@@ -81,7 +81,7 @@ build/%.o : src/%.c
 # Examples builds to cwd
 %: build/examples/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a
 		@mkdir -p $(dir $@)
-		$(CXX) -static -Wall $(CXXFLAGS) -o $@ $^ build-libmath/libmath/libmath.a
+		$(CXX) -static -Wall $(CXXFLAGS) -o $@ $^ build-libmath/libmath/libmath.a $(LDFLAGS)
 		find -name "*.gcda" -delete
 
 %: build/tests/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a
