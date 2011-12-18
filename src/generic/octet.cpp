@@ -1,7 +1,7 @@
 #include <iomanip>
 
+#include "generic/blob.hpp"
 #include "generic/octet.hpp"
-
 
 void ByteSeq::setData(const unsigned char * data, size_t data_size, bool rotate)
 {

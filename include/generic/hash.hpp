@@ -56,6 +56,3 @@ public:
     ByteSeq operator() (const ByteSeq & source) const;
     ByteSeq operator() (const ManagedBlob & source) const;
 };
-
-
-
