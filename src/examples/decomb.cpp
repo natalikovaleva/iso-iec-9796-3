@@ -12,6 +12,7 @@ using namespace std;
 #include "algorithm/comb.hpp"
 
 #include <iostream>
+#include <sys/time.h>
 
 using namespace NTL;
 using namespace std;
@@ -47,22 +48,41 @@ int main(int argc     __attribute__((unused)),
     G1.precompute(Metod);
     G2.precompute(MetodOrig);
 
-    for (int i = 0; i<20000; i++)
+    for (int i = 0; i<100; i ++)
     {
         const ZZ k = OS2IP(decomb.getRandomValue());
-        EC_Point kG1 = G1*k;
-        EC_Point kG2 = G2*k;
-
-        if (! (kG1 == kG2))
-        {
-            std::cout << "FAIL" << std::endl;
-            std::cout << kG1 << std::endl;
-            std::cout << kG2 << std::endl;
-            return 1;
-        }
+        if (!(G1*k == G2*k))
+            {
+                std::cout << "Incorrect computations!" << std::endl;
+                return 1;
+            }
     }
 
+    struct timeval tv1, tv2;
 
+    gettimeofday(&tv1, NULL);
+
+    for (int i = 0; i<100000; i++)
+    {
+        const ZZ k = OS2IP(decomb.getRandomValue());
+        const EC_Point kG1 = G1*k;
+    }
+
+    gettimeofday(&tv2, NULL);
+
+    std::cout << "deComb: " << tv2.tv_sec - tv1.tv_sec << std::endl;
+
+    gettimeofday(&tv1, NULL);
+
+    for (int i = 0; i<100000; i++)
+    {
+        const ZZ k = OS2IP(decomb.getRandomValue());
+        const EC_Point kG2 = G2*k;
+    }
+
+    gettimeofday(&tv2, NULL);
+
+    std::cout << "Comb: " << tv2.tv_sec - tv1.tv_sec << std::endl;
 
     return 0;
 }
