@@ -284,9 +284,10 @@ namespace Algorithm
                     P += getPrecomputedForMul(Y, i);
                 }
 
-                //std::cout << "Caching: " << P << //std::endl;
-
+                P += P;
                 __decombContext.cache(new Group1(P));
+                P += getPrecomputedForMul(Y, i);
+                i ++;
 
                 for (;
                      i < getMulPortions();
@@ -309,6 +310,9 @@ namespace Algorithm
                 //std::cout << "by " << Y << //std::endl;
 
                 long i = __decombContext.items();
+
+                P += getPrecomputedForMul(Y, i);
+                i ++;
 
                 for (;
                      i < getMulPortions();
