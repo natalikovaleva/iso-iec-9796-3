@@ -30,7 +30,10 @@ int main(int argc     __attribute__((unused)),
 
     SetSeed(ZZ());
 
-    decombType::Generator decomb(8,3,NumBits(EC.getModulus()));
+    fixedGenerator
+        tG(I2OSP(ZZ_str("08a8bea9f2b40ce7400672261d5c05e5fd8ab326")));
+
+    decombType::Generator decomb(8,3,NumBits(EC.getModulus()), tG);
 
     const Algorithm::Precomputations_Method_deComb<
         Affine::EC_Point,
