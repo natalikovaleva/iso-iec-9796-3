@@ -27,7 +27,7 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-LTO   := -fwhole-program -flto
+#LTO   := -fwhole-program -flto=4
 LOOPS := -ftree-vectorize
 FEATURES ?= lto loops nortti
 
