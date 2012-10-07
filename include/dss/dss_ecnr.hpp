@@ -54,7 +54,7 @@ public:
             do
             {
                 _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-                const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
+                const typename EC_Dscr::aECP PP = Algorithm::toAffine(_BasePoint * k);
                 _Curve.leave_mod_context();
 
                 if (PP.isZero())
@@ -104,7 +104,7 @@ public:
         t %= _Curve.getOrder();
 
         _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-        typename EC_Dscr::aECP R = toAffine(_publicKey * t + _BasePoint * s);
+        typename EC_Dscr::aECP R = Algorithm::toAffine(_publicKey * t + _BasePoint * s);
         _Curve.leave_mod_context();
 
         const Octet P  = EC2OSP(R, EC_Dscr::aEC::EC2OSP_COMPRESSED);

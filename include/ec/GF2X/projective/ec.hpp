@@ -21,39 +21,39 @@ namespace ECGF2X
         using NTL::ZZ;
 
         class EC;
-        
+
         class EC_Point
         {
-    
+
             GF2X X;
             GF2X Y;
             GF2X Z;
 
             const EC & __EC;
-            
+
             bool __isZeroPoint;
-            
+
             Algorithm::Precomputations<EC_Point,
                                        ZZ> __precomputations;
             const Algorithm::RLMul<EC_Point,
                                    ZZ> __generic_multiplication;
-            
+
         public:
-            
+
             EC_Point(const GF2X &X, const GF2X &Y, const GF2X &Z, const EC & __EC); // Projective
             EC_Point(const EC_Point & Point); // Same point in same field
             EC_Point(const EC & __EC); // Zero
             ~EC_Point();
 
             bool _IsOnCurve() const;
-    
+
         public:
             bool precompute(const Algorithm::Precomputations_Method<EC_Point, ZZ> & method)
                 { __precomputations = method(*this); return __precomputations.isReady(); }
 
             inline bool isPrecomputed() const
                 { return __precomputations.isReady(); }
-            
+
             inline bool isZero() const
                 { return __isZeroPoint; }
 
@@ -62,7 +62,7 @@ namespace ECGF2X
             EC_Point   operator+  (const Affine::EC_Point & Y) const;
             EC_Point   operator*  (const ZZ & Y) const;
             EC_Point   operator*  (const long Y) const;
-    
+
             void operator+= (const Affine::EC_Point & Y);
             void operator+= (const EC_Point & Y);
             void operator*= (const long Y);
@@ -76,10 +76,10 @@ namespace ECGF2X
 
             inline const GF2X & getY() const
                 { return Y; }
-        
+
             inline const GF2X & getZ() const
                 { return Z; }
-        
+
             inline const EC & getEC() const
                 { return __EC; }
 
@@ -88,15 +88,15 @@ namespace ECGF2X
             friend class EC;
             friend std::ostream& operator<<(std::ostream& s,
                                             const EC_Point & _EC_Point);
-            friend inline void 
+            friend inline void
             Lopez_Dahab_Addition(EC_Point & P1,
                                  const EC_Point & P2);
 
-            friend inline void 
+            friend inline void
             Lopez_Dahab_Mixed_Addition(EC_Point & P1,
                                        const Affine::EC_Point & P2);
-            
-            friend inline void 
+
+            friend inline void
             Lopez_Dahab_Double(GF2X & X,
                                GF2X & Y,
                                GF2X & Z,
@@ -122,35 +122,36 @@ namespace ECGF2X
 
             EC(const Affine::EC & EC);
             ~EC();
-            
+
             EC_Point create() const;
-    
+
             EC_Point create(const GF2X & x,
                             const GF2X & y,
                             const GF2X & z) const;
 
         };
-        
-        inline bool IsZero(const EC_Point & EC_Point) 
+
+        inline bool IsZero(const EC_Point & EC_Point)
         {
             return EC_Point.isZero();
         }
     }
-
-    Projective::EC_Point toProjective(const Affine::EC_Point & Point,
-                                      const Projective::EC & EC);
-    
-    Affine::EC_Point toAffine(const Projective::EC_Point & Point);
 }
 
 namespace Algorithm
 {
+
+    ECGF2X::Projective::EC_Point toProjective(const ECGF2X::Affine::EC_Point & Point,
+                                              const ECGF2X::Projective::EC & EC);
+
+    ECGF2X::Affine::EC_Point toAffine(const ECGF2X::Projective::EC_Point & Point);
+
     /* For templates/algorithms */
     template <>
     struct conv1 <ECGF2X::Affine::EC_Point, ECGF2X::Projective::EC_Point>
     {
         inline ECGF2X::Affine::EC_Point operator()(const ECGF2X::Projective::EC_Point & from)
-            { return ECGF2X::toAffine(from); }
+            { return toAffine(from); }
     };
 
     template <>

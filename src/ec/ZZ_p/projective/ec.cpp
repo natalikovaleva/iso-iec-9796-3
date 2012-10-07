@@ -58,30 +58,9 @@ namespace ECZZ_p
             _X.Z *= _Y.getZ() * E;
         }
     }
-
-    Projective::EC_Point
-    toProjective(const Affine::EC_Point & Point,
-                 const Projective::EC & EC)
-    {
-        if (Point.isZero())
-            return EC.create();
-        else
-            return EC.create(Point.getX(), Point.getY(), ZZ_p() + 1);
-    }
-
-    Affine::EC_Point
-    toAffine(const Projective::EC_Point & Point)
-    {
-        if (Point.isZero())
-            return Point.getEC().getAffineBasePoint()
-            .getEC().create();
-        else
-            return Point.getEC().getAffineBasePoint()
-                .getEC().create(Point.getX() / sqr(Point.getZ()),
-                                Point.getY() / power(Point.getZ(), 3));
-    }
 }
 
+using namespace Algorithm;
 using namespace ECZZ_p;
 using namespace ECZZ_p::Projective;
 
@@ -313,4 +292,28 @@ EC_Point EC::create(const ZZ_p & x,
                     const ZZ_p & z) const
 {
     return EC_Point(x, y, z, *this);
+}
+
+namespace Algorithm {
+	ECZZ_p::Projective::EC_Point
+    toProjective(const ECZZ_p::Affine::EC_Point & Point,
+                 const ECZZ_p::Projective::EC & EC)
+    {
+        if (Point.isZero())
+            return EC.create();
+        else
+            return EC.create(Point.getX(), Point.getY(), ZZ_p() + 1);
+    }
+
+	ECZZ_p::Affine::EC_Point
+    toAffine(const ECZZ_p::Projective::EC_Point & Point)
+    {
+        if (Point.isZero())
+            return Point.getEC().getAffineBasePoint()
+            .getEC().create();
+        else
+            return Point.getEC().getAffineBasePoint()
+                .getEC().create(Point.getX() / sqr(Point.getZ()),
+                                Point.getY() / power(Point.getZ(), 3));
+    }
 }

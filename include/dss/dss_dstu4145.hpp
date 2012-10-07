@@ -41,7 +41,7 @@ public:
 
             this->_Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             typename EC_Dscr::aECP AffinePublicKey
-                = toAffine(this->_publicKey);
+                = Algorithm::toAffine(this->_publicKey);
             this->_Curve.leave_mod_context();
 
             return FE2OSP(AffinePublicKey.getX(), this->_Lcm) ||
@@ -58,7 +58,7 @@ public:
             const ZZ k = OS2IP(this->_PRNG()) % N;
 
             this->_Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            const typename EC_Dscr::aECP PP = toAffine(this->_BasePoint * k);
+            const typename EC_Dscr::aECP PP = Algorithm::toAffine(this->_BasePoint * k);
             this->_Curve.leave_mod_context();
 
             const ZZ P = FE2IP(PP.getX());
@@ -88,7 +88,7 @@ public:
 
         this->_Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
         typename EC_Dscr::aECP R
-            = toAffine(this->_publicKey * r + this->_BasePoint * s);
+            = Algorithm::toAffine(this->_publicKey * r + this->_BasePoint * s);
         this->_Curve.leave_mod_context();
 
         const ZZ P = FE2IP(R.getX());
