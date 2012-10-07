@@ -1,8 +1,10 @@
 .PHONY : all clean
 
-INCLUDE += -Ibuild-libmath/deps/include
+TOP := $(dir $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)))
 
-INCLUDE += -Iinclude/
+INCLUDE += -I$(TOP)/build-libmath/deps/include
+
+INCLUDE += -I$(TOP)/include/
 
 SIGNS := ecnr  \
 				 ecmr	 \
@@ -25,14 +27,13 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-LTO   := -fwhole-program -combine -flto
-LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
+LTO   := -fwhole-program -flto
+LOOPS := -ftree-vectorize
 FEATURES ?= lto loops nortti
 
 ABI  ?= $(shell [ "$$(uname -m)" = "x86_64" ] && echo 64 || echo 32)
 
-CFLAGS ?= -O2 -march=native -fPIC -fvisibility=hidden -m$(ABI)
-#CFLAGS := -O0 -fPIC -ggdb -fvisibility=hidden -m$(ABI)
+CFLAGS ?= -O2 -ggdb2 -march=native -fPIC -fvisibility=hidden -m$(ABI)
 CXXFLAGS ?= $(CFLAGS)
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
@@ -72,11 +73,11 @@ lib/lib9796-3.a : $(addprefix build/ec/ZZ_p/affine/,    $(AFFINE_ZZ_P)) \
 
 build/%.o : src/%.cpp
 		@mkdir -p $(dir $@)
-		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -fvisibility-inlines-hidden -c -o $@ $<
+		$(CXX) $(CXXFLAGS) $(WARNINGS) $(INCLUDE) -fvisibility-inlines-hidden -c -o $@ $(TOP)/$<
 
 build/%.o : src/%.c
 		@mkdir -p $(dir $@)
-		$(CC) --std=gnu99 $(CFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $<
+		$(CC) --std=gnu99 $(CFLAGS) $(WARNINGS) $(INCLUDE) -c -o $@ $(TOP)/$<
 
 # Examples builds to cwd
 %: build/examples/%.o  lib/lib9796-3.a build-libmath/libmath/libmath.a
