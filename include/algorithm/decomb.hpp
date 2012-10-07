@@ -88,7 +88,7 @@ namespace Algorithm
                   _decomb_idx(0),
                   _prev(),
                   _cache(NULL),
-		  _callback(callback)
+          _callback(callback)
                 {}
 
             PGroup1 * cache()
@@ -96,8 +96,20 @@ namespace Algorithm
 
             void cache(PGroup1 * cache)
                 {
-                 if (_cache) delete _cache; _cache = cache; _decomb_idx ++;
+					if (_cache) delete _cache; _cache = cache; _decomb_idx ++;
                 }
+
+            bool cached(const ZZ & Y) const
+                {
+                    if ((_prev & _mask) != (Y & _mask))
+					{
+						return false;
+					}
+                    else
+					{
+						return cached();
+					}
+				}
 
             bool cached() const
                 {
@@ -115,7 +127,6 @@ namespace Algorithm
 
             Octet getRandomValue()
                 {
-                    //std::cout << "GET RANDOM VALUE!" << //std::endl;
                     /*             [ description ]
                      * |   *****|********|********|********| real
                      * |++++++++|++++++++|++++++++|++++++++| cache
@@ -141,18 +152,17 @@ namespace Algorithm
                      * &1 || &2: 0101|1001|1000|1000|0000
                      *                                             */
 
-
                     if (! cached())
                     {
-		                Octet random = _callback();
-		                // TODO: FIXIT
-		                _prev = OS2IP(random);
-                        return random;
+                        Octet random = _callback();
+                        // TODO: FIXIT
+                        _prev = OS2IP(random);
+						return random;
                     }
                     else
                     {
-		        Octet random = _callback();
-		        ZZ base = OS2IP(random);
+						Octet random = _callback();
+                        ZZ base = OS2IP(random);
                         return I2OSP((_prev & _mask) | (base & _imask));
                     }
                 }
@@ -262,7 +272,7 @@ namespace Algorithm
         void Multiply(      Group1 & P,
                             const ZZ & Y)
             {
-                if (__decombContext.cached())
+                if (__decombContext.cached(Y))
                 {
                     _Multiply_Cached(P, Y);
                 }
@@ -305,7 +315,7 @@ namespace Algorithm
         void _Multiply_Cached(      Group1 & P,
                                     const ZZ & Y)
             {
-	      // TODO: Add operator=
+				// TODO: Add operator=
                 P *= 0;
                 P += *__decombContext.cache();
                 long i = __decombContext.items();

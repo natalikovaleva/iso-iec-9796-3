@@ -1,7 +1,7 @@
 #include "dss/dss_isoiec9796-3.hpp"
 #include "generic/zz_utils.hpp"
 
-#include "algorithm/comb.hpp"
+#include "algorithm/decomb.hpp"
 
 using namespace NTL;
 using namespace std;
@@ -32,9 +32,11 @@ int main(int argc     __attribute__((unused)),
 
     /* ---------------------------------------------- */
 
-    const Algorithm::Precomputations_Method_Comb<Projective::EC_Point,
-                                                 ZZ,
-                                                 Affine::EC_Point> Precomputation (NumBits(Curve.getModulus()));
+	Algorithm::Precomputations_deComb<Projective::EC_Point,
+									  Affine::EC_Point>::Generator dtG(8,3,NumBits(Curve.getModulus()), tG);
+
+    const Algorithm::Precomputations_Method_deComb<Projective::EC_Point,
+												   Affine::EC_Point> Precomputation (dtG);
 
     const StaticDataInputPolicy DefaultInputPolicy(13 - 2,
                                                    5  + 2,
@@ -49,7 +51,7 @@ int main(int argc     __attribute__((unused)),
 
     ECPV<DSS_ZZ_p> dss(DomainParameters,
                        SchemeParameters,
-                       tG);
+                       dtG);
 
     dss.setPrivateKey(Xa);
     dss.generatePublicKey();
@@ -59,6 +61,8 @@ int main(int argc     __attribute__((unused)),
          << "; L_red: " << DefaultInputPolicy(M.length()).L_red
          << "; L_max: " << DefaultInputPolicy(M.length()).L_max << endl;
 
+    DigitalSignature sign1 =
+        dss.sign(Message);
     DigitalSignature sign =
         dss.sign(Message);
 
