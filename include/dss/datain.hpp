@@ -55,7 +55,7 @@ struct DSSDataInput
 
     inline DSSDataInput()
         : d(Octet()),
-          M_clr(ManagedBlob()),
+          M_clr(*((ManagedBlob *)NULL)),
           invalid(true)
         {}
 };
