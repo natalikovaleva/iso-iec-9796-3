@@ -82,7 +82,7 @@ public:
             const size_t K = _Ln; // Security parameter
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
+            const typename EC_Dscr::aECP PP = Algorithm::toAffine(_BasePoint * k);
             _Curve.leave_mod_context();
             const Octet P = EC2OSP(PP, EC_Dscr::aEC::EC2OSP_COMPRESSED);
 
@@ -130,7 +130,7 @@ public:
         }
 
         _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-        const typename EC_Dscr::aECP R = toAffine(_publicKey * u + _BasePoint * s);
+        const typename EC_Dscr::aECP R = Algorithm::toAffine(_publicKey * u + _BasePoint * s);
         _Curve.leave_mod_context();
 
         const Octet P  = EC2OSP(R, EC_Dscr::aEC::EC2OSP_COMPRESSED);

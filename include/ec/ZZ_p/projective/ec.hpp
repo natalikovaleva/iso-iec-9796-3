@@ -122,21 +122,21 @@ namespace ECZZ_p
             return EC_Point.isZero();
         }
     }
-
-    Projective::EC_Point toProjective(const Affine::EC_Point & Point,
-                                      const Projective::EC & EC);
-
-    Affine::EC_Point toAffine(const Projective::EC_Point & Point);
 }
 
 namespace Algorithm
 {
+    ECZZ_p::Projective::EC_Point toProjective(const ECZZ_p::Affine::EC_Point & Point,
+                                              const ECZZ_p::Projective::EC & EC);
+
+    ECZZ_p::Affine::EC_Point toAffine(const ECZZ_p::Projective::EC_Point & Point);
+
     /* For templates/algorithms */
     template <>
     struct conv1 <ECZZ_p::Affine::EC_Point, ECZZ_p::Projective::EC_Point>
     {
         inline ECZZ_p::Affine::EC_Point operator()(const ECZZ_p::Projective::EC_Point & from)
-            { return ECZZ_p::toAffine(from); }
+            { return toAffine(from); }
     };
 
     template <>

@@ -79,13 +79,16 @@ public:
 
     DigitalSignature sign(const ManagedBlob & data, const DataInputPolicy * dip = NULL)
         {
+            using namespace ECGF2X;
+            using namespace ECZZ_p;
+
             if (! _isPrivateKeyLoaded)
                 throw std::exception();
 
             const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
+            const typename EC_Dscr::aECP PP = Algorithm::toAffine(_BasePoint * k);
             _Curve.leave_mod_context();
 
             const Octet P  = _KDF(FE2OSP(PP.getX()));
@@ -112,6 +115,9 @@ public:
 
     VerificationVerdict verify(const DigitalSignature & data, const DataInputPolicy * dip = NULL)
     {
+        using namespace ECGF2X;
+        using namespace ECZZ_p;
+
         if (! _isPrivateKeyLoaded )
             throw std::exception();
 
@@ -127,7 +133,7 @@ public:
             return VerificationVerdict();
 
         _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-        const typename EC_Dscr::aECP R = toAffine(_publicKey * t + _BasePoint * s);
+        const typename EC_Dscr::aECP R = Algorithm::toAffine(_publicKey * t + _BasePoint * s);
         _Curve.leave_mod_context();
 
         const Octet P  = _KDF(FE2OSP(R.getX()));

@@ -77,7 +77,7 @@ public:
             const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            const typename EC_Dscr::aECP PP = toAffine(_BasePoint * k);
+            const typename EC_Dscr::aECP PP = Algorithm::toAffine(_BasePoint * k);
             _Curve.leave_mod_context();
 
             const Octet P = _MGF(EC2OSP(PP, EC_Dscr::aEC::EC2OSP_UNCOMPRESSED), _Ln);
@@ -128,7 +128,7 @@ public:
         }
 
         _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-        const typename EC_Dscr::aECP R = toAffine(_publicKey * u2 + _BasePoint * u1);
+        const typename EC_Dscr::aECP R = Algorithm::toAffine(_publicKey * u2 + _BasePoint * u1);
         _Curve.leave_mod_context();
 
         const Octet P  = _MGF(EC2OSP(R, EC_Dscr::aEC::EC2OSP_UNCOMPRESSED), _Ln);

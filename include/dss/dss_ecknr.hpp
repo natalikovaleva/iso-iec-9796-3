@@ -71,9 +71,11 @@ public:
             setPublicKeyHook();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            typename EC_Dscr::aECP AffinePublicKey = toAffine(_publicKey);
+            typename EC_Dscr::aECP AffinePublicKey = Algorithm::toAffine(_publicKey);
             _Curve.leave_mod_context();
 
+            using namespace ECGF2X;
+            using namespace ECZZ_p;
             return FE2OSP(AffinePublicKey.getX(), _Lcm) ||
                 FE2OSP(AffinePublicKey.getY(), _Lcm);
         }
@@ -86,7 +88,7 @@ public:
             const ZZ k = OS2IP(_PRNG()) % _Curve.getOrder();
 
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-            const typename EC_Dscr::aECP PP = toAffine(_publicKey * k);
+            const typename EC_Dscr::aECP PP = Algorithm::toAffine(_publicKey * k);
             _Curve.leave_mod_context();
 
             const Octet Za = Truncate(_CertData, _Hash.getInputSize());
@@ -130,7 +132,7 @@ public:
         t %= _Curve.getOrder();
 
         _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
-        typename EC_Dscr::aECP R = toAffine(_publicKey * s + _BasePoint * t);
+        typename EC_Dscr::aECP R = Algorithm::toAffine(_publicKey * s + _BasePoint * t);
         _Curve.leave_mod_context();
 
         const Octet P  = _MGF(EC2OSP(R, EC_Dscr::aEC::EC2OSP_COMPRESSED), _Ln);
@@ -165,9 +167,11 @@ public:
 private:
     void setPublicKeyHook()
         {
+            using namespace ECGF2X;
+            using namespace ECZZ_p;
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
 
-            typename EC_Dscr::aECP _AffinePublicKey = toAffine(_publicKey);
+            typename EC_Dscr::aECP _AffinePublicKey = Algorithm::toAffine(_publicKey);
             _CertData = FE2OSP(_AffinePublicKey.getX()) || FE2OSP(_AffinePublicKey.getY());
 
             _Curve.leave_mod_context();

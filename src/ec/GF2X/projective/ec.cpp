@@ -5,6 +5,7 @@
 
 #include <exception>
 
+using namespace Algorithm;
 using namespace ECGF2X;
 using namespace ECGF2X::Projective;
 
@@ -129,33 +130,6 @@ namespace ECGF2X
             P1.Y = MulMod(MulMod(A1, G, P) + MulMod(E1, D, P),
                           D, P) + MulMod(G + P1.Z, P1.X, P);
         }
-    }
-
-    Projective::EC_Point
-    toProjective(const Affine::EC_Point & Point,
-                 const Projective::EC & EC)
-    {
-        if (Point.isZero())
-            return EC.create();
-        else
-            return EC.create(Point.getX(), Point.getY(),
-                             GF2X(0, 1));
-    }
-
-
-
-    Affine::EC_Point
-    toAffine(const Projective::EC_Point & Point)
-    {
-        const Affine::EC & EC = Point.getEC().getAffineBasePoint().getEC();
-
-        if (Point.isZero())
-            return EC.create();
-
-        const GF2X & P = EC.getModulus();
-        const GF2X iZ = InvMod(Point.getZ(), P);
-        return EC.create(MulMod(Point.getX(), iZ, P),
-                         MulMod(Point.getY(), SqrMod(iZ, P), P));
     }
 }
 
@@ -407,4 +381,31 @@ EC_Point EC::create(const GF2X & x,
                     const GF2X & z) const
 {
     return EC_Point(x, y, z, *this);
+}
+
+namespace Algorithm {
+    ECGF2X::Projective::EC_Point
+    toProjective(const ECGF2X::Affine::EC_Point & Point,
+                 const ECGF2X::Projective::EC & EC)
+    {
+        if (Point.isZero())
+            return EC.create();
+        else
+            return EC.create(Point.getX(), Point.getY(),
+                             GF2X(0, 1));
+    }
+
+    ECGF2X::Affine::EC_Point
+    toAffine(const ECGF2X::Projective::EC_Point & Point)
+    {
+        const Affine::EC & EC = Point.getEC().getAffineBasePoint().getEC();
+
+        if (Point.isZero())
+            return EC.create();
+
+        const GF2X & P = EC.getModulus();
+        const GF2X iZ = InvMod(Point.getZ(), P);
+        return EC.create(MulMod(Point.getX(), iZ, P),
+                         MulMod(Point.getY(), SqrMod(iZ, P), P));
+    }
 }

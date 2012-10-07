@@ -106,7 +106,7 @@ public:
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
 
             _publicKey =
-                toProjective(_Curve
+                Algorithm::toProjective(_Curve
                              .create(OS2FEP(ByteSeq(PublicKey.getData(), _Lcm)),
                                      OS2FEP(ByteSeq(PublicKey.getData() + _Lcm, _Lcm))),
                              _PCurve);
@@ -128,7 +128,7 @@ public:
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
             _publicKey = _BasePoint * _privateKey;
 
-            typename EC_Dscr::aECP _AffinePublicKey = toAffine(_publicKey);
+            typename EC_Dscr::aECP _AffinePublicKey = Algorithm::toAffine(_publicKey);
 
             _Curve.leave_mod_context();
 
