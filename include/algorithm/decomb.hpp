@@ -119,26 +119,26 @@ namespace Algorithm
                     /*             [ description ]
                      * |   *****|********|********|********| real
                      * |++++++++|++++++++|++++++++|++++++++| cache
-                     * |.....!!!|.....!!!|.....!!!|.....!!!| mask
-                     * |   **!!!|*****!!!|*****!!!|*****!!!| output
+                     * |!!!.....|!!!.....|!!!.....|!!!.....| mask
+                     * |!!!*****|!!!*****|!!!*****|!!!*****| output
                      *  ^___ max                          0
                      * |<block->|
                      * |<--------------- max ------------->|
                      * i.e: blocks: 4
-                     *      window: 8
+                     *      window: 4
                      *      items:  3
                      *                                             */
 
                     /* Example:
                      * cache:    0011|0011|1100|1101|0111
-                     * mask:        1|0001|0001|0001|0001
-                     * &1:       0001|0001|0000|0001|0001
+                     * mask:     1000|1000|1000|1000|1000
+                     * &1:       0000|0000|1000|1000|0000
                      *
                      * new:      0100|1001|1110|0101|0001
-                     *~mask:     1110|1110|1110|1110|1110
-                     * &2:       0100|1000|1110|0100|0000
+                     *~mask:     0001|0001|0001|0001|0001
+                     * &2:       0000|0000|0000|0000|0000
                      *
-                     * &1 || &2: 0101|1001|1110|0101|0001
+                     * &1 || &2: 0101|1001|1000|1000|0000
                      *                                             */
 
 
@@ -281,7 +281,7 @@ namespace Algorithm
                 P *= 0;
                 long i = 0;
 
-		conv1<PGroup1, Group1> groupConvertor;
+				conv1<PGroup1, Group1> groupConvertor;
 
                 for (;
                      i < __decombContext.items();
@@ -291,7 +291,7 @@ namespace Algorithm
                     P += getPrecomputedForMul(Y, i);
                 }
 
-		__decombContext.cache(new PGroup1(groupConvertor(P)));
+				__decombContext.cache(new PGroup1(groupConvertor(P)));
 
                 for (;
                      i < getMulPortions();
