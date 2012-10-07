@@ -33,7 +33,9 @@ namespace Algorithm
 
             unsigned int _decomb_idx;
             ZZ           _prev;
-            Group1      * _cache;
+            PGroup1      * _cache;
+
+            generateRandomValueCallback &_callback;
 
         private:
             static ZZ makeRandomMask(unsigned int window,
@@ -64,7 +66,7 @@ namespace Algorithm
 
                     for (unsigned int i=0; i<window; i++)
                     {
-                        for (unsigned int j=items; j<window; j++)
+                        for (unsigned int j=items; j<d; j++)
                         {
                             SetBit(mask, i*d+(d - j - 1));
                         }
@@ -76,7 +78,8 @@ namespace Algorithm
         public:
             Generator(unsigned int window,
                       unsigned int items,
-                      unsigned int max)
+                      unsigned int max,
+                      generateRandomValueCallback & callback)
                 : _window(window),
                   _items(items),
                   _max(max),
@@ -84,18 +87,20 @@ namespace Algorithm
                   _imask(makeInvRandomMask(window, items, max)),
                   _decomb_idx(0),
                   _prev(),
-                  _cache(NULL)
+                  _cache(NULL),
+		  _callback(callback)
                 {}
 
             PGroup1 * cache()
-                { return _cache;  }
+                {  _decomb_idx ++; return _cache;  }
 
             void cache(PGroup1 * cache)
-                { if (_cache) delete _cache; _cache = cache; _decomb_idx ++; }
+                {
+                 if (_cache) delete _cache; _cache = cache; _decomb_idx ++;
+                }
 
             bool cached() const
                 {
-                    //std::cout << "_decomb_idx == " << _decomb_idx << //std::endl;
                     return ( _decomb_idx % 2 == 1 );
                 }
 
@@ -139,12 +144,15 @@ namespace Algorithm
 
                     if (! cached())
                     {
-                        RandomBits(_prev, _max);
-                        return I2OSP(_prev);
+		                Octet random = _callback();
+		                // TODO: FIXIT
+		                _prev = OS2IP(random);
+                        return random;
                     }
                     else
                     {
-                        ZZ base = RandomBits_ZZ(_max);
+		        Octet random = _callback();
+		        ZZ base = OS2IP(random);
                         return I2OSP((_prev & _mask) | (base & _imask));
                     }
                 }
@@ -256,7 +264,6 @@ namespace Algorithm
             {
                 if (__decombContext.cached())
                 {
-                    //std::cout << "Cached? " << __decombContext.cached() << //std::endl;
                     _Multiply_Cached(P, Y);
                 }
 
@@ -274,7 +281,7 @@ namespace Algorithm
                 P *= 0;
                 long i = 0;
 
-                //std::cout << "FULL, by " << Y << //std::endl;
+		conv1<PGroup1, Group1> groupConvertor;
 
                 for (;
                      i < __decombContext.items();
@@ -284,9 +291,7 @@ namespace Algorithm
                     P += getPrecomputedForMul(Y, i);
                 }
 
-                //std::cout << "Caching: " << P << //std::endl;
-
-                __decombContext.cache(new Group1(P));
+		__decombContext.cache(new PGroup1(groupConvertor(P)));
 
                 for (;
                      i < getMulPortions();
@@ -295,19 +300,14 @@ namespace Algorithm
                     P += P;
                     P += getPrecomputedForMul(Y, i);
                 }
-
-                //std::cout << "Decomb: " << i << "iterations" << //std::endl;
-            }
+           }
 
         void _Multiply_Cached(      Group1 & P,
                                     const ZZ & Y)
             {
-
-                P = *__decombContext.cache();
-
-                //std::cout << "CACHED: " << P << //std::endl;
-                //std::cout << "by " << Y << //std::endl;
-
+	      // TODO: Add operator=
+                P *= 0;
+                P += *__decombContext.cache();
                 long i = __decombContext.items();
 
                 for (;
@@ -317,7 +317,6 @@ namespace Algorithm
                     P += P;
                     P += getPrecomputedForMul(Y, i);
                 }
-                //std::cout << "Decomb: " << i << "iterations" << //std::endl;
             }
 
         long getMulPortions(void) const
