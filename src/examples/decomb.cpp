@@ -23,6 +23,12 @@ int main(int argc     __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
 
+    if (argc !=2)
+    {
+        printf("Usage: %s [1-2^31]\n");
+        return 1;
+    }
+
     typedef Algorithm::Precomputations_deComb<
         Affine::EC_Point,
         Affine::EC_Point> decombType;
@@ -34,7 +40,9 @@ int main(int argc     __attribute__((unused)),
     fixedGenerator
         tG(I2OSP(ZZ_str("08a8bea9f2b40ce7400672261d5c05e5fd8ab326")));
 
-    decombType::Generator decomb(8,3,NumBits(EC.getModulus()), tG);
+    decombType::Generator decomb(8,
+                                 NumBits(EC.getModulus())/8/2,
+                                 NumBits(EC.getModulus()), tG);
 
     const Algorithm::Precomputations_Method_deComb<
         Affine::EC_Point,
@@ -65,7 +73,7 @@ int main(int argc     __attribute__((unused)),
 
     gettimeofday(&tv1, NULL);
 
-    for (int i = 0; i<100000; i++)
+    for (int i = 0; i<atoi(argv[1]; i++)
     {
         const ZZ k = OS2IP(decomb.getRandomValue());
         const EC_Point kG1 = G1*k;
@@ -77,7 +85,7 @@ int main(int argc     __attribute__((unused)),
 
     gettimeofday(&tv1, NULL);
 
-    for (int i = 0; i<100000; i++)
+    for (int i = 0; i<atoi(argv[1]); i++)
     {
         const ZZ k = OS2IP(decomb.getRandomValue());
         const EC_Point kG2 = G2*k;
