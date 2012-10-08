@@ -25,9 +25,9 @@ namespace Algorithm
 
         class Generator : public generateRandomValueCallback
         {
-            const unsigned int _window;
-            const unsigned int _items;
-            const unsigned int _max;
+            const long _window;
+            const long _items;
+            const long _max;
             const ZZ           _mask;
             const ZZ           _imask;
 
@@ -118,7 +118,7 @@ namespace Algorithm
                     return ( _decomb_idx % 2 == 1 );
                 }
 
-            unsigned int items() const
+            long items() const
                 { return _items; }
 
             ZZ getMask()
