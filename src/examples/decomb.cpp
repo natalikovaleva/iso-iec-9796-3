@@ -73,7 +73,7 @@ int main(int argc     __attribute__((unused)),
 
     gettimeofday(&tv1, NULL);
 
-    for (int i = 0; i<atoi(argv[1]; i++)
+    for (int i = 0; i<atoi(argv[1]); i++)
     {
         const ZZ k = OS2IP(decomb.getRandomValue());
         const EC_Point kG1 = G1*k;
