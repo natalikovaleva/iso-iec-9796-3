@@ -33,7 +33,7 @@ namespace Algorithm
 
             unsigned int _decomb_idx;
             ZZ           _prev;
-            PGroup1      * _cache;
+            Group1       * _cache;
 
             generateRandomValueCallback &_callback;
 
@@ -91,25 +91,27 @@ namespace Algorithm
           _callback(callback)
                 {}
 
-            PGroup1 * cache()
+            const Group1 * cache()
                 {  _decomb_idx ++; return _cache;  }
 
-            void cache(PGroup1 * cache)
+            void cache(const Group1& cache)
                 {
-					if (_cache) delete _cache; _cache = cache; _decomb_idx ++;
+                    if (! _cache) _cache = new Group1(cache);
+                    else *_cache = cache;
+                    _decomb_idx ++;
                 }
 
             bool cached(const ZZ & Y) const
                 {
                     if ((_prev & _mask) != (Y & _mask))
-					{
-						return false;
-					}
+                    {
+                        return false;
+                    }
                     else
-					{
-						return cached();
-					}
-				}
+                    {
+                        return cached();
+                    }
+                }
 
             bool cached() const
                 {
@@ -157,11 +159,11 @@ namespace Algorithm
                         Octet random = _callback();
                         // TODO: FIXIT
                         _prev = OS2IP(random);
-						return random;
+                        return random;
                     }
                     else
                     {
-						Octet random = _callback();
+                        Octet random = _callback();
                         ZZ base = OS2IP(random);
                         return I2OSP((_prev & _mask) | (base & _imask));
                     }
@@ -276,9 +278,10 @@ namespace Algorithm
                 {
                     _Multiply_Cached(P, Y);
                 }
-
                 else
+                {
                     _Multiply_Noncached(P, Y);
+                }
             }
 
         inline bool isReady(void)
@@ -291,8 +294,6 @@ namespace Algorithm
                 P *= 0;
                 long i = 0;
 
-				conv1<PGroup1, Group1> groupConvertor;
-
                 for (;
                      i < __decombContext.items();
                      i++)
@@ -301,7 +302,7 @@ namespace Algorithm
                     P += getPrecomputedForMul(Y, i);
                 }
 
-				__decombContext.cache(new PGroup1(groupConvertor(P)));
+                __decombContext.cache(P);
 
                 for (;
                      i < getMulPortions();
@@ -315,9 +316,9 @@ namespace Algorithm
         void _Multiply_Cached(      Group1 & P,
                                     const ZZ & Y)
             {
-				// TODO: Add operator=
-                P *= 0;
-                P += *__decombContext.cache();
+                // TODO: Add operator=
+                P = *__decombContext.cache();
+
                 long i = __decombContext.items();
 
                 for (;
