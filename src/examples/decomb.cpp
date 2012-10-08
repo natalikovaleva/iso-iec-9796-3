@@ -25,7 +25,7 @@ int main(int argc     __attribute__((unused)),
 
     if (argc !=2)
     {
-        printf("Usage: %s [1-2^31]\n");
+        printf("Usage: %s [1-2^31]\n", argv[0]);
         return 1;
     }
 
