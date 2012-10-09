@@ -180,10 +180,11 @@ public:
         {
             _Curve.enter_mod_context(EC_Dscr::aEC::FIELD_CONTEXT);
 
-            if (_isPublicKeyLoaded)
+            if (_isPublicKeyLoaded && ( ! _publicKey.isPrecomputed()))
                 _publicKey.precompute(_DomainParameters.PrecomputationMethod);
 
-            _BasePoint.precompute(_DomainParameters.PrecomputationMethod);
+            if (! _BasePoint.isPrecomputed())
+                _BasePoint.precompute(_DomainParameters.PrecomputationMethod);
 
             _Curve.leave_mod_context();
         }
