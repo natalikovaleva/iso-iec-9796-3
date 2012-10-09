@@ -13,7 +13,7 @@ using namespace ECZZ_p::Affine;
 
 const EC_Defaults::Sizes EC_Defaults::__size_matrix[] =
 {
-    EC0, EC128, EC160, EC161, EC192, EC256, EC512
+    EC0, EC160, EC161, EC192
 };
 
 EC_Defaults::EC_Defaults()
