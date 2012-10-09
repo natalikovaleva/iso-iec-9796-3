@@ -226,7 +226,12 @@ struct deCombBenchResults
 
 std::ostream& operator<<(std::ostream& s, const deCombBenchResults & results)
 {
-    s << results.order << " & " << results.Comb;
+    s << results.order << " & ";
+    if (results.Comb)
+        s << results.count/(double)results.Comb;
+    else
+        s << " - ";
+
     for (std::list<deCombBenchResults::deCombItem>::const_iterator i = results.deComb.begin();
          i != results.deComb.end();
          i++)
