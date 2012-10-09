@@ -15,7 +15,7 @@ namespace ECZZ_p
                 EC0   = 0,   /* Broken EC */
                 EC160 = 160,
                 EC161 = 161,
-                EC192 = 192,
+                EC192 = 192
             };
 
             enum Version
