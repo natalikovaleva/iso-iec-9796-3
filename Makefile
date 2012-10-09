@@ -27,24 +27,28 @@ DSS := dss_ecknr \
 
 all: build-libmath/libmath/libmath.a $(DSS)
 
-#LTO   := -fwhole-program -flto=4
-LOOPS := -ftree-vectorize
+LTO   := -fwhole-program -flto
+LOOPS := -ftree-vectorize  -floop-interchange -floop-strip-mine -floop-block
+PROFILE := -ggdb2 -pg -fno-PIC -fno-PIE
+
 FEATURES ?= lto loops nortti
 
 ABI  ?= $(shell [ "$$(uname -m)" = "x86_64" ] && echo 64 || echo 32)
 
-CFLAGS ?= -O2 -ggdb2 -march=native -fPIC -fvisibility=hidden -m$(ABI)
-CXXFLAGS ?= $(CFLAGS)
+CFLAGS ?= -O2 -march=native -fPIC -fvisibility=hidden -m$(ABI)
+CXXFLAGS ?= $(CFLAGS) -std=gnu++11
 WARNINGS := -Wall -Wextra -pedantic -Winit-self
 
 ifeq ($(findstring lto,$(FEATURES)),lto)
  CFLAGS   += $(LTO)
- CXXFLAGS += $(LTO)
 endif
 
 ifeq ($(findstring loops,$(FEATURES)),loops)
  CFLAGS   += $(LOOPS)
- CXXFLAGS += $(LOOPS)
+endif
+
+ifeq ($(findstring profile,$(FEATURES)),profile)
+ CFLAGS   += $(PROFILE)
 endif
 
 ifeq ($(findstring nortti,$(FEATURES)),nortti)
