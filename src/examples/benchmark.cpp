@@ -31,13 +31,22 @@ public:
 template<class DSS, class DSS_Field>
 struct DefaultDSS
 {
-    DSS operator()(typename DSS_Field::aEC & Curve,
-                   const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
-                   unsigned int L_rec,
-                   generateRandomValueCallback & PRNG)
+    const ECDataInputPolicy<DSS_Field>   DefaultInputPolicy;
+    const DSSDomainParameters<DSS_Field> DomainParameters;
+          generateRandomValueCallback &  PRNG;
+
+    DefaultDSS(typename DSS_Field::aEC & Curve,
+               const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
+               unsigned int L_rec,
+               generateRandomValueCallback & PRNG)
+        : DefaultInputPolicy(L_rec, Curve, Hash::RIPEMD160),
+          DomainParameters(Curve, DefaultInputPolicy, Precomputation),
+          PRNG(PRNG)
+        {}
+
+
+    DSS operator()()
         {
-            const ECDataInputPolicy<DSS_Field>   DefaultInputPolicy(L_rec, Curve, Hash::RIPEMD160);
-            const DSSDomainParameters<DSS_Field> DomainParameters(Curve, DefaultInputPolicy, Precomputation);
             return DSS(DomainParameters, PRNG);
         }
 };
@@ -46,13 +55,23 @@ struct DefaultDSS
 template<class DSS_Field>
 struct DefaultDSS<ECKNR<DSS_Field>, DSS_Field>
 {
-    ECKNR<DSS_Field> operator()(typename DSS_Field::aEC & Curve,
-                                const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
-                                unsigned int L_rec,
-                                generateRandomValueCallback & PRNG)
+
+    const ECDataInputPolicy<DSS_Field>   DefaultInputPolicy;
+    const DSSDomainParameters<DSS_Field> DomainParameters;
+          generateRandomValueCallback &  PRNG;
+
+    DefaultDSS<ECKNR<DSS_Field>,
+               DSS_Field>(typename DSS_Field::aEC & Curve,
+                          const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
+                          unsigned int L_rec,
+                          generateRandomValueCallback & PRNG)
+    : DefaultInputPolicy(L_rec, Curve, Hash::RIPEMD160),
+        DomainParameters(Curve, DefaultInputPolicy, Precomputation),
+        PRNG(PRNG)
+        {}
+
+    ECKNR<DSS_Field> operator()()
         {
-            const ECDataInputPolicy<DSS_Field>   DefaultInputPolicy(L_rec, Curve, Hash::RIPEMD160);
-            const DSSDomainParameters<DSS_Field> DomainParameters(Curve, DefaultInputPolicy, Precomputation);
             return ECKNR<DSS_Field>(DomainParameters,
                                     DSSECKNRDomainParameters(Hash(Hash::RIPEMD160),
                                                              MGF(MGF::MGF2, Hash::RIPEMD160)),
@@ -63,13 +82,22 @@ struct DefaultDSS<ECKNR<DSS_Field>, DSS_Field>
 template<class DSS_Field>
 struct DefaultDSS<ECMR<DSS_Field>, DSS_Field>
 {
-    ECMR<DSS_Field> operator()(typename DSS_Field::aEC & Curve,
-                               const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
-                               unsigned int L_rec,
-                               generateRandomValueCallback & PRNG)
+    const ECMRDataInputPolicy<DSS_Field> DefaultInputPolicy;
+    const DSSDomainParameters<DSS_Field> DomainParameters;
+          generateRandomValueCallback &  PRNG;
+
+    DefaultDSS<ECMR<DSS_Field>,
+               DSS_Field>(typename DSS_Field::aEC & Curve,
+                          const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
+                          unsigned int L_rec,
+                          generateRandomValueCallback & PRNG)
+    : DefaultInputPolicy(L_rec, Curve, Hash::SHA1),
+        DomainParameters(Curve, DefaultInputPolicy, Precomputation),
+        PRNG(PRNG)
+        {}
+
+    ECMR<DSS_Field> operator()()
         {
-            const ECMRDataInputPolicy<DSS_Field> DefaultInputPolicy(L_rec, Curve, Hash::SHA1);
-            const DSSDomainParameters<DSS_Field> DomainParameters(Curve, DefaultInputPolicy, Precomputation);
             return ECMR<DSS_Field>(DomainParameters,
                                    DSSECMRDomainParameters(Hash(Hash::SHA1),
                                                            MGF(MGF::MGF1,
@@ -81,15 +109,22 @@ struct DefaultDSS<ECMR<DSS_Field>, DSS_Field>
 template<class DSS_Field>
 struct DefaultDSS<ECAO<DSS_Field>, DSS_Field>
 {
-    ECAO<DSS_Field> operator()(typename DSS_Field::aEC & Curve,
-                               const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
-                               unsigned int L_rec,
-                               generateRandomValueCallback & PRNG)
-        {
-            long L_pad = 1;
+    const ECAODataInputPolicy<DSS_Field> DefaultInputPolicy;
+    const DSSDomainParameters<DSS_Field> DomainParameters;
+          generateRandomValueCallback &  PRNG;
 
-            const ECAODataInputPolicy<DSS_Field> DefaultInputPolicy(L_rec, L_pad, Curve, Hash::SHA256);
-            const DSSDomainParameters<DSS_Field> DomainParameters(Curve, DefaultInputPolicy, Precomputation);
+
+    DefaultDSS<ECAO<DSS_Field>,
+               DSS_Field>(typename DSS_Field::aEC & Curve,
+                          const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
+                          unsigned int L_rec,
+                          generateRandomValueCallback & PRNG)
+    : DefaultInputPolicy(L_rec, 1, Curve, Hash::SHA256),
+        DomainParameters(Curve, DefaultInputPolicy, Precomputation),
+        PRNG(PRNG) {}
+
+    ECAO<DSS_Field> operator()()
+        {
             return ECAO<DSS_Field>(DomainParameters,
                                    DSSECAODomainParameters(Hash(Hash::SHA256),
                                                            MGF(MGF::MGF1, Hash::SHA256)),
@@ -100,30 +135,37 @@ struct DefaultDSS<ECAO<DSS_Field>, DSS_Field>
 template<class DSS_Field>
 struct DefaultDSS<ECPV<DSS_Field>, DSS_Field>
 {
-    ECPV<DSS_Field> operator()(typename DSS_Field::aEC & Curve,
-                               const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
-                               unsigned int L_rec,
-                               generateRandomValueCallback & PRNG)
+    const StaticDataInputPolicy DefaultInputPolicy;
+    const size_t KSize;
+    const SymXor Sym;
+    const DSSDomainParameters<DSS_Field> DomainParameters;
+    const DSSECPVDomainParameters SchemeParameters;
+          generateRandomValueCallback &  PRNG;
+
+    DefaultDSS<ECPV<DSS_Field>,
+               DSS_Field>(typename DSS_Field::aEC & Curve,
+                          const Algorithm::Precomputations_Method<typename DSS_Field::pECP, ZZ> & Precomputation,
+                          unsigned int L_rec,
+                          generateRandomValueCallback & PRNG)
+    : DefaultInputPolicy(13 - 2,
+                         5  + 2,
+                         13 + 5 + L_rec,
+                         Hash::SHA1),
+        KSize(NumBits(Curve.getOrder())),
+        Sym(KSize),
+      DomainParameters(Curve,
+                       DefaultInputPolicy,
+                       Precomputation),
+        SchemeParameters(Hash(Hash::SHA1), Sym, KSize),
+        PRNG(PRNG) {}
+
+    ECPV<DSS_Field> operator()()
         {
-            const StaticDataInputPolicy DefaultInputPolicy(13 - 2,
-                                                           5  + 2,
-                                                           13 + 5 + L_rec,
-                                                           Hash::SHA1);
-
-            const size_t KSize = NumBits(Curve.getOrder()); // Key size
-            const SymXor Sym(KSize);
-
-            const DSSDomainParameters<DSS_Field> DomainParameters(Curve,
-                                                                  DefaultInputPolicy,
-                                                                 Precomputation);
-            const DSSECPVDomainParameters SchemeParameters(Hash(Hash::SHA1), Sym, KSize);
-
             return ECPV<DSS_Field>(DomainParameters,
                                    SchemeParameters,
                                    PRNG);
         }
 };
-
 
 template <class DSS, typename DSS_Field>
 unsigned int DSSBenchmark(typename DSS_Field::aEC & Curve,
@@ -136,10 +178,10 @@ unsigned int DSSBenchmark(typename DSS_Field::aEC & Curve,
 
     Curve.enter_mod_context(DSS_Field::aEC::MOD_CONTEXT::FIELD_CONTEXT);
 
-    DefaultDSS<DSS, DSS_Field> dssBuilder;
-
     const unsigned long L_rec = 10;
-    DSS dss = dssBuilder(Curve, Precomputation, L_rec, tG);
+    DefaultDSS<DSS, DSS_Field> dssBuilder(Curve, Precomputation, L_rec, tG);
+
+    DSS dss = dssBuilder();
 
     dss.setPrivateKey(Xa);
     dss.generatePublicKey();
@@ -375,11 +417,11 @@ int main(int argc, char *argv[])
     MakeGFPTests<ECPV<DSS_ZZ_p>,  DSS_ZZ_p>("ECPV, $GF(P)$",   count);
     MakeGFPTests<ECKNR<DSS_ZZ_p>, DSS_ZZ_p>("ECKNR, $GF(P)$",  count);
 
-    MakeGF2XTests<ECNR<DSS_GF2X>,  DSS_GF2X>("ECNR, $GF(2^m)$", count);
-    MakeGF2XTests<ECMR<DSS_GF2X>,  DSS_GF2X>("ECMR, $GF(2^m)$", count);
-    MakeGF2XTests<ECAO<DSS_GF2X>,  DSS_GF2X>("ECAO, $GF(2^m)$", count);
-    MakeGF2XTests<ECPV<DSS_GF2X>,  DSS_GF2X>("ECPV, $GF(2^m)$", count);
-    MakeGF2XTests<ECKNR<DSS_GF2X>, DSS_GF2X>("ECKNR, $GF(2^m)$",count);
+    // MakeGF2XTests<ECNR<DSS_GF2X>,  DSS_GF2X>("ECNR, $GF(2^m)$", count);
+    // MakeGF2XTests<ECMR<DSS_GF2X>,  DSS_GF2X>("ECMR, $GF(2^m)$", count);
+    // MakeGF2XTests<ECAO<DSS_GF2X>,  DSS_GF2X>("ECAO, $GF(2^m)$", count);
+    // MakeGF2XTests<ECPV<DSS_GF2X>,  DSS_GF2X>("ECPV, $GF(2^m)$", count);
+    // MakeGF2XTests<ECKNR<DSS_GF2X>, DSS_GF2X>("ECKNR, $GF(2^m)$",count);
 
     return 0;
 }
