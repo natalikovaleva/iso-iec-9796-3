@@ -84,6 +84,8 @@ struct DefaultDSS<ECMR<DSS_Field>, DSS_Field>
 {
     const ECMRDataInputPolicy<DSS_Field> DefaultInputPolicy;
     const DSSDomainParameters<DSS_Field> DomainParameters;
+    const Hash                           _Hash;
+    const MGF                            _MGF;
           generateRandomValueCallback &  PRNG;
 
     DefaultDSS<ECMR<DSS_Field>,
@@ -93,15 +95,16 @@ struct DefaultDSS<ECMR<DSS_Field>, DSS_Field>
                           generateRandomValueCallback & PRNG)
     : DefaultInputPolicy(L_rec, Curve, Hash::SHA1),
         DomainParameters(Curve, DefaultInputPolicy, Precomputation),
+        _Hash(Hash::SHA1),
+        _MGF(MGF::MGF1,Hash::SHA1),
         PRNG(PRNG)
         {}
 
     ECMR<DSS_Field> operator()()
         {
             return ECMR<DSS_Field>(DomainParameters,
-                                   DSSECMRDomainParameters(Hash(Hash::SHA1),
-                                                           MGF(MGF::MGF1,
-                                                               Hash::SHA1)),
+                                   DSSECMRDomainParameters(_Hash,
+                                                           _MGF),
                                    PRNG);
         }
 };
@@ -111,6 +114,8 @@ struct DefaultDSS<ECAO<DSS_Field>, DSS_Field>
 {
     const ECAODataInputPolicy<DSS_Field> DefaultInputPolicy;
     const DSSDomainParameters<DSS_Field> DomainParameters;
+    const Hash                           _Hash;
+    const MGF                            _MGF;
           generateRandomValueCallback &  PRNG;
 
 
@@ -121,13 +126,15 @@ struct DefaultDSS<ECAO<DSS_Field>, DSS_Field>
                           generateRandomValueCallback & PRNG)
     : DefaultInputPolicy(L_rec, 1, Curve, Hash::SHA256),
         DomainParameters(Curve, DefaultInputPolicy, Precomputation),
+        _Hash(Hash::SHA256),
+        _MGF(MGF::MGF1, Hash::SHA256),
         PRNG(PRNG) {}
 
     ECAO<DSS_Field> operator()()
         {
             return ECAO<DSS_Field>(DomainParameters,
-                                   DSSECAODomainParameters(Hash(Hash::SHA256),
-                                                           MGF(MGF::MGF1, Hash::SHA256)),
+                                   DSSECAODomainParameters(_Hash,
+                                                           _MGF),
                                    PRNG);
         }
 };
@@ -135,11 +142,12 @@ struct DefaultDSS<ECAO<DSS_Field>, DSS_Field>
 template<class DSS_Field>
 struct DefaultDSS<ECPV<DSS_Field>, DSS_Field>
 {
-    const StaticDataInputPolicy DefaultInputPolicy;
-    const size_t KSize;
-    const SymXor Sym;
+    const StaticDataInputPolicy          DefaultInputPolicy;
+    const size_t                         KSize;
+    const SymXor                         Sym;
     const DSSDomainParameters<DSS_Field> DomainParameters;
-    const DSSECPVDomainParameters SchemeParameters;
+    const Hash                           _Hash;
+    const DSSECPVDomainParameters        SchemeParameters;
           generateRandomValueCallback &  PRNG;
 
     DefaultDSS<ECPV<DSS_Field>,
@@ -156,7 +164,8 @@ struct DefaultDSS<ECPV<DSS_Field>, DSS_Field>
       DomainParameters(Curve,
                        DefaultInputPolicy,
                        Precomputation),
-        SchemeParameters(Hash(Hash::SHA1), Sym, KSize),
+        _Hash(Hash::SHA1),
+        SchemeParameters(_Hash, Sym, KSize),
         PRNG(PRNG) {}
 
     ECPV<DSS_Field> operator()()
@@ -417,11 +426,11 @@ int main(int argc, char *argv[])
     MakeGFPTests<ECPV<DSS_ZZ_p>,  DSS_ZZ_p>("ECPV, $GF(P)$",   count);
     MakeGFPTests<ECKNR<DSS_ZZ_p>, DSS_ZZ_p>("ECKNR, $GF(P)$",  count);
 
-    // MakeGF2XTests<ECNR<DSS_GF2X>,  DSS_GF2X>("ECNR, $GF(2^m)$", count);
-    // MakeGF2XTests<ECMR<DSS_GF2X>,  DSS_GF2X>("ECMR, $GF(2^m)$", count);
-    // MakeGF2XTests<ECAO<DSS_GF2X>,  DSS_GF2X>("ECAO, $GF(2^m)$", count);
-    // MakeGF2XTests<ECPV<DSS_GF2X>,  DSS_GF2X>("ECPV, $GF(2^m)$", count);
-    // MakeGF2XTests<ECKNR<DSS_GF2X>, DSS_GF2X>("ECKNR, $GF(2^m)$",count);
+    MakeGF2XTests<ECNR<DSS_GF2X>,  DSS_GF2X>("ECNR, $GF(2^m)$", count);
+    MakeGF2XTests<ECMR<DSS_GF2X>,  DSS_GF2X>("ECMR, $GF(2^m)$", count);
+    MakeGF2XTests<ECAO<DSS_GF2X>,  DSS_GF2X>("ECAO, $GF(2^m)$", count);
+    MakeGF2XTests<ECPV<DSS_GF2X>,  DSS_GF2X>("ECPV, $GF(2^m)$", count);
+    MakeGF2XTests<ECKNR<DSS_GF2X>, DSS_GF2X>("ECKNR, $GF(2^m)$",count);
 
     return 0;
 }
