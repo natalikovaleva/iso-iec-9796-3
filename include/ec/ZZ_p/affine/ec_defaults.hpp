@@ -13,12 +13,9 @@ namespace ECZZ_p
             enum Sizes
             {
                 EC0   = 0,   /* Broken EC */
-                EC128 = 128,
                 EC160 = 160,
                 EC161 = 161,
                 EC192 = 192,
-                EC256 = 256,
-                EC512 = 512
             };
 
             enum Version
@@ -49,4 +46,3 @@ namespace ECZZ_p
         };
     }
 }
-
